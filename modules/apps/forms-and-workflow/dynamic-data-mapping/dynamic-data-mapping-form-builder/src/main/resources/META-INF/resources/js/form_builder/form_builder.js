@@ -1205,7 +1205,9 @@ AUI.add(
 							}
 						);
 
-						field.render();
+						if (!field.__metal_component__) {
+							field.render();
+						}
 					},
 
 					_renderFields: function() {
