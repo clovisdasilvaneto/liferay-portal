@@ -22,7 +22,6 @@ String redirect = ParamUtil.getString(request, "redirect", currentURL);
 long formInstanceId = ddmFormDisplayContext.getFormInstanceId();
 
 String languageId = LanguageUtil.getLanguageId(request);
-String[] availableLanguageIds = ddmFormDisplayContext.getAvailableLanguageIds();
 Locale displayLocale = LocaleUtil.fromLanguageId(languageId);
 %>
 
@@ -119,7 +118,7 @@ Locale displayLocale = LocaleUtil.fromLanguageId(languageId);
 						<c:if test="<%= ddmFormDisplayContext.isFormShared() %>">
 							<div class="container-fluid-1280">
 								<div class="locale-actions">
-									<liferay-ui:language formAction="<%= currentURL %>" languageId="<%= languageId %>" languageIds="<%= availableLanguageIds %>" />
+									<liferay-ui:language formAction="<%= currentURL %>" languageId="<%= languageId %>" languageIds="<%= ddmFormDisplayContext.getAvailableLanguageIds() %>" />
 								</div>
 							</div>
 						</c:if>
@@ -164,6 +163,7 @@ Locale displayLocale = LocaleUtil.fromLanguageId(languageId);
 							var <portlet:namespace />form;
 
 							<liferay-portlet:resourceURL copyCurrentRenderParameters="<%= false %>" id="addFormInstanceRecord" var="autoSaveFormInstanceRecordURL">
+								<portlet:param name="autoSave" value="<%= Boolean.TRUE.toString() %>" />
 								<portlet:param name="preview" value="<%= String.valueOf(ddmFormDisplayContext.isPreview()) %>" />
 							</liferay-portlet:resourceURL>
 
