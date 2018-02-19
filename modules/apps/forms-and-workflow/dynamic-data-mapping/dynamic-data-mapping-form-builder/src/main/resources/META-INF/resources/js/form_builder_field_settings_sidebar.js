@@ -348,11 +348,30 @@ AUI.add(
 										var previousFieldName = previousSettingsFormFieldContext.fieldName;
 
 										if (fieldName === previousFieldName) {
-											settingsFormFieldContext.value = previousSettingsFormFieldContext.value;
-											settingsFormFieldContext.dataType = previousSettingsFormFieldContext.dataType;
+											if ((typeof settingsFormFieldContext.value === typeof previousSettingsFormFieldContext.value) && !(fieldName === 'type')) {
+												var settingsFormFieldContextValue = settingsFormFieldContext.value;
 
-											if (fieldLocalizable == previousFieldLocalizable) {
+												if (!settingsFormFieldContextValue.length) {
+													settingsFormFieldContext.value = previousSettingsFormFieldContext.value;
+													settingsFormFieldContext.dataType = previousSettingsFormFieldContext.dataType;
+												}
+
+												if (fieldLocalizable == previousFieldLocalizable) {
+													settingsFormFieldContext.localizedValue = previousSettingsFormFieldContext.localizedValue;
+												}
+											}
+											else if (fieldLocalizable == previousFieldLocalizable) {
 												settingsFormFieldContext.localizedValue = previousSettingsFormFieldContext.localizedValue;
+
+												if (settingsFormFieldContext.localizedValue) {
+													var settingsFormFieldContextLocalizedValueKeys = Object.keys(settingsFormFieldContext.localizedValue);
+
+													settingsFormFieldContextLocalizedValueKeys.forEach(
+														function(key, index) {
+															settingsFormFieldContext.localizedValue[key] = settingsFormFieldContext.value;
+														}
+													);
+												}
 											}
 										}
 									}
