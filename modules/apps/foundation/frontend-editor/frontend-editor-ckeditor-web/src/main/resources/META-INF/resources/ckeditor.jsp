@@ -439,6 +439,8 @@ name = HtmlUtil.escapeJS(name);
 			</c:if>
 
 			window['<%= name %>'].instanceReady = true;
+
+			Liferay.component('<%= name %>', window['<%= name %>']);
 		}
 
 		currentToolbarSet = getToolbarSet(initialToolbarSet);
