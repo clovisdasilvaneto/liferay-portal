@@ -1,12 +1,10 @@
 <definition>
 	<command name="addCP">
-		<execute function="SelectFrame" locator1="IFrame#CONFIGURATION" />
+		<execute macro="IFrame#selectConfigurationFrame" />
 
 		<execute function="Type" locator1="TextInput#SOURCE_URL" value1="${sourceURL}" />
 
-		<execute macro="Button#clickSave" />
-
-		<execute macro="Alert#viewSuccessMessage" />
+		<execute macro="PortletEntry#save" />
 
 		<execute function="SelectFrame" value1="relative=top" />
 	</command>
@@ -17,16 +15,15 @@
 		<execute function="Click" locator1="Icon#CLOSE" />
 	</command>
 
-	<command name="saveConfiguration">
-		<execute macro="PortletEntry#save" />
-		<execute function="SelectFrame" value1="relative=top" />
-	</command>
-
 	<command name="selectCategoryFrame">
 		<execute function="SelectFrame" locator1="IFrame#SELECT_CATEGORY" />
 	</command>
 
 	<command name="selectConfigurationFrame">
+		<execute function="SelectFrame" locator1="IFrame#CONFIGURATION" />
+	</command>
+
+	<command name="selectDialogFrame">
 		<execute function="SelectFrame" locator1="IFrame#DIALOG" />
 	</command>
 
@@ -43,7 +40,7 @@
 
 		<execute function="AssertElementPresent" locator1="IFrame#IFRAME_TITLE" value1="Permissions" />
 
-		<execute function="SelectFrame" locator1="IFrame#DIALOG" />
+		<execute macro="IFrame#selectDialogFrame" />
 	</command>
 
 	<command name="selectTopFrame">

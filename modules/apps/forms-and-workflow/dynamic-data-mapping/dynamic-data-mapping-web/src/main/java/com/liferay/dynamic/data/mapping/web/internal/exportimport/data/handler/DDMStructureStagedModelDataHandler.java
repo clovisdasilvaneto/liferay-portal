@@ -271,6 +271,12 @@ public class DDMStructureStagedModelDataHandler
 				DDMStructure.class + ".ddmStructureKey");
 
 		structureKeys.put(structureKey, existingStructure.getStructureKey());
+
+		Map<String, String> structureUuids =
+			(Map<String, String>)portletDataContext.getNewPrimaryKeysMap(
+				DDMStructure.class + ".ddmStructureUuid");
+
+		structureUuids.put(uuid, existingStructure.getUuid());
 	}
 
 	@Override
@@ -530,7 +536,9 @@ public class DDMStructureStagedModelDataHandler
 		List<DDMFormField> ddmFormFields = ddmForm.getDDMFormFields();
 
 		for (DDMFormField ddmFormField : ddmFormFields) {
-			if (!ddmFormField.getType().equals(DDMFormFieldType.SELECT)) {
+			String ddmFormFieldType = ddmFormField.getType();
+
+			if (!ddmFormFieldType.equals(DDMFormFieldType.SELECT)) {
 				continue;
 			}
 

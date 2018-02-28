@@ -9,7 +9,7 @@
 			<var name="portletOption" value="Configuration" />
 		</execute>
 
-		<execute function="SelectFrame" locator1="IFrame#CONFIGURATION" />
+		<execute macro="IFrame#selectConfigurationFrame" />
 
 		<execute function="AssertClick" locator1="NavBar#SCOPE" value1="Scope" />
 
@@ -33,7 +33,7 @@
 	</command>
 
 	<command name="selectConfigurationIFrame">
-		<execute function="SelectFrame" locator1="IFrame#DIALOG" />
+		<execute macro="IFrame#selectDialogFrame" />
 	</command>
 
 	<command name="selectDisplayTemplate">
@@ -166,7 +166,7 @@
 							<var name="key_menuItem" value="Configuration" />
 						</execute>
 
-						<execute function="SelectFrame" locator1="IFrame#CONFIGURATION" />
+						<execute macro="IFrame#selectConfigurationFrame" />
 
 						<execute function="AssertElementNotPresent" locator1="MenuItem#ANY_MENU_ITEM" value1="Permissions">
 							<var name="key_menuItem" value="Permissions" />
@@ -189,7 +189,7 @@
 			<then>
 				<execute function="Click" locator1="Portlet#OPTIONS_MENULIST_PERMISSIONS" />
 
-				<execute function="SelectFrame" locator1="IFrame#DIALOG" />
+				<execute macro="IFrame#selectDialogFrame" />
 			</then>
 		</if>
 
@@ -201,7 +201,9 @@
 	<command name="viewScopeCP">
 		<execute macro="Navigator#openURL" />
 
-		<execute macro="ProductMenu#gotoSitesContent">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Content" />
+			<var name="panel" value="Site Administration" />
 			<var name="portlet" value="Blogs" />
 		</execute>
 
@@ -214,9 +216,13 @@
 	<command name="viewScopeDefaultNoEntryCP">
 		<execute macro="Navigator#openURL" />
 
-		<execute macro="ProductMenu#gotoSitesContent">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Content" />
+			<var name="panel" value="Site Administration" />
 			<var name="portlet" value="Blogs" />
 		</execute>
+
+		<execute function="AssertElementPresent" locator1="ProductMenu#PRODUCT_MENU_PANEL_SCOPE" />
 
 		<execute function="AssertTextEquals" locator1="ProductMenu#PRODUCT_MENU_PANEL_SCOPE" value1="${contentScopeName}" />
 

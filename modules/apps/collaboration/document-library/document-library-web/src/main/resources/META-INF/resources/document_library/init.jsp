@@ -16,6 +16,8 @@
 
 <%@ include file="/init.jsp" %>
 
+<%@ page import="com.liferay.document.library.web.internal.util.RepositoryClassDefinitionUtil" %>
+
 <%
 PortalPreferences portalPreferences = PortletPreferencesFactoryUtil.getPortalPreferences(liferayPortletRequest);
 
@@ -44,7 +46,7 @@ if (rootFolderId != DLFolderConstants.DEFAULT_PARENT_FOLDER_ID) {
 			rootFolderName = StringPool.BLANK;
 		}
 	}
-	catch (NoSuchFolderException nsfe) {
+	catch (NoSuchFolderException | PrincipalException e) {
 		rootFolderId = DLFolderConstants.DEFAULT_PARENT_FOLDER_ID;
 	}
 }

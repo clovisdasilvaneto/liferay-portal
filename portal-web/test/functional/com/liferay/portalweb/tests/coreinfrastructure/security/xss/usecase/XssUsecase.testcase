@@ -26,8 +26,6 @@
 	</tear-down>
 
 	<command name="ValidateXSSVulnerabilities" priority="5">
-		<property name="portal.acceptance" value="true" />
-
 		<var method="TestPropsUtil#get('portal.url')" name="portalURL" />
 
 		<var name="maliciousURL1">
@@ -109,10 +107,11 @@
 	</command>
 
 	<command name="ViewControlPanelNoXSS" priority="5">
-		<property name="portal.acceptance" value="true" />
 		<var name="siteName"><![CDATA[<script>document.write("XSS"); window.stop();</script>]]></var>
 
-		<execute macro="ProductMenu#gotoControlPanelSites">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Sites" />
+			<var name="panel" value="Control Panel" />
 			<var name="portlet" value="Sites" />
 		</execute>
 
@@ -120,7 +119,9 @@
 			<var name="siteName" value="${siteName}" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoControlPanelSites">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Sites" />
+			<var name="panel" value="Control Panel" />
 			<var name="portlet" value="Sites" />
 		</execute>
 
@@ -142,11 +143,11 @@
 	</command>
 
 	<command name="ViewGoogleAnalyticsIDNoXSS" priority="5">
-		<property name="portal.acceptance" value="true" />
-
 		<execute macro="Navigator#openURL" />
 
-		<execute macro="ProductMenu#gotoSitesConfiguration">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Configuration" />
+			<var name="panel" value="Site Administration" />
 			<var name="portlet" value="Site Settings" />
 		</execute>
 
@@ -159,8 +160,6 @@
 	</command>
 
 	<command name="ViewJSONWSNoXSS" priority="5">
-		<property name="portal.acceptance" value="true" />
-
 		<var method="TestPropsUtil#get('portal.url')" name="portalURL" />
 
 		<execute function="Open" locator1="${portalURL}/api/jsonws?contextPath=%22%3E%3Cimg%20src=x%20onerror=alert%28/contextPath/%29%3E" />
@@ -168,8 +167,6 @@
 	</command>
 
 	<command name="ViewLiferayPortletListNoXSS" priority="5">
-		<property name="portal.acceptance" value="true" />
-
 		<var method="TestPropsUtil#get('portal.url')" name="portalURL" />
 
 		<execute macro="Page#add">
@@ -198,8 +195,6 @@
 	</command>
 
 	<command name="ViewLookAndFeelNoXSS" priority="5">
-		<property name="portal.acceptance" value="true" />
-
 		<execute macro="Page#add">
 			<var name="pageName"><![CDATA[<script>document.write("XSS"); window.stop();</script>]]></var>
 		</execute>
@@ -220,14 +215,50 @@
 		<execute function="AssertElementNotPresent" locator1="//body[.='XSS']" />
 	</command>
 
-	<command name="ViewRecycleBinNoXSS" priority="5">
-		<property name="portal.acceptance" value="true" />
+	<command name="ViewMobileDeviceRulesNoXSS" priority="5">
+		<description message="This is a use case for LPS-42750." />
 
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Configuration" />
+			<var name="panel" value="Site Administration" />
+			<var name="portlet" value="Mobile Device Families" />
+		</execute>
+
+		<execute macro="MobileDevice#addDeviceFamilyCP">
+			<var name="deviceFamilyName"><![CDATA[<script>alert(123);</script>]]></var>
+		</execute>
+
+		<execute macro="Navigator#openURL" />
+
+		<execute macro="SitePageNavigator#gotoEditPage">
+			<var name="page" value="Welcome" />
+		</execute>
+
+		<execute macro="Navigator#gotoNavTab">
+			<var name="navTab" value="Advanced" />
+		</execute>
+
+		<execute macro="Panel#expandPanel">
+			<var name="panelHeading" value="Mobile Device Rules" />
+		</execute>
+
+		<execute macro="Page#disableMobileDeviceRulesAreInheritedFromPublicPages" />
+
+		<execute macro="Page#selectMobileDeviceFamily">
+			<var name="deviceFamilyName"><![CDATA[<script>alert(123);</script>]]></var>
+		</execute>
+
+		<execute function="AssertElementNotPresent" locator1="//body[.='123']" />
+	</command>
+
+	<command name="ViewRecycleBinNoXSS" priority="5">
 		<var name="entryTitle"><![CDATA[<script>document.write("XSS"); window.stop();</script>]]></var>
 
 		<execute macro="Navigator#openURL" />
 
-		<execute macro="ProductMenu#gotoSitesContent">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Content" />
+			<var name="panel" value="Site Administration" />
 			<var name="portlet" value="Blogs" />
 		</execute>
 
@@ -243,7 +274,9 @@
 
 		<execute macro="Navigator#openURL" />
 
-		<execute macro="ProductMenu#gotoSitesContent">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Content" />
+			<var name="panel" value="Site Administration" />
 			<var name="portlet" value="Blogs" />
 		</execute>
 
@@ -259,7 +292,9 @@
 
 		<execute macro="Navigator#openURL" />
 
-		<execute macro="ProductMenu#gotoSitesContent">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Content" />
+			<var name="panel" value="Site Administration" />
 			<var name="portlet" value="Recycle Bin" />
 		</execute>
 
@@ -273,7 +308,9 @@
 	</command>
 
 	<command name="ViewRolesNoXSS" priority="4">
-		<execute macro="ProductMenu#gotoControlPanelUsers">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Users" />
+			<var name="panel" value="Control Panel" />
 			<var name="portlet" value="Roles" />
 		</execute>
 
@@ -281,7 +318,9 @@
 			<var name="roleName"><![CDATA[<script>document.write("XSS"); window.stop();</script>]]></var>
 		</execute>
 
-		<execute macro="ProductMenu#gotoControlPanelUsers">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Users" />
+			<var name="panel" value="Control Panel" />
 			<var name="portlet" value="Roles" />
 		</execute>
 
@@ -303,7 +342,6 @@
 	</command>
 
 	<command name="ViewURLValidateNoXSS" priority="5">
-		<property name="portal.acceptance" value="true" />
 		<property name="test.name.skip.portal.instance" value="XSSUsecase#ViewURLValidateNoXSS" />
 
 		<var name="maliciousURL1">
@@ -357,8 +395,6 @@
 	</command>
 
 	<command name="ViewWikiNoXSS" priority="5">
-		<property name="portal.acceptance" value="true" />
-
 		<execute macro="Page#gotoMyAccount">
 			<var name="portletName" value="Account Settings" />
 		</execute>
@@ -371,7 +407,9 @@
 
 		<execute macro="Navigator#openURL" />
 
-		<execute macro="ProductMenu#gotoSitesContent">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Content" />
+			<var name="panel" value="Site Administration" />
 			<var name="portlet" value="Wiki" />
 		</execute>
 

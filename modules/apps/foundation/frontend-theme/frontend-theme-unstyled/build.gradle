@@ -13,8 +13,8 @@ task buildLexiconIcons(type: Copy)
 task buildTheme
 task publishNodeModule(type: PublishNodeModuleTask)
 
-String alloyUIVersion = "3.0.3-deprecated.60"
-String lexiconVersion = "1.0.24"
+String alloyUIVersion = "3.0.3-deprecated.73"
+String lexiconVersion = "1.0.25"
 
 File themeDestinationDir = file("src/main/resources/META-INF/resources/_unstyled");
 
@@ -153,6 +153,11 @@ buildTheme {
 
 classes {
 	dependsOn buildTheme
+}
+
+configJSModules {
+	dependsOn = []
+	enabled = false
 }
 
 dependencies {

@@ -40,12 +40,14 @@
 	</tear-down>
 
 	<command name="AddChildSiteWikiFrontPageFormatHTML" priority="5">
-		<property name="portal.acceptance" value="true" />
+		<property name="portal.acceptance" value="false" />
 		<property name="testray.component.names" value="Training" />
 
 		<var method="TestPropsUtil#get('portal.url')" name="portalURL" />
 
-		<execute macro="ProductMenu#gotoControlPanelSites">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Sites" />
+			<var name="panel" value="Control Panel" />
 			<var name="portlet" value="Sites" />
 		</execute>
 
@@ -53,7 +55,9 @@
 			<var name="siteName" value="Site Name" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoControlPanelSites">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Sites" />
+			<var name="panel" value="Control Panel" />
 			<var name="portlet" value="Sites" />
 		</execute>
 
@@ -66,7 +70,9 @@
 			<var name="site" value="Child SiteName" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoSitesContent">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Content" />
+			<var name="panel" value="Site Administration" />
 			<var name="portlet" value="Wiki" />
 		</execute>
 
@@ -195,7 +201,7 @@
 			<var name="wikiPageTitle" value="FrontPage" />
 		</execute>
 
-		<for list="Document_1.jpg,Document_2.mp3,Document_3.doc" param="attachmentFileName" >
+		<for list="Document_1.jpg,Document_2.mp3,Document_3.doc" param="attachmentFileName">
 			<execute macro="WikiPage#addAttachmentViaPageEdit">
 				<var name="attachmentFileName" value="${attachmentFileName}" />
 				<var name="wikiPageTitle" value="FrontPage" />
@@ -356,7 +362,7 @@
 			<var name="wikiPageTitle" value="FrontPage" />
 		</execute>
 
-		<for list="1,2,3" param="childPageCount" >
+		<for list="1,2,3" param="childPageCount">
 			<execute macro="WikiPage#addChildPagePG">
 				<var name="wikiChildPageContent" value="Wiki FrontPage Child Page${childPageCount} Content" />
 				<var name="wikiChildPageTitle" value="Wiki FrontPage Child Page${childPageCount} Title" />
@@ -368,7 +374,7 @@
 			<var name="pageName" value="Wiki Test Page" />
 		</execute>
 
-		<for list="1,2,3" param="childPageCount" >
+		<for list="1,2,3" param="childPageCount">
 			<execute macro="WikiNavigator#gotoPG">
 				<var name="wikiPageTitle" value="FrontPage" />
 			</execute>
@@ -758,7 +764,9 @@
 		<property name="osgi.app.includes" value="wiki-engine-jspwiki" />
 		<property name="test.assert.warning.exceptions" value="true" />
 
-		<execute macro="ProductMenu#gotoControlPanelApps">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Apps" />
+			<var name="panel" value="Control Panel" />
 			<var name="portlet" value="App Manager" />
 		</execute>
 
@@ -770,7 +778,9 @@
 			<var name="appName" value="Creole" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoControlPanelApps">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Apps" />
+			<var name="panel" value="Control Panel" />
 			<var name="portlet" value="App Manager" />
 		</execute>
 
@@ -790,6 +800,12 @@
 		<execute macro="WikiNavigator#gotoAllPagesPG" />
 
 		<execute macro="WikiNavigator#gotoAddPageViaPG" />
+
+		<execute function="AssertElementNotPresent" locator1="Message#ERROR" value1="The format of this page is not supported. The page content will be shown unformatted." />
+
+		<execute macro="WikiEntry#viewPageFormat">
+			<var name="pageFormat" value="Creole" />
+		</execute>
 
 		<execute macro="WikiEntry#addPageTitle">
 			<var name="wikiPageTitle" value="Wiki Page With JSPWiki Content" />
@@ -835,7 +851,7 @@
 
 		<execute macro="WikiNavigator#gotoAllPagesPG" />
 
-		<for list="1,2,3" param="entryCount" >
+		<for list="1,2,3" param="entryCount">
 			<execute macro="WikiPage#addPG">
 				<var name="wikiPageContent" value="Wiki Page${entryCount} Content" />
 				<var name="wikiPageTitle" value="Wiki Page${entryCount} Title" />
@@ -844,7 +860,7 @@
 			<execute function="Refresh" />
 		</for>
 
-		<for list="1,2,3" param="entryCount" >
+		<for list="1,2,3" param="entryCount">
 			<execute macro="Navigator#gotoPage">
 				<var name="pageName" value="Wiki Test Page" />
 			</execute>
@@ -923,7 +939,7 @@
 	</command>
 
 	<command name="CancelAddPage" priority="5">
-		<property name="portal.acceptance" value="true" />
+		<property name="portal.acceptance" value="false" />
 
 		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Wiki Test Page" />
@@ -1185,6 +1201,10 @@
 		<execute macro="WikiNavigator#gotoEntryEditViaPGTable">
 			<var name="wikiPageTitle" value="Wiki Page Title" />
 		</execute>
+
+		<execute function="Click" locator1="AlloyEditor#CONTENT_FIELD" />
+
+		<execute function="AssertElementPresent" locator1="AlloyEditor#CONTENT_ADD_BUTTON" />
 
 		<execute macro="WikiEntry#addPageContent">
 			<var name="wikiPageContent" value="Edited Wiki Page Content" />

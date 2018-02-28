@@ -32,6 +32,7 @@ import com.liferay.dynamic.data.mapping.kernel.StorageEngineManagerUtil;
 import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.expando.kernel.util.ExpandoBridgeFactoryUtil;
 import com.liferay.expando.kernel.util.ExpandoBridgeIndexerUtil;
+import com.liferay.petra.string.CharPool;
 import com.liferay.portal.kernel.comment.Comment;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
@@ -66,9 +67,9 @@ import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.service.GroupLocalServiceUtil;
 import com.liferay.portal.kernel.spring.osgi.OSGiBeanProperties;
 import com.liferay.portal.kernel.util.ArrayUtil;
-import com.liferay.portal.kernel.util.CharPool;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.util.LocalizationUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.StringBundler;
@@ -292,6 +293,8 @@ public class DLFileEntryIndexer
 		addSearchTerm(searchQuery, searchContext, "extension", false);
 		addSearchTerm(searchQuery, searchContext, "fileEntryTypeId", false);
 		addSearchTerm(searchQuery, searchContext, "path", false);
+		addSearchLocalizedTerm(
+			searchQuery, searchContext, Field.CONTENT, false);
 
 		LinkedHashMap<String, Object> params =
 			(LinkedHashMap<String, Object>)searchContext.getAttribute("params");
@@ -340,6 +343,19 @@ public class DLFileEntryIndexer
 		}
 	}
 
+	protected Summary createSummary(
+		Locale locale, Document document, String titleField,
+		String contentField) {
+
+		String prefix = Field.SNIPPET + StringPool.UNDERLINE;
+
+		String title = document.get(prefix + titleField, titleField);
+		String content = document.get(
+			locale, prefix + contentField, contentField);
+
+		return new Summary(title, content);
+	}
+
 	@Override
 	protected void doDelete(DLFileEntry dlFileEntry) throws Exception {
 		deleteDocument(
@@ -368,7 +384,9 @@ public class DLFileEntryIndexer
 			}
 
 			if (indexContent) {
-				is = dlFileEntry.getFileVersion().getContentStream(false);
+				DLFileVersion fileVersion = dlFileEntry.getFileVersion();
+
+				is = fileVersion.getContentStream(false);
 			}
 		}
 		catch (Exception e) {
@@ -386,8 +404,15 @@ public class DLFileEntryIndexer
 			if (indexContent) {
 				if (is != null) {
 					try {
+						Locale defaultLocale = PortalUtil.getSiteDefaultLocale(
+							dlFileEntry.getGroupId());
+
+						String localizedField =
+							LocalizationUtil.getLocalizedName(
+								Field.CONTENT, defaultLocale.toString());
+
 						document.addFile(
-							Field.CONTENT, is, dlFileEntry.getTitle(),
+							localizedField, is, dlFileEntry.getTitle(),
 							PropsValues.DL_FILE_INDEXING_MAX_SIZE);
 					}
 					catch (IOException ioe) {
@@ -494,7 +519,8 @@ public class DLFileEntryIndexer
 		Document document, Locale locale, String snippet,
 		PortletRequest portletRequest, PortletResponse portletResponse) {
 
-		Summary summary = createSummary(document, Field.TITLE, Field.CONTENT);
+		Summary summary = createSummary(
+			locale, document, Field.TITLE, Field.CONTENT);
 
 		if (Validator.isNull(summary.getContent())) {
 			summary = createSummary(document, Field.TITLE, Field.DESCRIPTION);

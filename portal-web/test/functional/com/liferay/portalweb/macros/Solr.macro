@@ -39,7 +39,7 @@
 	</command>
 
 	<command name="viewLoggerNameInSolrAdminLogging">
-		<for list="LogUpdateProcessor,SolrCore,UpdateHandler" param="loggerName">
+		<for list="LogUpdateProcessorFactory,SolrCore,DirectUpdateHandler2" param="loggerName">
 			<var name="key_loggerName" value="${loggerName}" />
 
 			<execute function="AssertTextEquals" locator1="SolrAdminDashboard#LOGGING_TABLE_LOGGER_NAME" value1="${loggerName}" />
@@ -70,10 +70,5 @@
 		<execute function="AssertConsoleTextPresent" value1="ZooKeeperConnection Watcher:localhost:9983" />
 		<execute function="AssertConsoleTextPresent" value1="Client is connected to ZooKeeper" />
 		<execute function="AssertConsoleTextPresent" value1="Updating cluster state from ZooKeeper" />
-	</command>
-
-	<command name="viewSolrwithSSLAuthenticationEnabledInConsole">
-		<execute function="AssertConsoleTextPresent" value1="Attempting to load from the file system because" />
-		<execute function="AssertConsoleTextPresent" value1="solr-ssl.keystore.jks is not in the class path" />
 	</command>
 </definition>

@@ -4,7 +4,7 @@
 
 		<execute macro="Portlet#viewEmptyMessage" />
 
-		<execute function="Click" locator1="Button#PLUS" />
+		<execute macro="LexiconEntry#gotoAdd" />
 
 		<execute function="AssertClick" locator1="MenuItem#ANY_MENU_ITEM" value1="${adtType} Template">
 			<var name="key_menuItem" value="${adtType} Template" />
@@ -26,7 +26,7 @@
 	</command>
 
 	<command name="addManualViaRSS">
-		<execute function="SelectFrame" locator1="IFrame#DIALOG" />
+		<execute macro="IFrame#selectDialogFrame" />
 
 		<execute function="Pause" locator1="5000" />
 
@@ -45,7 +45,7 @@
 
 		<execute function="SelectFrame" locator1="ApplicationDisplayTemplates#ADT_IFRAME" />
 
-		<execute function="Click" locator1="Button#PLUS" />
+		<execute macro="LexiconEntry#gotoAdd" />
 
 		<execute function="AssertVisible" locator1="ApplicationDisplayTemplates#RSS_FEEDS" />
 		<execute function="AssertElementPresent" locator1="ApplicationDisplayTemplates#RSS_FEEDS" />
@@ -65,7 +65,7 @@
 			<var name="portletOption" value="Configuration" />
 		</execute>
 
-		<execute function="SelectFrame" locator1="IFrame#CONFIGURATION" />
+		<execute macro="IFrame#selectConfigurationFrame" />
 
 		<execute function="Pause" locator1="5000" />
 
@@ -92,7 +92,7 @@
 
 		<execute function="SelectFrame" locator1="ApplicationDisplayTemplates#ADT_IFRAME" />
 
-		<execute function="Click" locator1="Button#PLUS" />
+		<execute macro="LexiconEntry#gotoAdd" />
 
 		<var name="key_adtType" value="${adtType}" />
 
@@ -118,7 +118,7 @@
 			<var name="portletOption" value="Configuration" />
 		</execute>
 
-		<execute function="SelectFrame" locator1="IFrame#CONFIGURATION" />
+		<execute macro="IFrame#selectConfigurationFrame" />
 
 		<execute function="Pause" locator1="3000" />
 
@@ -149,7 +149,7 @@
 			<var name="portletOption" value="Configuration" />
 		</execute>
 
-		<execute function="SelectFrame" locator1="IFrame#CONFIGURATION" />
+		<execute macro="IFrame#selectConfigurationFrame" />
 
 		<var name="key_tab" value="Display Settings" />
 
@@ -162,11 +162,9 @@
 			</then>
 		</if>
 
-		<execute function="Select" locator1="Select#DISPLAY_TEMPLATE" value1="${adtType} Test ADT" />
+		<execute function="Select" locator1="Select#DISPLAY_TEMPLATE" value1="${templateName}" />
 
-		<execute macro="Button#clickSave" />
-
-		<execute macro="Alert#viewSuccessMessage" />
+		<execute macro="PortletEntry#save" />
 
 		<execute function="SelectFrameTop" />
 	</command>
@@ -180,7 +178,7 @@
 					<var name="portletOption" value="Configuration" />
 				</execute>
 
-				<execute function="SelectFrame" locator1="IFrame#CONFIGURATION" />
+				<execute macro="IFrame#selectConfigurationFrame" />
 
 				<if>
 					<condition function="IsElementPresent" locator1="Configuration#SETUP_DISPLAY_SETTINGS" />
@@ -191,9 +189,7 @@
 
 				<execute function="Select" locator1="ApplicationDisplayTemplatesConfiguration#DISPLAY_TEMPLATE_SELECT" value1="${defaultADT}" />
 
-				<execute macro="Button#clickSave" />
-
-				<execute macro="Alert#viewSuccessMessage" />
+				<execute macro="PortletEntry#save" />
 
 				<execute function="SelectFrameTop" locator1="IFrame#DIALOG" value1="relative=top" />
 			</then>
@@ -206,7 +202,7 @@
 			<var name="portletOption" value="Configuration" />
 		</execute>
 
-		<execute function="SelectFrame" locator1="IFrame#CONFIGURATION" />
+		<execute macro="IFrame#selectConfigurationFrame" />
 
 		<if>
 			<condition function="IsElementPresent" locator1="Configuration#SETUP_DISPLAY_SETTINGS" />
@@ -246,7 +242,7 @@
 					<var name="portletOption" value="Configuration" />
 				</execute>
 
-				<execute function="SelectFrame" locator1="IFrame#CONFIGURATION" />
+				<execute macro="IFrame#selectConfigurationFrame" />
 
 				<if>
 					<condition function="IsElementPresent" locator1="Configuration#SETUP_DISPLAY_SETTINGS" />

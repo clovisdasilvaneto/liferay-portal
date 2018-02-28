@@ -8,7 +8,7 @@
 			<var name="key_menuItem" value="Bookmarks Entry" />
 		</execute>
 
-		<execute function="SelectFrame" locator1="IFrame#DIALOG" />
+		<execute macro="IFrame#selectDialogFrame" />
 
 		<if>
 			<isset var="bookmarkFolderName" />
@@ -46,10 +46,8 @@
 		<var name="bookmarkName" value="${bookmarkName}" />
 		<var name="bookmarkURL" value="${bookmarkURL}" />
 
-		<execute function="Click" locator1="Button#PLUS" />
-
-		<execute function="AssertClick" locator1="MenuItem#ANY_MENU_ITEM" value1="Bookmark">
-			<var name="key_menuItem" value="Bookmark" />
+		<execute macro="LexiconEntry#gotoAddMenuItem">
+			<var name="menuItem" value="Bookmark" />
 		</execute>
 
 		<if>
@@ -85,10 +83,8 @@
 	</command>
 
 	<command name="addIncorrectURLCP">
-		<execute function="Click" locator1="Button#PLUS" />
-
-		<execute function="AssertClick" locator1="MenuItem#ANY_MENU_ITEM" value1="Bookmark">
-			<var name="key_menuItem" value="Bookmark" />
+		<execute macro="LexiconEntry#gotoAddMenuItem">
+			<var name="menuItem" value="Bookmark" />
 		</execute>
 
 		<execute macro="PortletEntry#inputName">
@@ -129,14 +125,12 @@
 
 		<execute macro="Button#clickSave" />
 
-		<execute function="AssertTextEquals" locator1="TextInput#URL_REQUIRED" value1="URL Required Please enter a valid URL." />
+		<execute function="AssertTextEquals" locator1="TextInput#URL_REQUIRED" value1="URL asterisk Required Please enter a valid URL." />
 	</command>
 
 	<command name="addNullCP">
-		<execute function="Click" locator1="Button#PLUS" />
-
-		<execute function="AssertClick" locator1="MenuItem#ANY_MENU_ITEM" value1="Bookmark">
-			<var name="key_menuItem" value="Bookmark" />
+		<execute macro="LexiconEntry#gotoAddMenuItem">
+			<var name="menuItem" value="Bookmark" />
 		</execute>
 
 		<if>
@@ -222,7 +216,7 @@
 	<command name="addRelatedAssetBookmarksEntryPG">
 		<execute function="SelectFrame" locator1="AssetRelatedAssets#SELECT_ASSET_IFRAME" />
 
-		<execute function="Click" locator1="Button#PLUS" />
+		<execute macro="LexiconEntry#gotoAdd" />
 
 		<execute macro="PortletEntry#inputName">
 			<var name="name" value="${bookmarkName}" />
@@ -248,10 +242,8 @@
 
 		<execute function="AssertTextEquals" locator1="Portlet#HEADER" value1="${subfolderName}" />
 
-		<execute function="Click" locator1="Button#PLUS" />
-
-		<execute function="AssertClick" locator1="MenuItem#ANY_MENU_ITEM" value1="Bookmark">
-			<var name="key_menuItem" value="Bookmark" />
+		<execute macro="LexiconEntry#gotoAddMenuItem">
+			<var name="menuItem" value="Bookmark" />
 		</execute>
 
 		<execute macro="PortletEntry#inputName">
@@ -287,7 +279,9 @@
 
 		<execute macro="Navigator#openURL" />
 
-		<execute macro="ProductMenu#gotoSitesContent">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Content" />
+			<var name="panel" value="Site Administration" />
 			<var name="portlet" value="Recycle Bin" />
 		</execute>
 
@@ -381,7 +375,7 @@
 
 		<execute function="AssertClick" locator1="Button#SELECT" value1="Select" />
 
-		<execute function="SelectFrame" locator1="IFrame#DIALOG" />
+		<execute macro="IFrame#selectDialogFrame" />
 
 		<var name="key_folderName" value="${folderName2}" />
 
@@ -422,7 +416,7 @@
 
 		<execute function="AssertClick" locator1="Button#SELECT" value1="Select" />
 
-		<execute function="SelectFrame" locator1="IFrame#DIALOG" />
+		<execute macro="IFrame#selectDialogFrame" />
 
 		<execute function="AssertClick" locator1="Button#CHOOSE_THIS_FOLDER" value1="Choose This Folder" />
 
@@ -437,7 +431,9 @@
 
 		<execute macro="Navigator#openURL" />
 
-		<execute macro="ProductMenu#gotoSitesContent">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Content" />
+			<var name="panel" value="Site Administration" />
 			<var name="portlet" value="Bookmarks" />
 		</execute>
 
@@ -449,7 +445,9 @@
 	<command name="moveToRecycleBinCP">
 		<execute macro="Navigator#openURL" />
 
-		<execute macro="ProductMenu#gotoSitesContent">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Content" />
+			<var name="panel" value="Site Administration" />
 			<var name="portlet" value="Bookmarks" />
 		</execute>
 
@@ -491,7 +489,9 @@
 	<command name="tearDownCP">
 		<execute macro="Navigator#openURL" />
 
-		<execute macro="ProductMenu#gotoSitesContent">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Content" />
+			<var name="panel" value="Site Administration" />
 			<var name="portlet" value="Bookmarks" />
 		</execute>
 
@@ -509,7 +509,9 @@
 
 		<execute macro="Navigator#openURL" />
 
-		<execute macro="ProductMenu#gotoSitesContent">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Content" />
+			<var name="panel" value="Site Administration" />
 			<var name="portlet" value="Recycle Bin" />
 		</execute>
 
@@ -521,7 +523,7 @@
 
 		<execute function="AssertTextEquals#assertPartialText" locator1="Bookmarks#DESCRIPTIVE_ENTRY_TITLE" value1="${bookmarkName}" />
 
-		<execute function="AssertClick" locator1="Bookmarks#DESCRIPTIVE_ENTRY_TITLE" value1="${bookmarkName}" />
+		<execute function="AssertClick#assertTextClickAtNoJavaScript" locator1="Bookmarks#DESCRIPTIVE_ENTRY_TITLE" value1="${bookmarkName}" />
 
 		<execute function="AssertLocation" value1="${bookmarkURL}/" />
 	</command>
@@ -554,10 +556,8 @@
 	</command>
 
 	<command name="viewNoCategoryCP">
-		<execute macro="LexiconEntry#gotoAdd" />
-
-		<execute function="AssertClick" locator1="MenuItem#ANY_MENU_ITEM" value1="Bookmark">
-			<var name="key_menuItem" value="Bookmark" />
+		<execute macro="LexiconEntry#gotoAddMenuItem">
+			<var name="menuItem" value="Bookmark" />
 		</execute>
 
 		<execute macro="Panel#expandPanel">

@@ -1,7 +1,6 @@
 <definition>
 	<var name="calendarDefault" value="Yes" />
 	<var name="calendarDescription" value="" />
-	<var name="siteName" value="Liferay" />
 
 	<command name="_checkForRSSTitle">
 		<if>
@@ -246,9 +245,7 @@
 					<var name="name" value="${calendarNameEdit}" />
 				</execute>
 
-				<execute macro="Button#clickSave" />
-
-				<execute macro="Alert#viewSuccessMessage" />
+				<execute macro="PortletEntry#save" />
 
 				<execute function="SelectFrame" value1="relative=top" />
 			</then>
@@ -270,9 +267,7 @@
 						<var name="name" value="${calendarNameEdit}" />
 					</execute>
 
-					<execute macro="Button#clickSave" />
-
-					<execute macro="Alert#viewSuccessMessage" />
+					<execute macro="PortletEntry#save" />
 
 					<execute function="SelectFrame" value1="relative=top" />
 				</then>
@@ -291,9 +286,7 @@
 						<var name="name" value="${calendarNameEdit}" />
 					</execute>
 
-					<execute macro="Button#clickSave" />
-
-					<execute macro="Alert#viewSuccessMessage" />
+					<execute macro="PortletEntry#save" />
 
 					<execute function="SelectFrame" value1="relative=top" />
 				</then>
@@ -429,13 +422,16 @@
 		<if>
 			<condition function="IsElementPresent" locator1="Message#SUCCESS" />
 			<then>
-				<execute macro="Alert#viewSuccessMessage" />
+				<execute macro="Alert#waitForSuccessMessageHide" />
+
 				<execute function="SelectFrame" value1="relative=top" />
 			</then>
 			<else>
 				<execute function="SelectFrame" value1="relative=top" />
 
-				<execute macro="Alert#viewSuccessMessage" />
+				<execute function="SelectFrame" locator1="IFrame#DIALOG" />
+
+				<execute macro="Alert#waitForSuccessMessageHide" />
 			</else>
 		</if>
 

@@ -7,9 +7,9 @@
 			<var name="navItem" value="Users" />
 		</execute>
 
-		<execute function="Click" locator1="Button#PLUS" />
+		<execute macro="LexiconEntry#gotoAdd" />
 
-		<execute function="SelectFrame" locator1="IFrame#DIALOG" />
+		<execute macro="IFrame#selectDialogFrame" />
 
 		<execute function="Check#checkAll" locator1="Checkbox#SELECT_ALL" />
 
@@ -44,7 +44,7 @@
 	</command>
 
 	<command name="addCP">
-		<execute function="Click" locator1="Button#PLUS" />
+		<execute macro="LexiconEntry#gotoAdd" />
 
 		<if>
 			<not>
@@ -153,9 +153,7 @@
 			</then>
 		</if>
 
-		<execute macro="Button#clickSave" />
-
-		<execute macro="Alert#viewSuccessMessage" />
+		<execute macro="PortletEntry#save" />
 
 		<execute function="AssertTextEquals" locator1="SitesEditSite#DETAILS_NAME" value1="${siteName}" />
 	</command>
@@ -246,7 +244,7 @@
 	</command>
 
 	<command name="assertMemberListNotVisibleCP">
-		<for list="${usersEmailsList}" param="userEmail" >
+		<for list="${usersEmailsList}" param="userEmail">
 			<var method="StringUtil#replace('${userEmail}', '@liferay.com', '')" name="userName" />
 
 			<execute macro="Site#assertMemberNotVisibleCP">
@@ -297,9 +295,9 @@
 			<var name="navItem" value="Organizations" />
 		</execute>
 
-		<execute function="Click" locator1="Button#PLUS" />
+		<execute macro="LexiconEntry#gotoAdd" />
 
-		<execute function="SelectFrame" locator1="IFrame#DIALOG" />
+		<execute macro="IFrame#selectDialogFrame" />
 
 		<execute function="AssertTextEquals" locator1="Card#SPECIFIC_LARGE_TEXT" value1="${orgName}" />
 
@@ -318,7 +316,7 @@
 			<var name="rowEntry" value="${resourceName}" />
 		</execute>
 
-		<execute function="SelectFrame" locator1="IFrame#DIALOG" />
+		<execute macro="IFrame#selectDialogFrame" />
 
 		<execute function="Check" locator1="Card#SPECIFIC_CHECKBOX">
 			<var name="key_cardText" value="${roleName}" />
@@ -338,7 +336,7 @@
 
 		<execute function="AssertVisible" locator1="Button#DONE" />
 
-		<execute function="SelectFrame" locator1="IFrame#DIALOG" />
+		<execute macro="IFrame#selectDialogFrame" />
 
 		<if>
 			<isset var="userMiddleName" />
@@ -372,7 +370,7 @@
 
 		<execute macro="LexiconEntry#gotoAdd" />
 
-		<execute function="SelectFrame" locator1="IFrame#DIALOG" />
+		<execute macro="IFrame#selectDialogFrame" />
 
 		<execute function="AssertTextEquals" locator1="Card#SPECIFIC_LARGE_TEXT" value1="${userGroupName}" />
 
@@ -548,6 +546,22 @@
 
 		<execute function="AssertTextEquals" locator1="Message#EMPTY_INFO" value1="No sites were found." />
 		<execute function="AssertTextNotPresent" value1="${siteName}" />
+	</command>
+
+	<command name="disableRecycleBinCP">
+		<execute function="AssertClick" locator1="SitesEditSite#MENU_ADVANCED_TAB" value1="Advanced" />
+
+		<execute macro="Panel#expandPanel">
+			<var name="panelHeading" value="Recycle Bin" />
+		</execute>
+
+		<execute function="Uncheck#uncheckToggleSwitchNoErrorNoAssert" locator1="Checkbox#ENABLE_RECYCLE_BIN" />
+
+		<execute function="Confirm" value1="Disabling the Recycle Bin prevents the restoring of content that has been moved to the Recycle Bin." />
+
+		<execute function="AssertNotChecked#assertNotCheckedNotVisible" locator1="Checkbox#ENABLE_RECYCLE_BIN" />
+
+		<execute macro="PortletEntry#save" />
 	</command>
 
 	<command name="editCP">
@@ -826,13 +840,13 @@
 			</elseif>
 		</if>
 
-		<execute macro="Button#clickSave" />
-
-		<execute macro="Alert#viewSuccessMessage" />
+		<execute macro="PortletEntry#save" />
 	</command>
 
 	<command name="manageMembershipOptions">
-		<execute macro="ProductMenu#gotoSitesConfiguration">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Configuration" />
+			<var name="panel" value="Site Administration" />
 			<var name="portlet" value="Site Settings" />
 		</execute>
 
@@ -914,7 +928,7 @@
 			<var name="key_menuItem" value="Assign Site Roles" />
 		</execute>
 
-		<execute function="SelectFrame" locator1="IFrame#DIALOG" />
+		<execute macro="IFrame#selectDialogFrame" />
 
 		<execute function="Uncheck" locator1="Checkbox#SITE_OWNER" />
 
@@ -1052,7 +1066,9 @@
 	</command>
 
 	<command name="tearDownCP">
-		<execute macro="ProductMenu#gotoControlPanelSites">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Sites" />
+			<var name="panel" value="Control Panel" />
 			<var name="portlet" value="Sites" />
 		</execute>
 
@@ -1075,10 +1091,8 @@
 	</command>
 
 	<command name="viewCannotAdd">
-		<execute function="Click" locator1="Button#PLUS" />
-
-		<execute function="AssertClick" locator1="MenuItem#ANY_MENU_ITEM" value1="Blank Site">
-			<var name="key_menuItem" value="Blank Site" />
+		<execute macro="LexiconEntry#gotoAddMenuItem">
+			<var name="menuItem" value="Blank Site" />
 		</execute>
 
 		<execute macro="PortletEntry#inputName">
@@ -1203,9 +1217,9 @@
 			<var name="navItem" value="Users" />
 		</execute>
 
-		<execute function="Click" locator1="Button#PLUS" />
+		<execute macro="LexiconEntry#gotoAdd" />
 
-		<execute function="SelectFrame" locator1="IFrame#DIALOG" />
+		<execute macro="IFrame#selectDialogFrame" />
 
 		<execute function="AssertTextNotPresent" locator1="SiteMembershipsAddMembers#USER_TABLE_NAME" value1="${userFirstName} ${userLastName}" />
 		<execute function="AssertTextNotPresent" locator1="SiteMembershipsAddMembers#USER_TABLE_SCREEN_NAME" value1="${userScreenName}" />
@@ -1223,7 +1237,7 @@
 	</command>
 
 	<command name="viewMemberListCP">
-		<for list="${usersEmailsList}" param="userEmail" >
+		<for list="${usersEmailsList}" param="userEmail">
 			<var method="StringUtil#replace('${userEmail}', '@liferay.com', '')" name="userName" />
 
 			<execute macro="Site#viewMemberCP">

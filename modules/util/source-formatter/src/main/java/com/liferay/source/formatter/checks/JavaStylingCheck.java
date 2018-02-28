@@ -14,7 +14,7 @@
 
 package com.liferay.source.formatter.checks;
 
-import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 
 import java.util.regex.Matcher;
@@ -45,8 +45,14 @@ public class JavaStylingCheck extends BaseFileCheck {
 
 		content = StringUtil.replace(
 			content,
-			new String[] {";\n/**", "\t/*\n\t *", ";;\n", "\n/**\n *\n *"},
-			new String[] {";\n\n/**", "\t/**\n\t *", ";\n", "\n/**\n *"});
+			new String[] {
+				";\n/**", "\t/*\n\t *", ";;\n", "\n/**\n *\n *",
+				"\n */\npackage "
+			},
+			new String[] {
+				";\n\n/**", "\t/**\n\t *", ";\n", "\n/**\n *",
+				"\n */\n\npackage "
+			});
 
 		content = StringUtil.replace(
 			content,

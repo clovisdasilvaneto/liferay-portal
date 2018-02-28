@@ -32,7 +32,9 @@
 
 		<execute function="Click" locator1="Icon#DISPLAY_STYLE_DESCRIPTIVE" />
 
-		<execute macro="ProductMenu#gotoControlPanelUsers">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Users" />
+			<var name="panel" value="Control Panel" />
 			<var name="portlet" value="Users and Organizations" />
 		</execute>
 
@@ -43,7 +45,9 @@
 			<var name="userScreenName" value="usersn" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoControlPanelUsers">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Users" />
+			<var name="panel" value="Control Panel" />
 			<var name="portlet" value="Users and Organizations" />
 		</execute>
 
@@ -53,7 +57,9 @@
 			<var name="userScreenName" value="usersn" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoControlPanelUsers">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Users" />
+			<var name="panel" value="Control Panel" />
 			<var name="portlet" value="Users and Organizations" />
 		</execute>
 
@@ -92,7 +98,7 @@
 			<var name="notificationCount" value="0" />
 		</execute>
 
-		<execute macro="IFrame#selectConfigurationFrame" />
+		<execute macro="IFrame#selectDialogFrame" />
 
 		<execute macro="NotificationsPortlet#disableUserDeliveries">
 			<var name="actionType" value="Adds" />
@@ -169,7 +175,7 @@
 			<var name="notificationCount" value="0" />
 		</execute>
 
-		<execute macro="IFrame#selectConfigurationFrame" />
+		<execute macro="IFrame#selectDialogFrame" />
 
 		<execute macro="NotificationsPortlet#disableUserDeliveries">
 			<var name="actionType" value="Updates" />

@@ -785,7 +785,7 @@ app.artifacts-7.0.8=\
 	com.liferay.dynamic.data.mapping.web-1.0.42.jar,\
 	com.liferay.polls.api-4.0.2.jar,\
 	com.liferay.polls.service-3.0.20.jar,\
-	com.liferay.polls.web-2.0.13.jar,\
+	com.liferay.polls.web-2.0.14.jar,\
 	com.liferay.portal.reports.engine.api-3.0.0.jar,\
 	com.liferay.portal.rules.engine.api-2.0.5.jar,\
 	com.liferay.portal.rules.engine.wiring-2.0.2.jar,\
@@ -801,8 +801,8 @@ app.artifacts-7.0.8=\
 	com.liferay.portal.workflow.kaleo.runtime.scripting.impl-1.0.3.jar,\
 	com.liferay.portal.workflow.kaleo.service-2.0.26.jar,\
 	com.liferay.portal.workflow.lang-2.0.4.jar,\
-	com.liferay.portal.workflow.task.web-1.0.24.jar
+	com.liferay.portal.workflow.task.web-1.0.25.jar
 
-app.change.log-7.0.8=LPS-52675 LPS-56589 LPS-58297 LPS-61099 LPS-63382 LPS-64031 LPS-64305 LPS-65012 LPS-65225 LPS-65385 LPS-66853 LPS-67352 LPS-68062 LPS-68289 LPS-68860 LPS-68892 LPS-69661 LPS-70438 LPS-70644 LPS-70942 LPS-70988 LPS-71004 LPS-71142 LPS-71245 LPS-71783 LPS-71794 LPS-71828 LPS-72233 LPS-72246 LPS-72251 LPS-72429 LPS-72705 LPS-72943 LPS-73034 LPS-73262 LPS-73385 LPS-73443 LPS-73564 LPS-73600 LPS-73741 LPS-73902 LPS-73935 LPS-73967 LPS-74063 LPS-74155 LPS-74172 LPS-74244 LPS-74475
+app.change.log-7.0.8=LPS-52675 LPS-56589 LPS-58297 LPS-61099 LPS-63382 LPS-64031 LPS-64305 LPS-65012 LPS-65225 LPS-65385 LPS-66640 LPS-66853 LPS-67352 LPS-68062 LPS-68289 LPS-68860 LPS-68892 LPS-69661 LPS-70644 LPS-70942 LPS-70988 LPS-71004 LPS-71142 LPS-71245 LPS-71783 LPS-71828 LPS-72233 LPS-72246 LPS-72251 LPS-72429 LPS-72705 LPS-72838 LPS-72943 LPS-73034 LPS-73262 LPS-73385 LPS-73443 LPS-73564 LPS-73600 LPS-73741 LPS-73902 LPS-73935 LPS-73967 LPS-74063 LPS-74155 LPS-74172 LPS-74244 LPS-74475
 
-app.git.id-7.0.8=80ccc35378312ce5f72bcc120ada86df8e77e148
+app.git.id-7.0.8=f255274c98d34faf6e00308de1dcf7847ecc3752

@@ -23,7 +23,7 @@
 	</command>
 
 	<command name="addCP">
-		<execute function="Click" locator1="Button#PLUS" />
+		<execute macro="LexiconEntry#gotoAdd" />
 
 		<execute macro="PortletEntry#inputName">
 			<var name="name" value="${siteTemplateName}" />
@@ -47,9 +47,7 @@
 			</then>
 		</if>
 
-		<execute macro="Button#clickSave" />
-
-		<execute macro="Alert#viewSuccessMessage" />
+		<execute macro="PortletEntry#save" />
 	</command>
 
 	<command name="addSitePageViaSiteTemplateCP">
@@ -71,7 +69,7 @@
 
 		<execute function="Click" locator1="SitePages#PRIVATE_PAGE_ELLIPSIS" />
 
-		<execute function="AssertClick" locator1="MenuItem#ANY_MENU_ITEM" value1="Add Page" >
+		<execute function="AssertClick" locator1="MenuItem#ANY_MENU_ITEM" value1="Add Page">
 			<var name="key_menuItem" value="Add Page" />
 		</execute>
 
@@ -254,7 +252,9 @@
 	</command>
 
 	<command name="tearDownCP">
-		<execute macro="ProductMenu#gotoControlPanelSites">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Sites" />
+			<var name="panel" value="Control Panel" />
 			<var name="portlet" value="Site Templates" />
 		</execute>
 
@@ -307,7 +307,7 @@
 	</command>
 
 	<command name="viewDefaultCP">
-		<for list="${siteTemplateNameList}" param="siteTemplateName" >
+		<for list="${siteTemplateNameList}" param="siteTemplateName">
 			<var name="key_siteTemplateName" value="${siteTemplateName}" />
 
 			<execute function="AssertTextEquals#assertPartialText" locator1="SiteTemplates#SITE_TEMPLATE_TABLE_NAME" value1="${siteTemplateName}" />
@@ -317,13 +317,13 @@
 	</command>
 
 	<command name="viewDefaultDataLocalizedCP">
-		<for list="${siteTemplateNameList}" param="siteTemplateNameTranslation" >
+		<for list="${siteTemplateNameList}" param="siteTemplateNameTranslation">
 			<var name="key_siteTemplateName" value="${siteTemplateNameTranslation}" />
 
 			<execute function="AssertTextEquals#assertPartialText" locator1="SiteTemplates#SITE_TEMPLATE_TABLE_NAME" value1="${siteTemplateNameTranslation}" />
 		</for>
 
-		<for list="${siteTemplateDescriptionList}" param="DescriptionTranslation" >
+		<for list="${siteTemplateDescriptionList}" param="DescriptionTranslation">
 			<var name="key_siteTemplateDescription" value="${DescriptionTranslation}" />
 
 			<execute function="AssertTextEquals" locator1="SiteTemplates#SITE_TEMPLATE_TABLE_DESCRIPTION" value1="${DescriptionTranslation}" />
@@ -347,7 +347,9 @@
 			<var name="key_menuItem" value="Manage" />
 		</execute>
 
-		<execute macro="ProductMenuHelper#expandPanelSites" />
+		<execute macro="ProductMenuHelper#expandPanel">
+			<var name="panel" value="Site Administration" />
+		</execute>
 
 		<execute macro="ProductMenuHelper#expandCategory">
 			<var name="category" value="Configuration" />
@@ -365,7 +367,7 @@
 	</command>
 
 	<command name="viewNoTemplatesDisplay">
-		<execute function="Click" locator1="Button#PLUS" />
+		<execute macro="LexiconEntry#gotoAdd" />
 		<var name="key_siteTemplateName" value="${siteTemplateName}" />
 
 		<execute function="AssertElementNotPresent" locator1="MenuItem#ANY_MENU_ITEM" value1="${siteTemplateName}">

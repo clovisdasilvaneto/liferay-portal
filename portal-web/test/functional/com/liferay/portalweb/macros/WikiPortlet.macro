@@ -1,6 +1,6 @@
 <definition>
 	<command name="configureDisplaySettings">
-		<execute function="SelectFrame" locator1="IFrame#DIALOG" />
+		<execute macro="IFrame#selectDialogFrame" />
 
 		<for list="${uncheckSetting}" param="SettingName">
 			<execute function="Uncheck" locator1="Checkbox#${SettingName}" />
@@ -12,7 +12,7 @@
 	</command>
 
 	<command name="configureSharingAllowUsersToAddWikiToAnyWebsite">
-		<execute function="SelectFrame" locator1="IFrame#CONFIGURATION" />
+		<execute macro="IFrame#selectConfigurationFrame" />
 
 		<execute function="AssertClick" locator1="NavBar#SHARING" value1="Sharing" />
 
@@ -60,7 +60,9 @@
 	<command name="tearDownCP">
 		<execute macro="Navigator#openURL" />
 
-		<execute macro="ProductMenu#gotoSitesContent">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Content" />
+			<var name="panel" value="Site Administration" />
 			<var name="portlet" value="Wiki" />
 		</execute>
 
@@ -82,7 +84,7 @@
 	</command>
 
 	<command name="viewConfigurationTabs">
-		<execute function="SelectFrame" locator1="IFrame#DIALOG" />
+		<execute macro="IFrame#selectDialogFrame" />
 
 		<for list="${isPresent}" param="isPresent">
 			<execute function="AssertElementPresent" locator1="Configuration#${isPresent}" />
@@ -94,17 +96,17 @@
 	</command>
 
 	<command name="viewConfigureSharingAllowUsersToAddWikiToAnyWebsite">
-		<execute function="SelectFrame" locator1="IFrame#CONFIGURATION" />
+		<execute macro="IFrame#selectConfigurationFrame" />
 
 		<execute function="AssertClick" locator1="NavBar#SHARING" value1="Sharing" />
 
 		<if>
 			<equals arg1="${enabled}" arg2="true" />
 			<then>
-				<execute function="AssertChecked#assertCheckedToggleSwitch" locator1="WikiConfiguration#ALLOW_USERS_TO_ADD_WIKI_TO_ANY_WEBSITE_CHECKBOX" />
+				<execute function="AssertChecked#assertCheckedNotVisible" locator1="WikiConfiguration#ALLOW_USERS_TO_ADD_WIKI_TO_ANY_WEBSITE_CHECKBOX" />
 			</then>
 			<else>
-				<execute function="AssertNotChecked#assertNotCheckedToggleSwitch" locator1="WikiConfiguration#ALLOW_USERS_TO_ADD_WIKI_TO_ANY_WEBSITE_CHECKBOX" />
+				<execute function="AssertNotChecked#assertNotCheckedNotVisible" locator1="WikiConfiguration#ALLOW_USERS_TO_ADD_WIKI_TO_ANY_WEBSITE_CHECKBOX" />
 			</else>
 		</if>
 
@@ -112,7 +114,7 @@
 	</command>
 
 	<command name="viewDisplaySettings">
-		<execute function="SelectFrame" locator1="IFrame#DIALOG" />
+		<execute macro="IFrame#selectDialogFrame" />
 
 		<for list="${uncheckedSetting}" param="SettingName">
 			<execute function="AssertNotChecked" locator1="Checkbox#${SettingName}" />

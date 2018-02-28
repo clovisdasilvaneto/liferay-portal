@@ -4,20 +4,22 @@
 	<command name="addCP">
 		<var name="key_dmFolderName" value="${dmFolderName}" />
 
-		<execute function="Click" locator1="Button#PLUS" />
-
-		<execute function="AssertClick#assertTextClickAt" locator1="MenuItem#ANY_MENU_ITEM" value1="Folder">
-			<var name="key_menuItem" value="Folder" />
+		<execute macro="LexiconEntry#gotoAddMenuItem">
+			<var name="menuItem" value="Folder" />
 		</execute>
 
 		<execute function="Pause" locator1="1000" />
 
-		<execute function="Type" locator1="DocumentsAndMediaEditFolder#NAME_FIELD" value1="${dmFolderName}" />
+		<execute macro="PortletEntry#inputName">
+			<var name="name" value="${dmFolderName}" />
+		</execute>
 
 		<if>
 			<isset var="dmFolderDescription" />
 			<then>
-				<execute function="Type" locator1="DocumentsAndMediaEditFolder#DESCRIPTION_FIELD" value1="${dmFolderDescription}" />
+				<execute macro="PortletEntry#inputDescription">
+					<var name="description" value="${dmFolderDescription}" />
+				</execute>
 			</then>
 		</if>
 
@@ -40,8 +42,13 @@
 
 		<execute function="Pause" locator1="1000" />
 
-		<execute function="Type" locator1="DocumentsAndMediaEditFolder#NAME_FIELD" value1="${dmFolderName}" />
-		<execute function="Type" locator1="DocumentsAndMediaEditFolder#DESCRIPTION_FIELD" value1="${dmFolderDescription}" />
+		<execute macro="PortletEntry#inputName">
+			<var name="name" value="${dmFolderName}" />
+		</execute>
+
+		<execute macro="PortletEntry#inputDescription">
+			<var name="description" value="${dmFolderDescription}" />
+		</execute>
 
 		<if>
 			<isset var="viewableBy" />
@@ -104,20 +111,22 @@
 	</command>
 
 	<command name="addSubfolderCP">
-		<execute function="Click#makeVisibleClickAt" locator1="Button#PLUS" />
-
-		<execute function="AssertClick#assertTextClickAt" locator1="MenuItem#ANY_MENU_ITEM" value1="Subfolder">
-			<var name="key_menuItem" value="Subfolder" />
+		<execute macro="LexiconEntry#gotoAddMenuItem">
+			<var name="menuItem" value="Subfolder" />
 		</execute>
 
 		<execute function="Pause" locator1="1000" />
 
-		<execute function="Type" locator1="DocumentsAndMediaEditFolder#NAME_FIELD" value1="${dmSubFolderName}" />
+		<execute macro="PortletEntry#inputName">
+			<var name="name" value="${dmSubFolderName}" />
+		</execute>
 
 		<if>
 			<isset var="dmSubFolderDescription" />
 			<then>
-				<execute function="Type" locator1="DocumentsAndMediaEditFolder#DESCRIPTION_FIELD" value1="${dmSubFolderDescription}" />
+				<execute macro="PortletEntry#inputDescription">
+					<var name="description" value="${dmSubFolderDescription}" />
+				</execute>
 			</then>
 		</if>
 
@@ -155,12 +164,16 @@
 
 		<execute function="Pause" locator1="1000" />
 
-		<execute function="Type" locator1="DocumentsAndMediaEditFolder#NAME_FIELD" value1="${dmSubFolderName}" />
+		<execute macro="PortletEntry#inputName">
+			<var name="name" value="${dmSubFolderName}" />
+		</execute>
 
 		<if>
 			<isset var="dmSubFolderDescription" />
 			<then>
-				<execute function="Type" locator1="DocumentsAndMediaEditFolder#DESCRIPTION_FIELD" value1="${dmSubFolderDescription}" />
+				<execute macro="PortletEntry#inputDescription">
+					<var name="description" value="${dmSubFolderDescription}" />
+				</execute>
 			</then>
 		</if>
 
@@ -316,8 +329,6 @@
 		<execute function="AssertElementPresent" locator1="DocumentsAndMedia#ICON_FOLDER_THUMBNAIL" />
 		<execute function="AssertTextEquals" locator1="DocumentsAndMedia#ICON_FOLDER_THUMBNAIL" value1="${dmFolderName}" />
 
-		<execute function="MouseOver" locator1="DocumentsAndMedia#ICON_FOLDER_THUMBNAIL" />
-
 		<execute function="AssertElementPresent" locator1="DocumentsAndMedia#DESCRIPTIVE_LIST_VERTICAL_ELLIPSIS" />
 
 		<execute function="Click" locator1="DocumentsAndMedia#DESCRIPTIVE_LIST_VERTICAL_ELLIPSIS" />
@@ -326,8 +337,13 @@
 			<var name="key_menuItem" value="Edit" />
 		</execute>
 
-		<execute function="Type" locator1="DocumentsAndMediaEditFolder#NAME_FIELD" value1="${dmFolderNameEdit}" />
-		<execute function="Type" locator1="DocumentsAndMediaEditFolder#DESCRIPTION_FIELD" value1="${dmFolderDescriptionEdit}" />
+		<execute macro="PortletEntry#inputName">
+			<var name="name" value="${dmFolderNameEdit}" />
+		</execute>
+
+		<execute macro="PortletEntry#inputDescription">
+			<var name="description" value="${dmFolderDescriptionEdit}" />
+		</execute>
 
 		<execute macro="PortletEntry#save" />
 
@@ -506,9 +522,7 @@
 			<execute function="Uncheck" locator1="Permissions#CONTENT_PERMISSIONS_${permissionName}_CHECKBOX" />
 		</for>
 
-		<execute macro="Button#clickSave" />
-
-		<execute macro="Alert#viewSuccessMessage" />
+		<execute macro="PortletEntry#save" />
 	</command>
 
 	<command name="subscribePG">
@@ -522,7 +536,9 @@
 	<command name="tearDownCP">
 		<execute macro="Navigator#openURL" />
 
-		<execute macro="ProductMenu#gotoSitesContent">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Content" />
+			<var name="panel" value="Site Administration" />
 			<var name="portlet" value="Documents and Media" />
 		</execute>
 
@@ -543,14 +559,16 @@
 
 		<execute macro="Navigator#openURL" />
 
-		<execute macro="ProductMenu#gotoSitesContent">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Content" />
+			<var name="panel" value="Site Administration" />
 			<var name="portlet" value="Recycle Bin" />
 		</execute>
 
 		<execute macro="RecycleBin#emptyCP" />
 	</command>
 
-	<command name="tearDownPGViaMG" >
+	<command name="tearDownPGViaMG">
 		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="${pageName}" />
 		</execute>
@@ -568,7 +586,9 @@
 
 		<execute macro="Navigator#openURL" />
 
-		<execute macro="ProductMenu#gotoSitesContent">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Content" />
+			<var name="panel" value="Site Administration" />
 			<var name="portlet" value="Recycle Bin" />
 		</execute>
 

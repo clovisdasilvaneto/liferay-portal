@@ -83,7 +83,6 @@ import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -104,17 +103,14 @@ public class JournalConverterUtilTest {
 			new LiferayIntegrationTestRule(),
 			SynchronousDestinationTestRule.INSTANCE);
 
-	@BeforeClass
-	public static void setUpClass() {
-		_enLocale = LocaleUtil.fromLanguageId("en_US");
-		_ptLocale = LocaleUtil.fromLanguageId("pt_BR");
-	}
-
 	@Before
 	public void setUp() throws Exception {
 		setUpDDMFormJSONDeserializer();
 		setUpDDMFormXSDDeserializer();
 		setUpDDMXML();
+
+		_enLocale = LocaleUtil.fromLanguageId("en_US");
+		_ptLocale = LocaleUtil.fromLanguageId("pt_BR");
 
 		_group = GroupTestUtil.addGroup();
 
@@ -738,13 +734,14 @@ public class JournalConverterUtilTest {
 		Field field = new Field();
 
 		field.setDDMStructureId(ddmStructureId);
+		field.setDefaultLocale(_enLocale);
 		field.setName("link_to_layout");
 
 		List<Serializable> enValues = new ArrayList<>();
 
 		for (Layout layout : layoutsMap.values()) {
-			enValues.add(getLinkToLayoutFieldValue(layout, false));
-			enValues.add(getLinkToLayoutFieldValue(layout, true));
+			enValues.add(getLinkToLayoutFieldValue(layout, _enLocale, false));
+			enValues.add(getLinkToLayoutFieldValue(layout, _enLocale, true));
 		}
 
 		field.addValues(_enLocale, enValues);
@@ -753,12 +750,13 @@ public class JournalConverterUtilTest {
 	}
 
 	protected String getLinkToLayoutFieldValue(
-		Layout layout, boolean includeGroupId) {
+		Layout layout, Locale locale, boolean includeGroupId) {
 
 		JSONObject jsonObject = JSONFactoryUtil.createJSONObject();
 
 		if (includeGroupId) {
 			jsonObject.put("groupId", layout.getGroupId());
+			jsonObject.put("label", layout.getName(locale));
 		}
 
 		jsonObject.put("layoutId", layout.getLayoutId());

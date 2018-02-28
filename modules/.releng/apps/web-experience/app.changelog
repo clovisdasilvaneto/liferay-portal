@@ -1539,10 +1539,10 @@ app.artifacts-7.0.8=\
 	com.liferay.journal.item.selector.web-1.0.3.jar,\
 	com.liferay.journal.lang-2.0.8.jar,\
 	com.liferay.journal.ratings.definition-2.0.2.jar,\
-	com.liferay.journal.service-3.17.2.jar,\
+	com.liferay.journal.service-3.17.3.jar,\
 	com.liferay.journal.taglib-1.0.4.jar,\
 	com.liferay.journal.terms.of.use-2.0.24.jar,\
-	com.liferay.journal.web-1.9.9.jar,\
+	com.liferay.journal.web-1.9.10.jar,\
 	com.liferay.layout.admin.web-1.0.48.jar,\
 	com.liferay.layout.impl-2.0.2.jar,\
 	com.liferay.layout.item.selector.api-1.0.3.jar,\
@@ -1576,7 +1576,7 @@ app.artifacts-7.0.8=\
 	com.liferay.portlet.display.template-2.2.1.jar,\
 	com.liferay.portlet.display.template.web-2.0.7.jar,\
 	com.liferay.product.navigation.control.menu.api-3.0.0.jar,\
-	com.liferay.product.navigation.control.menu.theme.contributor-2.0.6.jar,\
+	com.liferay.product.navigation.control.menu.theme.contributor-2.0.7.jar,\
 	com.liferay.product.navigation.control.menu.web-2.0.11.jar,\
 	com.liferay.product.navigation.control.panel-2.0.2.jar,\
 	com.liferay.product.navigation.product.menu.theme.contributor-2.0.6.jar,\
@@ -1618,6 +1618,6 @@ app.artifacts-7.0.8=\
 	com.liferay.trash.web-1.0.19.jar,\
 	com.liferay.xsl.content.web-2.0.5.jar
 
-app.change.log-7.0.8=LPS-61049 LPS-61099 LPS-64031 LPS-64849 LPS-65012 LPS-65135 LPS-65225 LPS-65240 LPS-65362 LPS-65432 LPS-65537 LPS-65810 LPS-66853 LPS-66883 LPS-66997 LPS-67037 LPS-67352 LPS-67730 LPS-67941 LPS-68301 LPS-68539 LPS-68794 LPS-69063 LPS-69063-breadcrumbs LPS-69236 LPS-69421 LPS-69643 LPS-69661 LPS-69873 LPS-70607 LPS-70748 LPS-70762 LPS-71004 LPS-71091 LPS-71164 LPS-71206 LPS-71244 LPS-71470 LPS-71544 LPS-71555 LPS-71619 LPS-71786 LPS-71868 LPS-71912 LPS-71954 LPS-72095 LPS-72256 LPS-72460 LPS-72507 LPS-72552 LPS-72638 LPS-72671 LPS-72726 LPS-72834 LPS-72839 LPS-72848 LPS-72871 LPS-72924 LPS-72969 LPS-72996 LPS-73025 LPS-73045 LPS-73138 LPS-73178 LPS-73412 LPS-73428 LPS-73482 LPS-73518 LPS-73521 LPS-73546 LPS-73566 LPS-73664 LPS-73751 LPS-73855 LPS-73935 LPS-74106 LPS-74108 LPS-74119 LPS-74121 LPS-74155 LPS-74172 LPS-74194 LPS-74236
+app.change.log-7.0.8=LPS-61049 LPS-61099 LPS-64031 LPS-64849 LPS-65012 LPS-65135 LPS-65225 LPS-65240 LPS-65362 LPS-65432 LPS-65537 LPS-65810 LPS-66853 LPS-66883 LPS-66997 LPS-67037 LPS-67352 LPS-67730 LPS-67941 LPS-68301 LPS-68539 LPS-68794 LPS-69063 LPS-69063-breadcrumbs LPS-69236 LPS-69421 LPS-69643 LPS-69661 LPS-69873 LPS-70607 LPS-70748 LPS-70762 LPS-71004 LPS-71091 LPS-71164 LPS-71206 LPS-71244 LPS-71470 LPS-71544 LPS-71555 LPS-71619 LPS-71786 LPS-71809 LPS-71868 LPS-71912 LPS-71954 LPS-72095 LPS-72256 LPS-72460 LPS-72507 LPS-72552 LPS-72638 LPS-72671 LPS-72726 LPS-72834 LPS-72839 LPS-72848 LPS-72871 LPS-72924 LPS-72969 LPS-72996 LPS-73025 LPS-73045 LPS-73138 LPS-73178 LPS-73412 LPS-73428 LPS-73482 LPS-73518 LPS-73521 LPS-73546 LPS-73566 LPS-73664 LPS-73751 LPS-73855 LPS-73935 LPS-74106 LPS-74108 LPS-74119 LPS-74155 LPS-74172 LPS-74194 LPS-74236
 
-app.git.id-7.0.8=a9ddf15a3293cbfb223930399e85b94da99f3b4b
+app.git.id-7.0.8=9170680d4fe0b937d189a37700b8ac23f1c05fe9

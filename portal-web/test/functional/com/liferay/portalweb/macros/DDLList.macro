@@ -4,7 +4,7 @@
 	<var name="ddlListName" value="List Name" />
 
 	<command name="addCP">
-		<execute function="Click" locator1="Button#PLUS" />
+		<execute macro="LexiconEntry#gotoAdd" />
 
 		<execute function="Type#clickAtType" locator1="TextInput#NAME" value1="${ddlListName}" />
 
@@ -30,7 +30,7 @@
 
 		<execute function="AssertTextEquals" locator1="Portlet#H3_MODAL_TITLE" value1="Add List" />
 
-		<execute function="SelectFrame" locator1="IFrame#DIALOG" />
+		<execute macro="IFrame#selectDialogFrame" />
 
 		<execute macro="PortletEntry#inputName">
 			<var name="name" value="${ddlListName}" />
@@ -79,10 +79,6 @@
 		<execute function="Confirm" value1="Are you sure you want to delete this? It will be deleted immediately." />
 
 		<execute function="AssertTextEquals" locator1="Message#ERROR" value1="You do not have the required permissions." />
-	</command>
-
-	<command name="clickSave">
-		<execute function="AssertClick" locator1="DDL#SAVE_BUTTON" value1="Save" />
 	</command>
 
 	<command name="deleteCP">
@@ -143,7 +139,7 @@
 	<command name="editViaDDLDisplayPG">
 		<execute function="Click" locator1="DDL#PORTLET_ACTIONS_EDIT_LIST" value1="Edit List" />
 
-		<execute function="SelectFrame" locator1="IFrame#DIALOG" />
+		<execute macro="IFrame#selectDialogFrame" />
 
 		<execute macro="PortletEntry#inputName">
 			<var name="name" value="${ddlListNameEdit}" />
@@ -161,16 +157,8 @@
 		<execute function="AssertClick" locator1="Button#SAVE" value1="Save" />
 	</command>
 
-	<command name="save">
-		<execute macro="DDLList#clickSave" />
-
-		<execute macro="Alert#viewSuccessMessage" />
-	</command>
-
 	<command name="saveViaDDLDisplayPG">
-		<execute macro="DDLList#clickSave" />
-
-		<execute macro="Alert#viewSuccessMessage" />
+		<execute macro="DDLDataDefinition#save" />
 
 		<execute function="Pause" locator1="5000" />
 	</command>
@@ -196,7 +184,9 @@
 	<command name="tearDownCP">
 		<execute macro="Navigator#openURL" />
 
-		<execute macro="ProductMenu#gotoSitesContent">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Content" />
+			<var name="panel" value="Site Administration" />
 			<var name="portlet" value="Dynamic Data Lists" />
 		</execute>
 

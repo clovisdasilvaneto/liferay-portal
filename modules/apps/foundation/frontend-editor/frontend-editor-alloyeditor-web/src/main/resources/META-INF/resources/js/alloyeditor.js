@@ -5,6 +5,7 @@ AUI.add(
 	function(A) {
 		var Do = A.Do;
 		var Lang = A.Lang;
+		var UA = A.UA;
 
 		var contentFilter = new CKEDITOR.filter(
 			{
@@ -266,10 +267,26 @@ AUI.add(
 						}
 					},
 
+					_onFocusFix: function(activeElement, nativeEditor) {
+						var instance = this;
+
+						setTimeout(
+							function() {
+								if (activeElement) {
+									nativeEditor.focusManager.blur(true);
+									activeElement.focus();
+								}
+							},
+							100
+						);
+					},
+
 					_onInstanceReady: function() {
 						var instance = this;
 
 						var contents = instance.get('contents');
+
+						var editorNamespace = instance.get('namespace');
 
 						if (contents) {
 							instance.getNativeEditor().setData(contents);
@@ -283,7 +300,9 @@ AUI.add(
 
 						instance.instanceReady = true;
 
-						window[instance.get('namespace')].instanceReady = true;
+						window[editorNamespace].instanceReady = true;
+
+						Liferay.component(editorNamespace, window[editorNamespace]);
 
 						// LPS-73775
 
@@ -304,6 +323,19 @@ AUI.add(
 							doc.execCommand('enableInlineTableEditing', false, false);
 
 							doc.designMode = 'off';
+						}
+
+						// LPS-71967
+
+						if (UA.edge && parseInt(UA.edge) >= 14) {
+							A.soon(
+								function() {
+									var nativeEditor = instance.getNativeEditor();
+
+									nativeEditor.once('focus', A.bind('_onFocusFix', instance, document.activeElement, nativeEditor));
+									nativeEditor.focus();
+								}
+							);
 						}
 					},
 
@@ -336,6 +368,6 @@ AUI.add(
 	},
 	'',
 	{
-		requires: ['aui-component', 'liferay-portlet-base']
+		requires: ['aui-component', 'liferay-portlet-base', 'timers']
 	}
 );

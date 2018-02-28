@@ -122,6 +122,8 @@ public class AssetTagLocalServiceImpl extends AssetTagLocalServiceBaseImpl {
 		List<AssetTag> tags = new ArrayList<>();
 
 		for (String name : names) {
+			name = StringUtil.toLowerCase(StringUtil.trim(name));
+
 			AssetTag tag = fetchTag(group.getGroupId(), name);
 
 			if (tag == null) {
@@ -646,7 +648,9 @@ public class AssetTagLocalServiceImpl extends AssetTagLocalServiceBaseImpl {
 				"A tag with the name " + name + " already exists");
 		}
 
-		if (!tag.getName().equals(name)) {
+		String tagName = tag.getName();
+
+		if (!tagName.equals(name)) {
 			AssetTag existingAssetTag = fetchTag(tag.getGroupId(), name);
 
 			if ((existingAssetTag != null) &&

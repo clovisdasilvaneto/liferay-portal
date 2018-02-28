@@ -30,9 +30,10 @@ import com.liferay.journal.internal.upgrade.v0_0_5.UpgradeJournalArticles;
 import com.liferay.journal.internal.upgrade.v0_0_5.UpgradeJournalDisplayPreferences;
 import com.liferay.journal.internal.upgrade.v0_0_5.UpgradeLastPublishDate;
 import com.liferay.journal.internal.upgrade.v0_0_5.UpgradePortletSettings;
-import com.liferay.journal.internal.upgrade.v1_0_0.UpgradeImageTypeContentAttributes;
+import com.liferay.journal.internal.upgrade.v0_0_6.UpgradeImageTypeContentAttributes;
 import com.liferay.journal.internal.upgrade.v1_0_0.UpgradeJournalArticleImage;
 import com.liferay.journal.internal.upgrade.v1_0_1.UpgradeJournalContentSearch;
+import com.liferay.journal.internal.upgrade.v1_0_2.UpgradeJournalDDMTemplateLinks;
 import com.liferay.portal.kernel.dao.db.DB;
 import com.liferay.portal.kernel.dao.db.DBManagerUtil;
 import com.liferay.portal.kernel.dao.db.DBProcessContext;
@@ -111,13 +112,20 @@ public class JournalServiceUpgrade implements UpgradeStepRegistrator {
 			});
 
 		registry.register(
-			"com.liferay.journal.service", "0.0.5", "1.0.0",
-			new UpgradeImageTypeContentAttributes(),
+			"com.liferay.journal.service", "0.0.5", "0.0.6",
 			new UpgradeJournalArticleImage());
+
+		registry.register(
+			"com.liferay.journal.service", "0.0.6", "1.0.0",
+			new UpgradeImageTypeContentAttributes());
 
 		registry.register(
 			"com.liferay.journal.service", "1.0.0", "1.0.1",
 			new UpgradeJournalContentSearch());
+
+		registry.register(
+			"com.liferay.journal.service", "1.0.1", "1.0.2",
+			new UpgradeJournalDDMTemplateLinks());
 	}
 
 	protected void deleteTempImages() throws Exception {

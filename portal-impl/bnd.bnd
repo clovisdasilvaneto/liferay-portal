@@ -1,6 +1,6 @@
 Bundle-Name: ${manifest.bundle.name}
 Bundle-SymbolicName: ${manifest.bundle.symbolic.name}
-Bundle-Version: 2.20.1
+Bundle-Version: 2.28.3
 Export-Package:\
 	com.liferay.portal.bean,\
 	com.liferay.portal.cache.thread.local,\
@@ -29,6 +29,7 @@ Export-Package:\
 	com.liferay.portal.spring.bean,\
 	com.liferay.portal.spring.context,\
 	com.liferay.portal.spring.hibernate,\
+	com.liferay.portal.spring.jndi,\
 	com.liferay.portal.spring.transaction,\
 	com.liferay.portal.systemevent,\
 	com.liferay.portal.template,\
@@ -77,6 +78,6 @@ Export-Package:\
 	com.liferay.portlet.usersadmin.search
 Import-Package: *
 Include-Resource: classes
+Liferay-Service: true
 Private-Package: com.liferay.*.dependencies
--baseline: *;file=${project.dir}/.bnd/ant-baseline-cache/com.liferay.portal.impl-2.20.0.jar
 -donotcopy: (log4j\.properties|logging\.properties|portal-.*\.properties|system-.*\.properties|\.touch)

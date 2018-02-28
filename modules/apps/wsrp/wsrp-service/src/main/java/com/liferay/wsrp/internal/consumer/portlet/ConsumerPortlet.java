@@ -14,14 +14,14 @@
 
 package com.liferay.wsrp.internal.consumer.portlet;
 
-import com.liferay.petra.encryptor.Encryptor;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Address;
-import com.liferay.portal.kernel.model.Company;
+import com.liferay.portal.kernel.model.Country;
 import com.liferay.portal.kernel.model.EmailAddress;
 import com.liferay.portal.kernel.model.ListType;
 import com.liferay.portal.kernel.model.Phone;
+import com.liferay.portal.kernel.model.Region;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.model.Website;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
@@ -61,14 +61,15 @@ import com.liferay.wsrp.constants.WSRPPortletKeys;
 import com.liferay.wsrp.internal.axis.WSRPHTTPSender;
 import com.liferay.wsrp.internal.proxy.Stub;
 import com.liferay.wsrp.internal.servlet.ServiceHolder;
+import com.liferay.wsrp.internal.util.ConsumerRequestExtensionsHelper;
+import com.liferay.wsrp.internal.util.ExtensionHelperUtil;
+import com.liferay.wsrp.internal.util.WSRPConfigurationUtil;
+import com.liferay.wsrp.internal.util.WSRPURLUtil;
 import com.liferay.wsrp.model.WSRPConsumer;
 import com.liferay.wsrp.model.WSRPConsumerPortlet;
 import com.liferay.wsrp.service.WSRPConsumerLocalService;
 import com.liferay.wsrp.service.WSRPConsumerPortletLocalService;
-import com.liferay.wsrp.util.ConsumerRequestExtensionsHelper;
-import com.liferay.wsrp.util.ExtensionHelperUtil;
-import com.liferay.wsrp.util.MarkupCharacterSetsUtil;
-import com.liferay.wsrp.util.WSRPConfigurationUtil;
+import com.liferay.wsrp.util.MarkupCharacterSetsHelper;
 import com.liferay.wsrp.util.WSRPConsumerManager;
 import com.liferay.wsrp.util.WSRPConsumerManagerFactory;
 import com.liferay.wsrp.util.WebKeys;
@@ -305,26 +306,30 @@ public class ConsumerPortlet extends MVCPortlet {
 		String url = GetterUtil.getString(
 			resourceRequest.getParameter("wsrp-url"));
 		String wsrpAuth = GetterUtil.getString(
-			resourceRequest.getParameter("wsrp-auth"));
+			resourceRequest.getParameter(WebKeys.WSRP_AUTH));
 
-		StringBundler sb = new StringBundler(3);
+		StringBundler sb = new StringBundler(4);
 
 		sb.append(resourceID);
 		sb.append(url);
 		sb.append(wsrpGroupServiceConfiguration.soapDebug());
 
-		String expectedWsrpAuth = encodeWSRPAuth(
-			resourceRequest, sb.toString());
+		ThemeDisplay themeDisplay = (ThemeDisplay)resourceRequest.getAttribute(
+			WebKeys.THEME_DISPLAY);
 
-		if (wsrpAuth.equals(expectedWsrpAuth)) {
+		String expectedWSRPAuth = _wsrpURLUtil.encodeWSRPAuth(
+			themeDisplay.getCompanyId(), sb.toString());
+
+		if (wsrpAuth.equals(expectedWSRPAuth)) {
 			return true;
 		}
 
 		sb.append(AuthTokenUtil.getToken(request));
 
-		expectedWsrpAuth = encodeWSRPAuth(resourceRequest, sb.toString());
+		expectedWSRPAuth = _wsrpURLUtil.encodeWSRPAuth(
+			themeDisplay.getCompanyId(), sb.toString());
 
-		if (wsrpAuth.equals(expectedWsrpAuth)) {
+		if (wsrpAuth.equals(expectedWSRPAuth)) {
 			return true;
 		}
 
@@ -343,7 +348,7 @@ public class ConsumerPortlet extends MVCPortlet {
 			wsrpConsumerPortlet.getWsrpConsumerId());
 
 		WSRPConsumerManager wsrpConsumerManager =
-			WSRPConsumerManagerFactory.getWSRPConsumerManager(wsrpConsumer);
+			_wsrpConsumerManagerFactory.getWSRPConsumerManager(wsrpConsumer);
 
 		InteractionParams interactionParams = new InteractionParams();
 		MarkupParams markupParams = new MarkupParams();
@@ -392,7 +397,7 @@ public class ConsumerPortlet extends MVCPortlet {
 			wsrpConsumerPortlet.getWsrpConsumerId());
 
 		WSRPConsumerManager wsrpConsumerManager =
-			WSRPConsumerManagerFactory.getWSRPConsumerManager(wsrpConsumer);
+			_wsrpConsumerManagerFactory.getWSRPConsumerManager(wsrpConsumer);
 
 		EventParams eventParams = new EventParams();
 		MarkupParams markupParams = new MarkupParams();
@@ -483,22 +488,6 @@ public class ConsumerPortlet extends MVCPortlet {
 		}
 	}
 
-	protected String encodeWSRPAuth(
-			PortletRequest portletRequest, String wsrpAuth)
-		throws Exception {
-
-		ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
-			WebKeys.THEME_DISPLAY);
-
-		Company company = themeDisplay.getCompany();
-
-		wsrpAuth = String.valueOf(wsrpAuth.hashCode());
-		wsrpAuth = Encryptor.encrypt(company.getKeyObj(), wsrpAuth);
-		wsrpAuth = Base64.toURLSafe(wsrpAuth);
-
-		return wsrpAuth;
-	}
-
 	protected Calendar getBdate(User user) throws Exception {
 		Calendar birthday = Calendar.getInstance();
 
@@ -512,7 +501,7 @@ public class ConsumerPortlet extends MVCPortlet {
 			int x = contentType.lastIndexOf("charset=");
 
 			if (x >= 0) {
-				return contentType.substring(x + 8).trim();
+				return StringUtil.trim(contentType.substring(x + 8));
 			}
 		}
 
@@ -562,7 +551,7 @@ public class ConsumerPortlet extends MVCPortlet {
 			wsrpConsumerPortlet.getWsrpConsumerId());
 
 		WSRPConsumerManager wsrpConsumerManager =
-			WSRPConsumerManagerFactory.getWSRPConsumerManager(wsrpConsumer);
+			_wsrpConsumerManagerFactory.getWSRPConsumerManager(wsrpConsumer);
 
 		MarkupParams markupParams = new MarkupParams();
 		PortletContext portletContext = new PortletContext();
@@ -747,10 +736,17 @@ public class ConsumerPortlet extends MVCPortlet {
 			Postal postal = new Postal();
 
 			postal.setCity(address.getCity());
-			postal.setCountry(address.getCountry().getName());
+
+			Country country = address.getCountry();
+
+			postal.setCountry(country.getName());
+
 			postal.setName(address.getUserName());
 			postal.setPostalcode(address.getZip());
-			postal.setStateprov(address.getRegion().getName());
+
+			Region region = address.getRegion();
+
+			postal.setStateprov(region.getName());
 
 			String street =
 				address.getStreet1() + address.getStreet2() +
@@ -776,7 +772,7 @@ public class ConsumerPortlet extends MVCPortlet {
 			wsrpConsumerPortlet.getWsrpConsumerId());
 
 		WSRPConsumerManager wsrpConsumerManager =
-			WSRPConsumerManagerFactory.getWSRPConsumerManager(wsrpConsumer);
+			_wsrpConsumerManagerFactory.getWSRPConsumerManager(wsrpConsumer);
 
 		PortletContext portletContext = new PortletContext();
 		ResourceParams resourceParams = new ResourceParams();
@@ -898,7 +894,7 @@ public class ConsumerPortlet extends MVCPortlet {
 		ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
 
-		StringBundler sb = new StringBundler();
+		StringBundler sb = new StringBundler(7);
 
 		sb.append(baseKey);
 		sb.append(StringPool.UNDERLINE);
@@ -996,8 +992,7 @@ public class ConsumerPortlet extends MVCPortlet {
 		String wsrpConsumerPortletUuid = portletName;
 
 		if (portletName.startsWith("WSRP_")) {
-			wsrpConsumerPortletUuid = portletName.substring(
-				5, portletName.length());
+			wsrpConsumerPortletUuid = portletName.substring(5);
 		}
 
 		wsrpConsumerPortletUuid = PortalUUIDUtil.fromJsSafeUuid(
@@ -1164,7 +1159,7 @@ public class ConsumerPortlet extends MVCPortlet {
 				wsrpConsumer.getMarkupCharacterSets();
 
 			markupCharacterSetsString =
-				MarkupCharacterSetsUtil.getSupportedMarkupCharacterSets(
+				_markupCharacterSetsHelper.getSupportedMarkupCharacterSets(
 					markupCharacterSetsString);
 
 			markupCharacterSets = StringUtil.split(markupCharacterSetsString);
@@ -1204,8 +1199,7 @@ public class ConsumerPortlet extends MVCPortlet {
 
 		if (Validator.isNotNull(navigationalState)) {
 			navigationalState = new String(
-				Base64.decode(Base64.fromURLSafe(navigationalState)),
-				StringPool.UTF8);
+				Base64.decodeFromURL(navigationalState), StringPool.UTF8);
 
 			navigationalContext.setOpaqueValue(navigationalState);
 		}
@@ -1752,7 +1746,7 @@ public class ConsumerPortlet extends MVCPortlet {
 			if (Validator.isNotNull(opaqueValue)) {
 				byte[] opaqueValueBytes = opaqueValue.getBytes(StringPool.UTF8);
 
-				opaqueValue = Base64.toURLSafe(Base64.encode(opaqueValueBytes));
+				opaqueValue = Base64.encodeToURL(opaqueValueBytes);
 
 				stateAwareResponse.setRenderParameter(
 					"wsrp-navigationalState", opaqueValue);
@@ -1928,7 +1922,7 @@ public class ConsumerPortlet extends MVCPortlet {
 				if (Validator.isNotNull(value)) {
 					byte[] valueBytes = value.getBytes(StringPool.UTF8);
 
-					value = Base64.toURLSafe(Base64.encode(valueBytes));
+					value = Base64.encodeToURL(valueBytes);
 
 					liferayPortletURL.setParameter(name, value);
 				}
@@ -2077,9 +2071,10 @@ public class ConsumerPortlet extends MVCPortlet {
 			sb.append(AuthTokenUtil.getToken(request));
 		}
 
-		String wsrpAuth = encodeWSRPAuth(portletRequest, sb.toString());
+		String wsrpAuth = _wsrpURLUtil.encodeWSRPAuth(
+			themeDisplay.getCompanyId(), sb.toString());
 
-		parameterMap.put("wsrp-auth", wsrpAuth);
+		parameterMap.put(WebKeys.WSRP_AUTH, wsrpAuth);
 	}
 
 	protected void sendRedirect(
@@ -2171,6 +2166,9 @@ public class ConsumerPortlet extends MVCPortlet {
 	@ServiceReference(type = ListTypeService.class)
 	private ListTypeService _listTypeService;
 
+	@ServiceReference(type = MarkupCharacterSetsHelper.class)
+	private MarkupCharacterSetsHelper _markupCharacterSetsHelper;
+
 	@ServiceReference(type = PhoneLocalService.class)
 	private PhoneLocalService _phoneLocalService;
 
@@ -2181,6 +2179,13 @@ public class ConsumerPortlet extends MVCPortlet {
 	private WebsiteLocalService _websiteLocalService;
 
 	private WSRPConsumerLocalService _wsrpConsumerLocalService;
+
+	@ServiceReference(type = WSRPConsumerManagerFactory.class)
+	private WSRPConsumerManagerFactory _wsrpConsumerManagerFactory;
+
 	private WSRPConsumerPortletLocalService _wsrpConsumerPortletLocalService;
+
+	@ServiceReference(type = WSRPURLUtil.class)
+	private WSRPURLUtil _wsrpURLUtil;
 
 }

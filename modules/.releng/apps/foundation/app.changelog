@@ -2346,7 +2346,7 @@ app.artifacts-7.0.9=\
 	admin-theme-1.0.34.war,\
 	classic-theme-1.0.36.war,\
 	com.ctc.wstx-4.4.1.jar,\
-	com.liferay.alloy.mvc-1.0.8.jar,\
+	com.liferay.alloy.mvc-1.0.9.jar,\
 	com.liferay.captcha.api-1.1.0.jar,\
 	com.liferay.captcha.taglib-1.0.3.jar,\
 	com.liferay.configuration.admin.web-1.0.27.jar,\
@@ -2376,7 +2376,7 @@ app.artifacts-7.0.9=\
 	com.liferay.frontend.image.editor.capability.saturation-1.0.11.jar,\
 	com.liferay.frontend.image.editor.integration.document.library-1.0.11.jar,\
 	com.liferay.frontend.image.editor.web-1.0.14.jar,\
-	com.liferay.frontend.js.aui.web-1.0.3.jar,\
+	com.liferay.frontend.js.aui.web-1.0.4.jar,\
 	com.liferay.frontend.js.bundle.config.extender-1.0.6.jar,\
 	com.liferay.frontend.js.loader.modules.extender-1.0.14.jar,\
 	com.liferay.frontend.js.metal.web-1.0.18.jar,\
@@ -2384,14 +2384,14 @@ app.artifacts-7.0.9=\
 	com.liferay.frontend.js.polyfill.babel.web-1.0.4.jar,\
 	com.liferay.frontend.js.soyutils.web-1.0.4.jar,\
 	com.liferay.frontend.js.spa.web-1.0.38.jar,\
-	com.liferay.frontend.js.web-1.0.59.jar,\
+	com.liferay.frontend.js.web-1.0.60.jar,\
 	com.liferay.frontend.taglib-2.2.5.jar,\
 	com.liferay.frontend.taglib.form.navigator-1.0.3.jar,\
 	com.liferay.frontend.taglib.soy-1.0.7.jar,\
 	com.liferay.frontend.taglib.util.freemarker.contributor-1.0.2.jar,\
 	com.liferay.frontend.theme.contributor.extender-1.0.9.jar,\
 	com.liferay.frontend.theme.styled-2.1.0.jar,\
-	com.liferay.frontend.theme.unstyled-2.2.0.jar,\
+	com.liferay.frontend.theme.unstyled-2.2.1.jar,\
 	com.liferay.hello.soy.navigation.web-1.0.1.jar,\
 	com.liferay.hello.soy.web-1.0.11.jar,\
 	com.liferay.hello.velocity.web-2.0.3.jar,\
@@ -2521,7 +2521,7 @@ app.artifacts-7.0.9=\
 	com.liferay.portal.weblogic.support-2.0.3.jar,\
 	com.liferay.roles.admin.api-2.0.1.jar,\
 	com.liferay.roles.admin.impl-1.0.8.jar,\
-	com.liferay.roles.admin.web-1.0.27.jar,\
+	com.liferay.roles.admin.web-1.0.28.jar,\
 	com.liferay.roles.selector.web-1.0.6.jar,\
 	com.liferay.server.admin.web-1.0.21.jar,\
 	com.liferay.user.groups.admin.api-2.0.1.jar,\
@@ -2529,7 +2529,7 @@ app.artifacts-7.0.9=\
 	com.liferay.user.groups.admin.web-1.0.13.jar,\
 	com.liferay.users.admin.api-2.0.1.jar,\
 	com.liferay.users.admin.impl-1.0.11.jar,\
-	com.liferay.users.admin.web-2.3.8.jar,\
+	com.liferay.users.admin.web-2.3.9.jar,\
 	com.liferay.web.proxy.web-1.0.9.jar,\
 	com.liferay.websocket.whiteboard-1.0.1.jar,\
 	com.liferay.xstream.configurator.api-2.1.0.jar,\
@@ -2538,6 +2538,6 @@ app.artifacts-7.0.9=\
 	user-dashboard-theme-1.0.35.war,\
 	user-profile-theme-1.0.35.war
 
-app.change.log-7.0.9=LPS-41934 LPS-53084 LPS-53235 LPS-54509 LPS-58771 LPS-59837 LPS-61099 LPS-64031 LPS-64870 LPS-64981 LPS-65012 LPS-65225 LPS-65393 LPS-65398 LPS-65627 LPS-65810 LPS-65930 LPS-66064 LPS-66236 LPS-67167 LPS-67352 LPS-67878 LPS-68062 LPS-68289 LPS-68298: LPS-68616 LPS-68843 LPS-69271 LPS-69494 LPS-69553 LPS-69647 LPS-69661 LPS-70051 LPS-70086 LPS-70110 LPS-70411 LPS-70475 LPS-70479 LPS-70652 LPS-70739 LPS-71050 LPS-71491 LPS-71543 LPS-71559 LPS-71588 LPS-71619 LPS-71775 LPS-71782 LPS-71989 LPS-71992 LPS-72002 LPS-72227 LPS-72269 LPS-72342 LPS-72343 LPS-72363 LPS-72413 LPS-72446 LPS-72526 LPS-72576 LPS-72607 LPS-72638 LPS-72671 LPS-72701 LPS-72705 LPS-72789 LPS-72854 LPS-72862 LPS-72904 LPS-72956 LPS-72963 LPS-73038 LPS-73054 LPS-73086 LPS-73087 LPS-73178 LPS-73190 LPS-73273 LPS-73286 LPS-73380 LPS-73458 LPS-73461 LPS-73562 LPS-73596 LPS-73658 LPS-73659 LPS-73660 LPS-73762 LPS-73812 LPS-73829 LPS-73830 LPS-73853 LPS-73855 LPS-73870 LPS-73903 LPS-73911 LPS-73935 LPS-73954 LPS-73967 LPS-73968 LPS-73994 LPS-73996 LPS-739976 LPS-74023 LPS-74028 LPS-74029 LPS-74046 LPS-74063 LPS-74080 LPS-74082 LPS-74127 LPS-74128 LPS-74133 LPS-74155 LPS-74160 LPS-74172 LPS-74241 LPS-74245 LPS-74298 LPS-74328 LPS-74346 LPS-74356 LPS-74358 LPS-74407 LPS-74475 SYNC-1721
+app.change.log-7.0.9=LPS-41934 LPS-53084 LPS-53235 LPS-54509 LPS-58771 LPS-59837 LPS-61099 LPS-64031 LPS-64870 LPS-64981 LPS-65012 LPS-65225 LPS-65393 LPS-65398 LPS-65627 LPS-65810 LPS-66064 LPS-66236 LPS-67167 LPS-67352 LPS-67878 LPS-68062 LPS-68289 LPS-68298: LPS-68616 LPS-68843 LPS-69271 LPS-69494 LPS-69553 LPS-69647 LPS-69661 LPS-70051 LPS-70086 LPS-70110 LPS-70411 LPS-70479 LPS-70652 LPS-70739 LPS-71050 LPS-71491 LPS-71543 LPS-71559 LPS-71588 LPS-71619 LPS-71775 LPS-71782 LPS-71809 LPS-71989 LPS-71992 LPS-72002 LPS-72227 LPS-72269 LPS-72342 LPS-72343 LPS-72363 LPS-72413 LPS-72446 LPS-72526 LPS-72576 LPS-72607 LPS-72638 LPS-72671 LPS-72701 LPS-72705 LPS-72789 LPS-72854 LPS-72862 LPS-72904 LPS-72956 LPS-72963 LPS-73038 LPS-73054 LPS-73087 LPS-73178 LPS-73190 LPS-73273 LPS-73286 LPS-73380 LPS-73458 LPS-73461 LPS-73562 LPS-73596 LPS-73658 LPS-73659 LPS-73660 LPS-73723 LPS-73829 LPS-73830 LPS-73853 LPS-73855 LPS-73903 LPS-73911 LPS-73935 LPS-73954 LPS-73967 LPS-73968 LPS-73994 LPS-73996 LPS-739976 LPS-74023 LPS-74028 LPS-74029 LPS-74046 LPS-74063 LPS-74080 LPS-74082 LPS-74127 LPS-74128 LPS-74133 LPS-74155 LPS-74160 LPS-74172 LPS-74241 LPS-74245 LPS-74290 LPS-74298 LPS-74328 LPS-74346 LPS-74356 LPS-74358 LPS-74475 LPS-74485 SYNC-1721
 
-app.git.id-7.0.9=20b32c691466edc4c62a594c8c665f055756738c
+app.git.id-7.0.9=ba648f1efde6d9b449c0d38347727c97429bb84c

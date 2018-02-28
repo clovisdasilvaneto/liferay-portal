@@ -18,11 +18,11 @@
 	<command name="addPGViaAP">
 		<execute function="Click#makeVisibleClickAt" locator1="AP#ADD_ASSET_PLUS_ICON" />
 
-		<execute function="AssertClick" locator1="MenuItem#ANY_MENU_ITEM" value1="${ddlListName}" >
+		<execute function="AssertClick" locator1="MenuItem#ANY_MENU_ITEM" value1="${ddlListName}">
 			<var name="key_menuItem" value="${ddlListName}" />
 		</execute>
 
-		<execute function="SelectFrame" locator1="IFrame#DIALOG" />
+		<execute macro="IFrame#selectDialogFrame" />
 
 		<execute macro="DDLRecord#populateFieldText">
 			<var name="ddlRecordFieldData" value="${ddlRecordFieldData}" />
@@ -412,7 +412,7 @@
 
 		<execute function="AssertClick" locator1="DDLEditRecord#WEB_CONTENT_CHOOSE_FROM_WEB_CONTENT_LIBRARY_BUTTON" value1="Select" />
 
-		<execute function="SelectFrame" locator1="IFrame#DIALOG" />
+		<execute macro="IFrame#selectDialogFrame" />
 
 		<execute function="AssertClick" locator1="Link#WEB_CONTENT_ARTICLE" value1="${webContentTitle}" />
 

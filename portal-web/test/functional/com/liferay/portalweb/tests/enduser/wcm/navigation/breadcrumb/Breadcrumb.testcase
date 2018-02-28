@@ -44,8 +44,8 @@
 		</execute>
 
 		<execute macro="ApplicationDisplayTemplates#selectPortletADT">
-			<var name="adtType" value="Breadcrumb" />
 			<var name="portletName" value="Breadcrumb" />
+			<var name="templateName" value="Breadcrumb Test ADT" />
 		</execute>
 
 		<execute macro="Navigator#gotoPage">
@@ -57,7 +57,7 @@
 			<var name="portletOption" value="Configuration" />
 		</execute>
 
-		<execute function="SelectFrame" locator1="IFrame#CONFIGURATION" />
+		<execute macro="IFrame#selectConfigurationFrame" />
 
 		<execute function="AssertElementPresent" locator1="Select#DISPLAY_TEMPLATE" value1="Breadcrumb Test ADT" />
 	</command>
@@ -65,7 +65,9 @@
 	<command name="ConfigureNoSave" priority="3">
 		<property name="test.name.skip.portal.instance" value="Breadcrumb#ConfigureNoSave" />
 
-		<execute macro="ProductMenu#gotoControlPanelSites">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Sites" />
+			<var name="panel" value="Control Panel" />
 			<var name="portlet" value="Sites" />
 		</execute>
 
@@ -73,7 +75,9 @@
 			<var name="siteName" value="Site Name" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoControlPanelSites">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Sites" />
+			<var name="panel" value="Control Panel" />
 			<var name="portlet" value="Sites" />
 		</execute>
 
@@ -82,7 +86,9 @@
 			<var name="siteName" value="Site Name" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoControlPanelSites">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Sites" />
+			<var name="panel" value="Control Panel" />
 			<var name="portlet" value="Sites" />
 		</execute>
 
@@ -110,8 +116,13 @@
 			<var name="uncheckSetupName" value="Show Current Site,Show Guest Site,Show Page,Show Parent Sites,Show Application Breadcrumb" />
 		</execute>
 
+		<execute macro="TestCase#getSiteName">
+			<return from="siteName" name="siteName" />
+			<var name="siteName" value="${siteName}" />
+		</execute>
+
 		<execute macro="Breadcrumb#viewConfigurationPreview">
-			<var name="breadcrumbListNotVisible" value="Liferay,Site Name,Parent Page Name,Child Page Name" />
+			<var name="breadcrumbListNotVisible" value="${siteName},Site Name,Parent Page Name,Child Page Name" />
 		</execute>
 
 		<execute macro="Breadcrumb#configureBreadcrumb">
@@ -120,14 +131,16 @@
 		</execute>
 
 		<execute macro="Breadcrumb#viewConfigurationPreview">
-			<var name="breadcrumbListVisible" value="Liferay,Site Name,Parent Page Name,Child Page Name" />
+			<var name="breadcrumbListVisible" value="${siteName},Site Name,Parent Page Name,Child Page Name" />
 		</execute>
 	</command>
 
 	<command name="DisableShowApplicationBreadcrumb" priority="4">
 		<property name="custom.properties" value="default.layout.template.id=1_column" />
 
-		<execute macro="ProductMenu#gotoControlPanelSites">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Sites" />
+			<var name="panel" value="Control Panel" />
 			<var name="portlet" value="Sites" />
 		</execute>
 
@@ -135,7 +148,9 @@
 			<var name="siteName" value="Site Name" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoControlPanelSites">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Sites" />
+			<var name="panel" value="Control Panel" />
 			<var name="portlet" value="Sites" />
 		</execute>
 
@@ -244,7 +259,7 @@
 			<var name="subCategoryName" value="MB Subcategory Subcategory Name" />
 		</execute>
 
-		<execute macro="Breadcrumb#viewPG">
+		<execute macro="Breadcrumb#viewSpecificPG">
 			<var name="breadcrumbListNotVisible" value="MB Category Name,MB Subcategory Name,MB Subcategory Subcategory Name" />
 			<var name="breadcrumbListVisible" value="Site Name,Page Name" />
 			<var name="pathLocator" value="EMBEDDED" />
@@ -291,7 +306,9 @@
 	<command name="DisableShowCurrentSite" priority="5">
 		<property name="portal.acceptance" value="true" />
 
-		<execute macro="ProductMenu#gotoControlPanelSites">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Sites" />
+			<var name="panel" value="Control Panel" />
 			<var name="portlet" value="Sites" />
 		</execute>
 
@@ -299,7 +316,9 @@
 			<var name="siteName" value="Site Name" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoControlPanelSites">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Sites" />
+			<var name="panel" value="Control Panel" />
 			<var name="portlet" value="Sites" />
 		</execute>
 
@@ -308,7 +327,9 @@
 			<var name="siteName" value="Site Name" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoControlPanelSites">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Sites" />
+			<var name="panel" value="Control Panel" />
 			<var name="portlet" value="Sites" />
 		</execute>
 
@@ -463,7 +484,9 @@
 	</command>
 
 	<command name="DisableShowParentSite" priority="4">
-		<execute macro="ProductMenu#gotoControlPanelSites">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Sites" />
+			<var name="panel" value="Control Panel" />
 			<var name="portlet" value="Sites" />
 		</execute>
 
@@ -471,7 +494,9 @@
 			<var name="siteName" value="Site Name" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoControlPanelSites">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Sites" />
+			<var name="panel" value="Control Panel" />
 			<var name="portlet" value="Sites" />
 		</execute>
 
@@ -480,7 +505,9 @@
 			<var name="siteName" value="Site Name" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoControlPanelSites">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Sites" />
+			<var name="panel" value="Control Panel" />
 			<var name="portlet" value="Sites" />
 		</execute>
 
@@ -489,7 +516,9 @@
 			<var name="siteName" value="Child SiteName" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoControlPanelSites">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Sites" />
+			<var name="panel" value="Control Panel" />
 			<var name="portlet" value="Sites" />
 		</execute>
 
@@ -502,7 +531,9 @@
 			<var name="siteName" value="Child SiteName" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoControlPanelSites">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Sites" />
+			<var name="panel" value="Control Panel" />
 			<var name="portlet" value="Sites" />
 		</execute>
 
@@ -683,8 +714,13 @@
 			<var name="breadcrumbListVisible" value="Welcome,Child Page Name" />
 		</execute>
 
+		<execute macro="TestCase#getSiteName">
+			<return from="siteName" name="siteName" />
+			<var name="siteName" value="${siteName}" />
+		</execute>
+
 		<execute macro="Breadcrumb#viewConfigurationPreview">
-			<var name="breadcrumbListNotVisible" value="Liferay" />
+			<var name="breadcrumbListNotVisible" value="${siteName}" />
 		</execute>
 
 		<execute macro="Breadcrumb#configureBreadcrumb">
@@ -692,13 +728,13 @@
 		</execute>
 
 		<execute macro="Breadcrumb#viewConfigurationPreview">
-			<var name="breadcrumbListVisible" value="Liferay,Welcome,Child Page Name" />
+			<var name="breadcrumbListVisible" value="${siteName},Welcome,Child Page Name" />
 		</execute>
 
 		<execute macro="Breadcrumb#saveDisplayPreview" />
 
 		<execute macro="Breadcrumb#viewConfigurationPreview">
-			<var name="breadcrumbListVisible" value="Liferay,Welcome,Child Page Name" />
+			<var name="breadcrumbListVisible" value="${siteName},Welcome,Child Page Name" />
 		</execute>
 
 		<execute macro="Navigator#openURL" />
@@ -709,7 +745,7 @@
 		</execute>
 
 		<execute macro="Breadcrumb#viewPG">
-			<var name="breadcrumbListVisible" value="Liferay,Welcome,Child Page Name" />
+			<var name="breadcrumbListVisible" value="${siteName},Welcome,Child Page Name" />
 			<var name="pathLocator" value="PAGE" />
 		</execute>
 	</command>

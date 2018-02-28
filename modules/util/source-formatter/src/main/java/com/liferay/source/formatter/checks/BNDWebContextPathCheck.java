@@ -14,7 +14,7 @@
 
 package com.liferay.source.formatter.checks;
 
-import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.petra.string.StringPool;
 import com.liferay.source.formatter.checks.util.BNDSourceUtil;
 import com.liferay.source.formatter.util.FileUtil;
 
@@ -40,6 +40,7 @@ public class BNDWebContextPathCheck extends BaseFileCheck {
 		throws Exception {
 
 		if (fileName.endsWith("/bnd.bnd") &&
+			!isModulesApp(absolutePath, true) &&
 			!absolutePath.contains("/testIntegration/") &&
 			!absolutePath.contains("/third-party/")) {
 
@@ -56,8 +57,7 @@ public class BNDWebContextPathCheck extends BaseFileCheck {
 		String moduleName = BNDSourceUtil.getModuleName(absolutePath);
 
 		if (moduleName.contains("-import-") ||
-			moduleName.contains("-private-") ||
-			absolutePath.contains("/modules/private/apps/")) {
+			moduleName.contains("-private-")) {
 
 			return;
 		}

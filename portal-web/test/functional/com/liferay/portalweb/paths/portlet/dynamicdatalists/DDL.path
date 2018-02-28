@@ -15,7 +15,7 @@
 </tr>
 <tr>
 	<td>SAVE_BUTTON</td>
-	<td>//div[contains(@class,'button-holder ')]/button[contains(.,'Save')]</td>
+	<td>//div[contains(@class,'button-holder')]/button[contains(.,'Save')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -220,47 +220,6 @@
 <tr>
 	<td>PORTLET_ACTIONS_EDIT_LIST</td>
 	<td>//span[contains(@class,'lfr-icon-action')]/a[contains(.,'Edit List')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td></td>
-	<td></td>
-	<td></td>
-</tr>
-<!--MENULIST-->
-<tr>
-	<td>MENULIST_VIEW</td>
-	<td>//a[@role='menuitem' and contains(.,'View')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>MENULIST_VIEW_SPECIFIC_RECORD</td>
-	<td>//tr[contains(.,'${key_ddlRecordFieldData}')]//a[@role='menuitem' and contains(.,'View')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>MENULIST_SPREADSHEET_VIEW</td>
-	<td>//a[@role='menuitem' and contains(.,'Spreadsheet View')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>MENULIST_EDIT</td>
-	<td>//a[@role='menuitem' and contains(.,'Edit')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>MENULIST_EXPORT</td>
-	<td>//a[@role='menuitem' and contains(.,'Export')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>MENULIST_PERMISSIONS</td>
-	<td>//a[@role='menuitem' and contains(.,'Permissions')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>MENULIST_DELETE</td>
-	<td>//a[@role='menuitem' and contains(.,'Delete')]</td>
 	<td></td>
 </tr>
 <tr>

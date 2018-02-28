@@ -539,8 +539,10 @@ app.git.id-7.0.10=65a773779708ed130c9dd3d53d2a20c09c00331e
 #
 
 app.artifacts-7.0.11=\
+	com.liferay.osgi.felix.file.install.configuration.cleaner-1.0.1.jar,\
 	com.liferay.osgi.util-3.0.11.jar,\
 	com.liferay.petra.xml-1.0.7.jar,\
+	com.liferay.portal.bundle.blacklist-1.0.1.jar,\
 	com.liferay.portal.classloader.tracker-1.0.1.jar,\
 	com.liferay.portal.configuration.metatype-2.0.9.jar,\
 	com.liferay.portal.configuration.persistence-2.1.0.jar,\
@@ -577,6 +579,6 @@ app.artifacts-7.0.11=\
 	org.osgi.service.http-3.5.0-20150611.165350-3.LIFERAY-PATCHED-2.jar,\
 	org.osgi.service.metatype-1.3.0.jar
 
-app.change.log-7.0.11=LPS-67352 LPS-68294 LPS-68843 LPS-69140 LPS-71787 LPS-72409 LPS-72505 LPS-72705 LPS-72911 LPS-73178 LPS-73562 LPS-73855 LPS-73935 
+app.change.log-7.0.11=LPS-67352 LPS-68294 LPS-68843 LPS-69140 LPS-71787 LPS-72409 LPS-72505 LPS-72705 LPS-72911 LPS-73178 LPS-73562 LPS-73855 LPS-73935 LPS-74473 
 
-app.git.id-7.0.11=7ab2ee59ff0516132837c1af9522b202d9ced127
+app.git.id-7.0.11=bec5b63be6bbd61244f8835fc8cd904c58d868c7

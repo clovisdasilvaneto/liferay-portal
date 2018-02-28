@@ -14,12 +14,13 @@
 
 package com.liferay.javadoc.formatter;
 
+import com.liferay.petra.string.CharPool;
+import com.liferay.petra.string.StringPool;
+import com.liferay.petra.xml.Dom4jUtil;
 import com.liferay.portal.kernel.io.unsync.UnsyncByteArrayOutputStream;
 import com.liferay.portal.kernel.io.unsync.UnsyncStringReader;
-import com.liferay.portal.kernel.util.CharPool;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Tuple;
 import com.liferay.portal.kernel.util.Validator;
@@ -28,7 +29,6 @@ import com.liferay.portal.tools.JavaImportsFormatter;
 import com.liferay.portal.tools.ToolsUtil;
 import com.liferay.portal.xml.SAXReaderFactory;
 import com.liferay.util.xml.Dom4jDocUtil;
-import com.liferay.util.xml.Dom4jUtil;
 import com.liferay.util.xml.XMLSafeReader;
 
 import com.thoughtworks.qdox.JavaProjectBuilder;
@@ -44,6 +44,7 @@ import com.thoughtworks.qdox.model.JavaMethod;
 import com.thoughtworks.qdox.model.JavaModel;
 import com.thoughtworks.qdox.model.JavaParameter;
 import com.thoughtworks.qdox.model.JavaType;
+import com.thoughtworks.qdox.model.JavaTypeVariable;
 import com.thoughtworks.qdox.model.expression.AnnotationValue;
 
 import java.io.BufferedReader;
@@ -204,9 +205,8 @@ public class JavadocFormatter {
 				sb.append(limit);
 
 				if (limit.contains(".")) {
-					sb.append(
-						" Specify limit filename without package path or ");
-					sb.append("file type suffix.");
+					sb.append(" Specify limit filename without package path ");
+					sb.append("or file type suffix.");
 				}
 
 				System.out.println(sb.toString());
@@ -315,11 +315,14 @@ public class JavadocFormatter {
 			_addDocletElements(parentElement, javaClass, "author");
 		}
 
+		_addParamElements(
+			parentElement, javaClass, javaClass.getTagsByName("param"));
 		_addDocletElements(parentElement, javaClass, "version");
 		_addDocletElements(parentElement, javaClass, "see");
 		_addDocletElements(parentElement, javaClass, "since");
 		_addDocletElements(parentElement, javaClass, "serial");
 		_addDocletElements(parentElement, javaClass, "deprecated");
+		_addDocletElements(parentElement, javaClass, "review");
 	}
 
 	private void _addClassElement(
@@ -522,6 +525,7 @@ public class JavadocFormatter {
 		_addDocletElements(constructorElement, javaConstructor, "see");
 		_addDocletElements(constructorElement, javaConstructor, "since");
 		_addDocletElements(constructorElement, javaConstructor, "deprecated");
+		_addDocletElements(constructorElement, javaConstructor, "review");
 	}
 
 	private String _addDeprecatedTag(
@@ -787,6 +791,7 @@ public class JavadocFormatter {
 		_addDocletElements(fieldElement, javaField, "see");
 		_addDocletElements(fieldElement, javaField, "since");
 		_addDocletElements(fieldElement, javaField, "deprecated");
+		_addDocletElements(fieldElement, javaField, "review");
 	}
 
 	private void _addMethodElement(Element parentElement, JavaMethod javaMethod)
@@ -813,21 +818,22 @@ public class JavadocFormatter {
 		_addDocletElements(methodElement, javaMethod, "see");
 		_addDocletElements(methodElement, javaMethod, "since");
 		_addDocletElements(methodElement, javaMethod, "deprecated");
+		_addDocletElements(methodElement, javaMethod, "review");
 	}
 
 	private void _addParamElement(
-			Element executableElement, JavaParameter javaParameter,
-			List<DocletTag> paramDocletTags)
+			Element executableElement, String parameterName,
+			String parameterValue, List<DocletTag> paramDocletTags)
 		throws Exception {
-
-		String name = javaParameter.getName();
 
 		String value = null;
 
 		for (DocletTag paramDocletTag : paramDocletTags) {
 			String curValue = paramDocletTag.getValue();
 
-			if (curValue.equals(name) || curValue.startsWith(name + " ")) {
+			if (curValue.equals(parameterName) ||
+				curValue.startsWith(parameterName + " ")) {
+
 				value = curValue;
 
 				break;
@@ -836,11 +842,14 @@ public class JavadocFormatter {
 
 		Element paramElement = executableElement.addElement("param");
 
-		Dom4jDocUtil.add(paramElement, "name", name);
-		Dom4jDocUtil.add(paramElement, "type", _getTypeValue(javaParameter));
+		Dom4jDocUtil.add(paramElement, "name", parameterName);
+
+		if (parameterValue != null) {
+			Dom4jDocUtil.add(paramElement, "type", parameterValue);
+		}
 
 		if (value != null) {
-			value = value.substring(name.length());
+			value = value.substring(parameterName.length());
 
 			Dom4jDocUtil.add(paramElement, "required", true);
 		}
@@ -856,6 +865,20 @@ public class JavadocFormatter {
 	}
 
 	private void _addParamElements(
+			Element classElement, JavaClass javaClass,
+			List<DocletTag> paramDocletTags)
+		throws Exception {
+
+		for (JavaTypeVariable<?> typeParameter :
+				javaClass.getTypeParameters()) {
+
+			_addParamElement(
+				classElement, "<" + typeParameter.getName() + ">", null,
+				paramDocletTags);
+		}
+	}
+
+	private void _addParamElements(
 			Element executableElement, JavaExecutable javaExecutable,
 			List<DocletTag> paramDocletTags)
 		throws Exception {
@@ -863,7 +886,9 @@ public class JavadocFormatter {
 		List<JavaParameter> javaParameters = javaExecutable.getParameters();
 
 		for (JavaParameter javaParameter : javaParameters) {
-			_addParamElement(executableElement, javaParameter, paramDocletTags);
+			_addParamElement(
+				executableElement, javaParameter.getName(),
+				_getTypeValue(javaParameter), paramDocletTags);
 		}
 	}
 
@@ -1140,7 +1165,8 @@ public class JavadocFormatter {
 		// Wrap special constants in code tags
 
 		text = text.replaceAll(
-			"(?i)(?<!<code>|\\w)(null|false|true)(?!\\w)", "<code>$1</code>");
+			"(?i)(?<!<code>|\\{@code |\\w)(null|false|true)(?!\\w)",
+			"<code>$1</code>");
 
 		return text;
 	}
@@ -1408,7 +1434,7 @@ public class JavadocFormatter {
 			Element rootElement, JavaClass javaClass, String indent)
 		throws Exception {
 
-		StringBundler sb = new StringBundler();
+		StringBundler sb = new StringBundler(8);
 
 		sb.append(indent);
 		sb.append("/**\n");
@@ -1425,12 +1451,14 @@ public class JavadocFormatter {
 		String docletTags = _addDocletTags(
 			rootElement,
 			new String[] {
-				"author", "version", "see", "since", "serial", "deprecated"
+				"author", "version", "param", "see", "since", "serial",
+				"deprecated", "review"
 			},
 			indent + " * ", _hasPublicModifier(javaClass));
 
 		if (Validator.isNotNull(docletTags)) {
 			if (_initializeMissingJavadocs || Validator.isNotNull(comment)) {
+				sb.append(indent);
 				sb.append(" *\n");
 			}
 
@@ -1582,7 +1610,7 @@ public class JavadocFormatter {
 			return null;
 		}
 
-		StringBundler sb = new StringBundler();
+		StringBundler sb = new StringBundler(8);
 
 		sb.append(indent);
 		sb.append("/**\n");
@@ -1601,12 +1629,13 @@ public class JavadocFormatter {
 		if (javaExecutable instanceof JavaMethod) {
 			tags = new String[] {
 				"version", "param", "return", "throws", "see", "since",
-				"deprecated"
+				"deprecated", "review"
 			};
 		}
 		else {
 			tags = new String[] {
-				"version", "param", "throws", "see", "since", "deprecated"
+				"version", "param", "throws", "see", "since", "deprecated",
+				"review"
 			};
 		}
 
@@ -1654,7 +1683,7 @@ public class JavadocFormatter {
 			return null;
 		}
 
-		StringBundler sb = new StringBundler();
+		StringBundler sb = new StringBundler(8);
 
 		sb.append(indent);
 		sb.append("/**\n");
@@ -1670,7 +1699,7 @@ public class JavadocFormatter {
 
 		String docletTags = _addDocletTags(
 			fieldElement,
-			new String[] {"version", "see", "since", "deprecated"},
+			new String[] {"version", "see", "since", "deprecated", "review"},
 			indent + " * ", _hasPublicModifier(javaField));
 
 		if (Validator.isNotNull(docletTags)) {
@@ -1708,15 +1737,22 @@ public class JavadocFormatter {
 
 			List<String> modifiers = javaClass.getModifiers();
 
+			if (modifiers.isEmpty()) {
+				return _getAdjustedLineNumber(
+					javaModel.getLineNumber(), javaModel);
+			}
+
 			String modifier = modifiers.get(0);
 
-			for (int i = javaClass.getLineNumber(); i < lines.length; i++) {
+			for (int i = javaClass.getLineNumber() - 1; i < lines.length; i++) {
 				String line = StringUtil.trim(lines[i - 1]);
 
 				if (line.startsWith(modifier + StringPool.SPACE)) {
 					return _getAdjustedLineNumber(i, javaModel);
 				}
 			}
+
+			return -1;
 		}
 
 		if (javaModel instanceof JavaField) {
@@ -1858,8 +1894,8 @@ public class JavadocFormatter {
 			return false;
 		}
 
-		for (int i = 0; i < annotations.size(); i++) {
-			JavaClass javaClass = annotations.get(i).getType();
+		for (JavaAnnotation javaAnnotation : annotations) {
+			JavaClass javaClass = javaAnnotation.getType();
 
 			if (annotationName.equals(javaClass.getName())) {
 				return true;
@@ -2201,7 +2237,75 @@ public class JavadocFormatter {
 		}
 
 		System.out.println(
-			"Updating " + _languagePropertiesFile + " key " + key);
+			StringBundler.concat(
+				"Updating ", String.valueOf(_languagePropertiesFile), " key ",
+				key));
+	}
+
+	private String _wrap(String text, int width) {
+		if (text == null) {
+			return null;
+		}
+
+		StringBundler sb = new StringBundler();
+
+		for (String line : StringUtil.splitLines(text)) {
+			if (line.isEmpty()) {
+				sb.append("\n");
+
+				continue;
+			}
+
+			int lineLength = 0;
+
+			for (String token : StringUtil.split(line, CharPool.SPACE)) {
+				if ((lineLength + token.length() + 1) > width) {
+					if (lineLength > 0) {
+						sb.append("\n");
+					}
+
+					if (token.length() > width) {
+						int pos = token.indexOf(CharPool.OPEN_PARENTHESIS);
+
+						if (pos != -1) {
+							sb.append(token.substring(0, pos + 1));
+							sb.append("\n");
+
+							token = token.substring(pos + 1);
+
+							sb.append(token);
+
+							lineLength = token.length();
+						}
+						else {
+							sb.append(token);
+
+							lineLength = token.length();
+						}
+					}
+					else {
+						sb.append(token);
+
+						lineLength = token.length();
+					}
+				}
+				else {
+					if (lineLength > 0) {
+						sb.append(StringPool.SPACE);
+
+						lineLength++;
+					}
+
+					sb.append(token);
+
+					lineLength += token.length();
+				}
+			}
+
+			sb.append("\n");
+		}
+
+		return sb.toString();
 	}
 
 	private String _wrapText(String text, int indentLength, String exclude) {
@@ -2221,7 +2325,7 @@ public class JavadocFormatter {
 		while (matcher.find()) {
 			String wrapped = _formatInlines(matcher.group());
 
-			wrapped = StringUtil.wrap(wrapped, 80 - indentLength, "\n");
+			wrapped = _wrap(wrapped, 80 - indentLength);
 
 			matcher.appendReplacement(sb, wrapped);
 		}
@@ -2242,7 +2346,7 @@ public class JavadocFormatter {
 		}
 		else {
 			text = _formatInlines(text);
-			text = StringUtil.wrap(text, 80 - indentLength, "\n");
+			text = _wrap(text, 80 - indentLength);
 		}
 
 		text = text.replaceAll("(?m)^", indent);

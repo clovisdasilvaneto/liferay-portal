@@ -94,7 +94,7 @@
 </tr>
 <tr>
 	<td>ASSET_ABSTRACT_DESCRIPTION</td>
-	<td>//div[contains(@class,'asset-abstract ') and h4[contains(.,'${key_assetTitle}')]]/div[@class='asset-content']</td>
+	<td>//div[contains(@class,'asset-abstract') and h4[contains(.,'${key_assetTitle}')]]/div[@class='asset-content']</td>
 	<td></td>
 </tr>
 <tr>
@@ -105,6 +105,11 @@
 <tr>
 	<td>ASSET_ABSTRACT_DESCRIPTION_SMALL_IMAGE</td>
 	<td>//div[contains(.,'${key_assetTitle}')]//div[@class='asset-small-image']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>ASSET_ABSTRACT_VERTICAL_ELLIPSIS</td>
+	<td>//div[contains(@class,'portlet') and contains(@class,'container')]//div[contains(@class,'asset-abstract ')]/h4[contains(@class,'asset-title') and contains(.,'${key_assetTitle}')]/..//span/*[name()='svg'][contains(@class,'icon-ellipsis')]</td>
 	<td></td>
 </tr>
 <tr>

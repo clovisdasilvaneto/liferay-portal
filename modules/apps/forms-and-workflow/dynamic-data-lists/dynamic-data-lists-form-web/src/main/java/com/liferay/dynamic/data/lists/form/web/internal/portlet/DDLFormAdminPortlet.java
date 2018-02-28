@@ -15,8 +15,9 @@
 package com.liferay.dynamic.data.lists.form.web.internal.portlet;
 
 import com.liferay.dynamic.data.lists.form.web.configuration.DDLFormWebConfigurationActivator;
-import com.liferay.dynamic.data.lists.form.web.constants.DDLFormPortletKeys;
+import com.liferay.dynamic.data.lists.form.web.internal.constants.DDLFormPortletKeys;
 import com.liferay.dynamic.data.lists.form.web.internal.display.context.DDLFormAdminDisplayContext;
+import com.liferay.dynamic.data.lists.form.web.internal.instance.lifecycle.AddDefaultSharedFormLayoutPortalInstanceLifecycleListener;
 import com.liferay.dynamic.data.lists.model.DDLRecordSet;
 import com.liferay.dynamic.data.lists.model.DDLRecordSetSettings;
 import com.liferay.dynamic.data.lists.service.DDLRecordLocalService;
@@ -55,6 +56,7 @@ import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.workflow.WorkflowDefinition;
@@ -139,7 +141,7 @@ public class DDLFormAdminPortlet extends MVCPortlet {
 			DDMFormFieldOptions ddmFormFieldOptions, ThemeDisplay themeDisplay)
 		throws PortalException {
 
-		if (!_workflowEngineManager.isDeployed()) {
+		if (_workflowDefinitionManager == null) {
 			return;
 		}
 
@@ -157,7 +159,8 @@ public class DDLFormAdminPortlet extends MVCPortlet {
 				themeDisplay.getLocale(), "version-x",
 				workflowDefinition.getVersion(), false);
 
-			String label = workflowDefinition.getName() + " (" + version + ")";
+			String label = StringBundler.concat(
+				workflowDefinition.getName(), " (", version, ")");
 
 			ddmFormFieldOptions.addOptionLabel(
 				value, themeDisplay.getLocale(), label);
@@ -429,6 +432,7 @@ public class DDLFormAdminPortlet extends MVCPortlet {
 		DDLFormAdminDisplayContext ddlFormAdminDisplayContext =
 			new DDLFormAdminDisplayContext(
 				renderRequest, renderResponse,
+				_addDefaultSharedFormLayoutPortalInstanceLifecycleListener,
 				_ddlFormWebConfigurationActivator.getDDLFormWebConfiguration(),
 				_ddlRecordLocalService, _ddlRecordSetService,
 				_ddmDataProviderInstanceLocalService, _ddmFormEvaluatorServlet,
@@ -478,6 +482,10 @@ public class DDLFormAdminPortlet extends MVCPortlet {
 	private static final Log _log = LogFactoryUtil.getLog(
 		DDLFormAdminPortlet.class);
 
+	@Reference
+	private AddDefaultSharedFormLayoutPortalInstanceLifecycleListener
+		_addDefaultSharedFormLayoutPortalInstanceLifecycleListener;
+
 	private DDLFormWebConfigurationActivator _ddlFormWebConfigurationActivator;
 	private DDLRecordLocalService _ddlRecordLocalService;
 	private DDLRecordSetLocalService _ddlRecordSetLocalService;
@@ -500,7 +508,14 @@ public class DDLFormAdminPortlet extends MVCPortlet {
 
 	private StorageAdapterRegistry _storageAdapterRegistry;
 	private StorageEngine _storageEngine;
+
+	@Reference(
+		cardinality = ReferenceCardinality.OPTIONAL,
+		policyOption = ReferencePolicyOption.GREEDY,
+		target = "(proxy.bean=false)"
+	)
 	private WorkflowDefinitionManager _workflowDefinitionManager;
+
 	private WorkflowEngineManager _workflowEngineManager;
 
 }

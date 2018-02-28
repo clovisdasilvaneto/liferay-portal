@@ -143,6 +143,8 @@
 			<var name="title" value="${categoryName}" />
 		</execute>
 
+		<execute function="Click" locator1="TextArea#DESCRIPTION" />
+
 		<if>
 			<isset var="categoryDescription" />
 			<then>
@@ -424,7 +426,7 @@
 			<var name="key_menuItem" value="Permissions" />
 		</execute>
 
-		<execute function="SelectFrame" locator1="IFrame#DIALOG" />
+		<execute macro="IFrame#selectDialogFrame" />
 
 		<if>
 			<equals arg1="${viewableBy}" arg2="Anyone (Guest Role)" />
@@ -465,7 +467,7 @@
 
 		<execute function="AssertClick" locator1="CategoriesNavigation#CATEGORY_NAME" value1="${categoryName}" />
 
-		<execute function="AssertTextEquals" locator1="AP#CATEGORIES_FILTER_CATEGORY" value1="${categoryName}" />
+		<execute function="AssertTextEquals#assertPartialText" locator1="AP#CATEGORIES_FILTER_CATEGORY" value1="${categoryName}" />
 	</command>
 
 	<command name="viewNavigationCP">
