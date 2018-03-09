@@ -23,9 +23,11 @@ import com.liferay.portal.kernel.util.Validator;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -90,20 +92,20 @@ public class Entity implements Comparable<Entity> {
 
 	public Entity(String name) {
 		this(
-			null, null, null, null, name, null, null, null, false, false, false,
-			true, null, null, null, null, null, true, false, false, false,
-			false, false, null, null, null, null, null, null, null, null, null,
-			null, false);
+			null, null, null, name, null, null, null, false, false, false, true,
+			null, null, null, null, null, true, false, false, false, false,
+			false, null, null, null, null, null, null, null, null, null, null,
+			false, null);
 	}
 
 	public Entity(
-		String packagePath, String apiPackagePath, String portletName,
-		String portletShortName, String name, String humanName, String table,
-		String alias, boolean uuid, boolean uuidAccessor, boolean localService,
-		boolean remoteService, String persistenceClass, String finderClassName,
-		String dataSource, String sessionFactory, String txManager,
-		boolean cacheEnabled, boolean dynamicUpdateEnabled, boolean jsonEnabled,
-		boolean mvccEnabled, boolean trashEnabled, boolean deprecated,
+		String packagePath, String apiPackagePath, String portletShortName,
+		String name, String humanName, String table, String alias, boolean uuid,
+		boolean uuidAccessor, boolean localService, boolean remoteService,
+		String persistenceClass, String finderClassName, String dataSource,
+		String sessionFactory, String txManager, boolean cacheEnabled,
+		boolean dynamicUpdateEnabled, boolean jsonEnabled, boolean mvccEnabled,
+		boolean trashEnabled, boolean deprecated,
 		List<EntityColumn> pkEntityColumns,
 		List<EntityColumn> regularEntityColumns,
 		List<EntityColumn> blobEntityColumns,
@@ -111,11 +113,11 @@ public class Entity implements Comparable<Entity> {
 		List<EntityColumn> entityColumns, EntityOrder entityOrder,
 		List<EntityFinder> entityFinders, List<Entity> referenceEntities,
 		List<String> unresolvedReferenceEntityNames,
-		List<String> txRequiredMethodNames, boolean resourceActionModel) {
+		List<String> txRequiredMethodNames, boolean resourceActionModel,
+		String uadEntityTypeDescription) {
 
 		_packagePath = packagePath;
 		_apiPackagePath = apiPackagePath;
-		_portletName = portletName;
 		_portletShortName = portletShortName;
 		_name = name;
 		_table = table;
@@ -142,6 +144,7 @@ public class Entity implements Comparable<Entity> {
 		_unresolvedReferenceEntityNames = unresolvedReferenceEntityNames;
 		_txRequiredMethodNames = txRequiredMethodNames;
 		_resourceActionModel = resourceActionModel;
+		_uadEntityTypeDescription = uadEntityTypeDescription;
 
 		_humanName = GetterUtil.getString(
 			humanName, ServiceBuilder.toHumanName(name));
@@ -274,6 +277,11 @@ public class Entity implements Comparable<Entity> {
 		return entityFinders;
 	}
 
+	public String getConstantName() {
+		return TextFormatter.format(
+			TextFormatter.format(_name, TextFormatter.H), TextFormatter.A);
+	}
+
 	public String getDataSource() {
 		return _dataSource;
 	}
@@ -392,10 +400,6 @@ public class Entity implements Comparable<Entity> {
 		return entityColumn.getNames();
 	}
 
-	public String getPortletName() {
-		return _portletName;
-	}
-
 	public String getPortletShortName() {
 		return _portletShortName;
 	}
@@ -439,6 +443,43 @@ public class Entity implements Comparable<Entity> {
 
 	public List<String> getTxRequiredMethodNames() {
 		return _txRequiredMethodNames;
+	}
+
+	public Map<String, List<EntityColumn>>
+		getUADAnonymizableEntityColumnsMap() {
+
+		Map<String, List<EntityColumn>> uadAnonymizableEntityColumnsMap =
+			new HashMap<>();
+
+		for (EntityColumn entityColumn : _entityColumns) {
+			if (entityColumn.isUADUserId()) {
+				List<EntityColumn> uadAnonymizableEntityColumns =
+					new ArrayList<>();
+
+				uadAnonymizableEntityColumns.add(entityColumn);
+
+				uadAnonymizableEntityColumnsMap.put(
+					entityColumn.getName(), uadAnonymizableEntityColumns);
+			}
+		}
+
+		for (EntityColumn entityColumn : _entityColumns) {
+			if (entityColumn.isUADUserName()) {
+				List<EntityColumn> uadAnonymizableEntityColumns =
+					uadAnonymizableEntityColumnsMap.get(
+						entityColumn.getUADUserIdColumnName());
+
+				if (uadAnonymizableEntityColumns != null) {
+					uadAnonymizableEntityColumns.add(entityColumn);
+				}
+			}
+		}
+
+		return uadAnonymizableEntityColumnsMap;
+	}
+
+	public String getUADEntityTypeDescription() {
+		return _uadEntityTypeDescription;
 	}
 
 	public List<EntityColumn> getUADNonanonymizableEntityColumns() {
@@ -984,7 +1025,6 @@ public class Entity implements Comparable<Entity> {
 	private final String _persistenceClassName;
 	private final List<EntityColumn> _pkEntityColumns;
 	private boolean _portalReference;
-	private final String _portletName;
 	private final String _portletShortName;
 	private final List<Entity> _referenceEntities;
 	private final List<EntityColumn> _regularEntityColumns;
@@ -996,6 +1036,7 @@ public class Entity implements Comparable<Entity> {
 	private final boolean _trashEnabled;
 	private final String _txManager;
 	private final List<String> _txRequiredMethodNames;
+	private final String _uadEntityTypeDescription;
 	private List<String> _unresolvedReferenceEntityNames;
 	private final boolean _uuid;
 	private final boolean _uuidAccessor;
