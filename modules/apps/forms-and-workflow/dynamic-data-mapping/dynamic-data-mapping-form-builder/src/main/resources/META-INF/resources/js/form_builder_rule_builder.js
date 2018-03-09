@@ -461,6 +461,8 @@ AUI.add(
 					_handleCancelRule: function() {
 						var instance = this;
 
+						instance.set('ruleDraft', {});
+
 						instance.syncUI();
 					},
 
