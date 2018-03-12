@@ -217,8 +217,6 @@ AUI.add(
 					_onLabelFieldChange: function(event) {
 						var instance = this;
 
-						console.log('asdasasd');
-
 						var nameField = instance.getField('name');
 
 						var formBuilderField = instance.get('field');
@@ -234,11 +232,11 @@ AUI.add(
 
 							if (formBuilderField.__metal_component__) {
 								formBuilderField.fieldName = event.newVal;
+								formBuilderField.name = event.newVal;
 							}
 							else {
 								formBuilderField.set('context.fieldName', event.newVal);
 							}
-							console.log(formBuilderField.getState());
 						}
 						instance._saveSettings();
 					},

@@ -50,6 +50,7 @@ class Metal extends Component {
 			const name = field.fieldName;
 			this[name] = field.value;
 		});
+
 		this.emit('field:saveSettings', {
 			field: this
 		});
@@ -60,6 +61,7 @@ class Metal extends Component {
 
 		return new Liferay.DDM.FormBuilderSettingsForm(
 			{
+				builder: builder,
 				context: context,
 				editMode: builder.isEditMode() || this.isPersisted(),
 				evaluatorURL: Liferay.DDM.Settings.evaluatorURL,

@@ -163,12 +163,17 @@ AUI.add(
 								var fieldName = settingsFormFieldContext.fieldName;
 
 								if (fieldName == 'name') {
-									settingsFormFieldContext.value = field.get('context.fieldName');
+									settingsFormFieldContext.value = field.get('context').fieldName;
 								}
 							}
 						);
+						
+						if(field.__metal_component__) {
+							field.set('name', field.get('fieldName'));
+						}else {
+							field.set('context.name', field.get('context.fieldName'));
+						}
 
-						field.set('context.name', field.get('context.fieldName'));
 					},
 
 					_addFieldTypesInToolbar: function() {
@@ -218,7 +223,7 @@ AUI.add(
 						var instance = this;
 
 						var field = instance.get('field');
-						var fieldType = FieldTypes.get(field.get('context.type'));
+						var fieldType = FieldTypes.get(field.get('context').type);
 
 						instance._changeFieldTypeMenu(fieldType);
 					},
