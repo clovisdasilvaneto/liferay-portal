@@ -105,7 +105,7 @@ if (wikiPageInfoPanelDisplayContext.isSinglePageSelection()) {
 							<liferay-ui:message key="format" />
 						</dt>
 						<dd class="sidebar-dd">
-							<liferay-ui:message key="<%= wikiEngineRenderer.getFormatLabel(wikiPage.getFormat(), locale) %>" />
+							<liferay-ui:message key="<%= WikiUtil.getFormatLabel(wikiEngineRenderer, wikiPage.getFormat(), locale) %>" />
 						</dd>
 						<dt class="sidebar-dt">
 							<liferay-ui:message key="latest-version" />
@@ -230,7 +230,7 @@ if (wikiPageInfoPanelDisplayContext.isSinglePageSelection()) {
 								</div>
 
 								<div class="h6 sidebar-caption">
-									<liferay-ui:message arguments='<%= new Object[] {HtmlUtil.escape(Validator.isNotNull(curPage.getUserName()) ? curPage.getUserName() : "Liferay"), dateFormatDateTime.format(curPage.getCreateDate())} %>' key="by-x-on-x" />
+									<liferay-ui:message arguments='<%= new Object[] {HtmlUtil.escape(Validator.isNotNull(curPage.getUserName()) ? curPage.getUserName() : "Liferay"), dateFormatDateTime.format(curPage.getStatusDate())} %>' key="by-x-on-x" />
 								</div>
 							</div>
 

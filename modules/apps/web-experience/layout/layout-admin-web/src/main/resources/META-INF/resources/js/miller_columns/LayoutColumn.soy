@@ -1,4 +1,4 @@
-{namespace LayoutColumn}
+{namespace com.liferay.layout.admin.web.LayoutColumn}
 
 /**
  * LayoutColumn
@@ -119,6 +119,12 @@
 					{if $layoutColumnItem.actionURLs['configureURL']}
 						<a class="dropdown-item" href="{$layoutColumnItem.actionURLs['configureURL']}">
 							{msg desc=""}configure{/msg}
+						</a>
+					{/if}
+
+					{if $layoutColumnItem.actionURLs['copyLayoutURL']}
+						<a class="dropdown-item" data-onclick="_handleCopyLayoutClick" href="{$layoutColumnItem.actionURLs['copyLayoutURL']}">
+							{msg desc=""}copy-page{/msg}
 						</a>
 					{/if}
 
