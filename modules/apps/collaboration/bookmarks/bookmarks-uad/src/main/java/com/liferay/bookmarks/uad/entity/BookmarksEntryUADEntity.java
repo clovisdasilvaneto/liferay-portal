@@ -36,20 +36,29 @@ public class BookmarksEntryUADEntity extends BaseUADEntity {
 		_bookmarksEntry = bookmarksEntry;
 	}
 
+	@Override
+	public Object clone() {
+		return new BookmarksEntryUADEntity(
+			getUserId(), getUADEntityId(), _bookmarksEntry);
+	}
+
 	public BookmarksEntry getBookmarksEntry() {
 		return _bookmarksEntry;
 	}
 
 	@Override
-	public Map<String, Object> getEntityNonanonymizableFieldValues() {
-		Map<String, Object> entityNonanonymizableFieldValues = new HashMap<>();
+	public Map<String, Object> getUADEntityNonanonymizableFieldValues() {
+		Map<String, Object> uadEntityNonanonymizableFieldValues =
+			new HashMap<>();
 
-		entityNonanonymizableFieldValues.put(
+		uadEntityNonanonymizableFieldValues.put(
 			"description", _bookmarksEntry.getDescription());
-		entityNonanonymizableFieldValues.put("name", _bookmarksEntry.getName());
-		entityNonanonymizableFieldValues.put("url", _bookmarksEntry.getUrl());
+		uadEntityNonanonymizableFieldValues.put(
+			"name", _bookmarksEntry.getName());
+		uadEntityNonanonymizableFieldValues.put(
+			"url", _bookmarksEntry.getUrl());
 
-		return entityNonanonymizableFieldValues;
+		return uadEntityNonanonymizableFieldValues;
 	}
 
 	private final BookmarksEntry _bookmarksEntry;

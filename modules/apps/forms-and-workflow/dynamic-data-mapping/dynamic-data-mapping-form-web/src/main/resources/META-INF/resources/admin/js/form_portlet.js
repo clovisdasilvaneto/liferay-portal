@@ -331,7 +331,7 @@ AUI.add(
 									toolbars: {
 										footer: [
 											{
-												cssClass: 'btn-primary',
+												cssClass: 'btn-secondary',
 												label: Liferay.Language.get('leave'),
 												on: {
 													click: function() {
@@ -340,7 +340,7 @@ AUI.add(
 												}
 											},
 											{
-												cssClass: 'btn-link',
+												cssClass: 'btn-primary',
 												label: Liferay.Language.get('stay'),
 												on: {
 													click: function() {
@@ -397,10 +397,20 @@ AUI.add(
 					_addFieldButton: function() {
 						var instance = this;
 
+						var ruleButton = A.one('.lfr-ddm-add-rule');
+
+						if (ruleButton) {
+							ruleButton.replaceClass('lfr-ddm-add-rule', 'lfr-ddm-add-field');
+						}
+					},
+
+					_addRuleButton: function() {
+						var instance = this;
+
 						var addButton = A.one('.lfr-ddm-add-field');
 
-						if (addButton && addButton.hasClass('hide')) {
-							addButton.removeClass('hide');
+						if (addButton) {
+							addButton.replaceClass('lfr-ddm-add-field', 'lfr-ddm-add-rule');
 						}
 					},
 
@@ -487,7 +497,11 @@ AUI.add(
 										method: 'POST',
 										on: {
 											failure: function(event, id, xhr) {
-												window.location.reload();
+												var sessionStatus = Liferay.Session.get('sessionState');
+
+												if (sessionStatus === 'expired' || xhr.status === 401) {
+													window.location.reload();
+												}
 											}
 										}
 									}
@@ -541,6 +555,18 @@ AUI.add(
 
 						if (ddmStructureIdNode.val() === '0') {
 							ddmStructureIdNode.val(response.ddmStructureId);
+						}
+					},
+
+					_fillRuleDraft: function() {
+						var instance = this;
+
+						var ruleBuilder = instance.get('ruleBuilder');
+
+						var ruleDraft = ruleBuilder.get('ruleDraft');
+
+						if ((!ruleBuilder.isRuleDraftEmpty(ruleDraft)) || (typeof ruleDraft == 'undefined')) {
+							ruleBuilder.renderRule();
 						}
 					},
 
@@ -785,7 +811,11 @@ AUI.add(
 										method: 'POST',
 										on: {
 											failure: function(event, id, xhr) {
-												window.location.reload();
+												var sessionStatus = Liferay.Session.get('sessionState');
+
+												if (sessionStatus === 'expired' || xhr.status === 401) {
+													window.location.reload();
+												}
 											}
 										}
 									}
@@ -822,7 +852,9 @@ AUI.add(
 
 						instance._showRuleBuilder();
 
-						instance._removeAddFieldButton();
+						instance._addRuleButton();
+
+						instance._fillRuleDraft();
 					},
 
 					_onSaveButtonClick: function(event) {
@@ -837,16 +869,6 @@ AUI.add(
 						saveButton.append(TPL_BUTTON_SPINNER);
 
 						instance.submitForm();
-					},
-
-					_removeAddFieldButton: function() {
-						var instance = this;
-
-						var addButton = A.one('.lfr-ddm-add-field');
-
-						if (addButton && !addButton.hasClass('hide')) {
-							addButton.addClass('hide');
-						}
 					},
 
 					_setDescription: function(value) {
