@@ -14,19 +14,23 @@
 
 package com.liferay.user.associated.data.entity;
 
+import com.liferay.portal.kernel.model.StagedModel;
+
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * @author William Newbury
  */
-public interface UADEntity {
-
-	public default Map<String, Object> getEntityNonanonymizableFieldValues() {
-		return new HashMap<>();
-	}
+public interface UADEntity extends StagedModel {
 
 	public String getUADEntityId();
+
+	public default Map<String, Object>
+		getUADEntityNonanonymizableFieldValues() {
+
+		return new HashMap<>();
+	}
 
 	public String getUADRegistryKey();
 

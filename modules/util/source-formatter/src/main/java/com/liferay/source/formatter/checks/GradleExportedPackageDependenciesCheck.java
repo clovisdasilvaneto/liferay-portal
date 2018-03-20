@@ -73,6 +73,10 @@ public class GradleExportedPackageDependenciesCheck extends BaseFileCheck {
 			return content;
 		}
 
+		if (absolutePath.contains("/modules/apps/static/")) {
+			return content;
+		}
+
 		if (absolutePath.contains("/modules/apps/")) {
 			for (String dependencies : _getDependenciesBlocks(content)) {
 				content = _formatDependencies(content, dependencies);
@@ -206,6 +210,10 @@ public class GradleExportedPackageDependenciesCheck extends BaseFileCheck {
 
 			String bundleSymbolicName = BNDSourceUtil.getDefinitionValue(
 				content, "Bundle-SymbolicName");
+
+			if (bundleSymbolicName == null) {
+				continue;
+			}
 
 			if (bundleSymbolicName.startsWith("com.liferay")) {
 				bundleSymbolicNames.add(bundleSymbolicName);
