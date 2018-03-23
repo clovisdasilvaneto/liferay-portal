@@ -331,7 +331,7 @@ AUI.add(
 									toolbars: {
 										footer: [
 											{
-												cssClass: 'btn-primary',
+												cssClass: 'btn-secondary',
 												label: Liferay.Language.get('leave'),
 												on: {
 													click: function() {
@@ -340,7 +340,7 @@ AUI.add(
 												}
 											},
 											{
-												cssClass: 'btn-link',
+												cssClass: 'btn-primary',
 												label: Liferay.Language.get('stay'),
 												on: {
 													click: function() {
@@ -397,10 +397,20 @@ AUI.add(
 					_addFieldButton: function() {
 						var instance = this;
 
+						var ruleButton = A.one('.lfr-ddm-add-rule');
+
+						if (ruleButton) {
+							ruleButton.replaceClass('lfr-ddm-add-rule', 'lfr-ddm-add-field');
+						}
+					},
+
+					_addRuleButton: function() {
+						var instance = this;
+
 						var addButton = A.one('.lfr-ddm-add-field');
 
-						if (addButton && addButton.hasClass('hide')) {
-							addButton.removeClass('hide');
+						if (addButton) {
+							addButton.replaceClass('lfr-ddm-add-field', 'lfr-ddm-add-rule');
 						}
 					},
 
@@ -487,7 +497,11 @@ AUI.add(
 										method: 'POST',
 										on: {
 											failure: function(event, id, xhr) {
-												window.location.reload();
+												var sessionStatus = Liferay.Session.get('sessionState');
+
+												if (sessionStatus === 'expired' || xhr.status === 401) {
+													window.location.reload();
+												}
 											}
 										}
 									}
@@ -785,7 +799,11 @@ AUI.add(
 										method: 'POST',
 										on: {
 											failure: function(event, id, xhr) {
-												window.location.reload();
+												var sessionStatus = Liferay.Session.get('sessionState');
+
+												if (sessionStatus === 'expired' || xhr.status === 401) {
+													window.location.reload();
+												}
 											}
 										}
 									}
@@ -822,7 +840,7 @@ AUI.add(
 
 						instance._showRuleBuilder();
 
-						instance._removeAddFieldButton();
+						instance._addRuleButton();
 					},
 
 					_onSaveButtonClick: function(event) {
@@ -837,16 +855,6 @@ AUI.add(
 						saveButton.append(TPL_BUTTON_SPINNER);
 
 						instance.submitForm();
-					},
-
-					_removeAddFieldButton: function() {
-						var instance = this;
-
-						var addButton = A.one('.lfr-ddm-add-field');
-
-						if (addButton && !addButton.hasClass('hide')) {
-							addButton.addClass('hide');
-						}
 					},
 
 					_setDescription: function(value) {
@@ -929,6 +937,10 @@ AUI.add(
 
 						A.one('.ddm-form-builder-buttons').removeClass('hide');
 
+						if (A.one('.lfr-ddm-add-rule').hasClass('hide')) {
+							A.one('.lfr-ddm-add-rule').removeClass('hide');
+						}
+
 						instance.one('#showForm').addClass('active');
 					},
 
@@ -946,6 +958,10 @@ AUI.add(
 						}
 						else {
 							ruleBuilder.show();
+						}
+
+						if (!A.one('.form-builder-rule-builder-container')) {
+							A.one('.lfr-ddm-add-field').addClass('hide');
 						}
 
 						A.one('.portlet-forms').addClass('liferay-ddm-form-rule-builder');

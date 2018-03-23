@@ -30,23 +30,23 @@
 
 	<tbody>
 		<tr>
-			<td><clay:checkbox checked="<%= true %>" hideLabel="<%= true %>" label="My Input" name="name" /></td>
+			<td><clay:checkbox checked="<%= true %>" label="My Input" name="name" showLabel="<%= false %>" /></td>
 			<td>On</td>
 		</tr>
 		<tr>
-			<td><clay:checkbox hideLabel="<%= true %>" label="My Input" name="name" /></td>
+			<td><clay:checkbox label="My Input" name="name" showLabel="<%= false %>" /></td>
 			<td>Off</td>
 		</tr>
 		<tr>
-			<td><clay:checkbox checked="<%= true %>" disabled="<%= true %>" hideLabel="<%= true %>" label="My Input" name="name" /></td>
+			<td><clay:checkbox checked="<%= true %>" disabled="<%= true %>" label="My Input" name="name" showLabel="<%= false %>" /></td>
 			<td>On disabled</td>
 		</tr>
 		<tr>
-			<td><clay:checkbox disabled="<%= true %>" hideLabel="<%= true %>" label="My Input" name="name" /></td>
+			<td><clay:checkbox disabled="<%= true %>" label="My Input" name="name" showLabel="<%= false %>" /></td>
 			<td>Off disabled</td>
 		</tr>
 		<tr>
-			<td><clay:checkbox hideLabel="<%= true %>" indeterminate="<%= true %>" label="My Input" name="name" /></td>
+			<td><clay:checkbox indeterminate="<%= true %>" label="My Input" name="name" showLabel="<%= false %>" /></td>
 			<td>Checkbox Variable for multiple selection</td>
 		</tr>
 	</tbody>
@@ -66,19 +66,19 @@
 
 	<tbody>
 		<tr>
-			<td><clay:radio checked="<%= true %>" hideLabel="<%= true %>" label="My Input" name="name" /></td>
+			<td><clay:radio checked="<%= true %>" label="My Input" name="name" showLabel="<%= false %>" /></td>
 			<td>On</td>
 		</tr>
 		<tr>
-			<td><clay:radio hideLabel="<%= true %>" label="My Input" name="name" /></td>
+			<td><clay:radio label="My Input" name="name" showLabel="<%= false %>" /></td>
 			<td>Off</td>
 		</tr>
 		<tr>
-			<td><clay:radio checked="<%= true %>" disabled="<%= true %>" hideLabel="<%= true %>" label="My Input" name="name" /></td>
+			<td><clay:radio checked="<%= true %>" disabled="<%= true %>" label="My Input" name="name" showLabel="<%= false %>" /></td>
 			<td>On disabled</td>
 		</tr>
 		<tr>
-			<td><clay:radio disabled="<%= true %>" hideLabel="<%= true %>" label="My Input" name="name" /></td>
+			<td><clay:radio disabled="<%= true %>" label="My Input" name="name" showLabel="<%= false %>" /></td>
 			<td>Off disabled</td>
 		</tr>
 	</tbody>
@@ -101,10 +101,30 @@ for (int i = 0; i < 8; i++) {
 }
 %>
 
-<clay:select label="Regular Select Element" name="name" options="<%= options %>" />
+<clay:select
+	label="Regular Select Element"
+	name="name"
+	options="<%= options %>"
+/>
 
-<clay:select disabled="<%= true %>" label="Disabled Regular Select Element" name="name" options="<%= options %>" />
+<clay:select
+	disabled="<%= true %>"
+	label="Disabled Regular Select Element"
+	name="name"
+	options="<%= options %>"
+/>
 
-<clay:select label="Multiple Select Element" multiple="<%= true %>" name="name" options="<%= options %>" />
+<clay:select
+	label="Multiple Select Element"
+	multiple="<%= true %>"
+	name="name"
+	options="<%= options %>"
+/>
 
-<clay:select disabled="<%= true %>" label="Disabled Multiple Select Element" multiple="<%= true %>" name="name" options="<%= options %>" />
+<clay:select
+	disabled="<%= true %>"
+	label="Disabled Multiple Select Element"
+	multiple="<%= true %>"
+	name="name"
+	options="<%= options %>"
+/>
