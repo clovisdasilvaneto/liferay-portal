@@ -28,7 +28,6 @@ import com.liferay.exportimport.kernel.model.ExportImportConfiguration;
 import com.liferay.exportimport.kernel.service.ExportImportConfigurationLocalService;
 import com.liferay.exportimport.kernel.service.ExportImportLocalService;
 import com.liferay.exportimport.kernel.staging.Staging;
-import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -150,14 +149,10 @@ public class ExportImportChangesetMVCActionCommandImpl
 			String cmd, String changesetUuid)
 		throws IOException, PortalException {
 
-		if (Validator.isNotNull(changesetUuid)) {
-		}
-		else if (Validator.isNotNull(
-					actionRequest.getParameter("changesetUuid"))) {
-
+		if (Validator.isNotNull(actionRequest.getParameter("changesetUuid"))) {
 			changesetUuid = ParamUtil.getString(actionRequest, "changesetUuid");
 		}
-		else {
+		else if (Validator.isNull(changesetUuid)) {
 			SessionErrors.add(
 				actionRequest, ExportImportEntityException.class,
 				new ExportImportEntityException(
