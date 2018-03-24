@@ -6,18 +6,15 @@
 	},
 	"devDependencies": {
 		"babel-cli": "6.26.0",
-		"babel-preset-es2015": "6.24.1",
 		"babel-preset-liferay-project": "1.6.1",
+		"babel-preset-yui3": "0.0.6",
 		"gulp-metal": "^1.12.0",
-		"liferay-module-config-generator": "^1.2.1",
 		"liferay-npm-bundler": "^1.6.1",
-		"liferay-npm-bundler-preset-amd": "1.6.1",
-		"liferay-npm-bundler-preset-standard": "^1.6.1",
-		"metal-tools-soy": "^4.2.1"
+		"liferay-npm-bundler-preset-standard": "^1.6.1"
 	},
 	"name": "dynamic-data-mapping-type-checkbox",
 	"scripts": {
-		"build": "gulp && babel -d classes/META-INF/resources src/main/resources/META-INF/resources --ignore config.js,checkbox_field.js && liferay-npm-bundler"
+		"build": "gulp && babel --presets=yui3 --no-babelrc -d classes/META-INF/resources src/main/resources/META-INF/resources --ignore *.es.js && babel -d classes/META-INF/resources src/main/resources/META-INF/resources --ignore config.js,checkbox_field.js && liferay-npm-bundler"
 	},
 	"version": "3.0.0"
 }
