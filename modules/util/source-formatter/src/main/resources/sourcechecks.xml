@@ -63,6 +63,7 @@
 			<property name="allowedExportPackageDirName" value="modules/apps/foundation/portal-cache/portal-cache" />
 			<property name="allowedExportPackageDirName" value="modules/apps/foundation/portal-cache/portal-cache-ehcache" />
 			<property name="allowedExportPackageDirName" value="modules/apps/foundation/portal-cache/portal-cache-ehcache-provider" />
+			<property name="allowedExportPackageDirName" value="modules/apps/foundation/portal-cache/portal-cache-ehcache-spi" />
 			<property name="allowedExportPackageDirName" value="modules/apps/foundation/portal-configuration/portal-configuration-upgrade-util" />
 			<property name="allowedExportPackageDirName" value="modules/apps/foundation/portal-portlet-bridge/portal-portlet-bridge-soy" />
 			<property name="allowedExportPackageDirName" value="modules/apps/foundation/portal-remote/portal-remote-soap-extender" />
@@ -135,16 +136,7 @@
 		<check name="GradleBlockOrderCheck" />
 		<check name="GradleBodyCheck" />
 		<check name="GradleDependenciesCheck" />
-		<check name="GradleExportedPackageDependenciesCheck">
-			<property name="exportPackageBundleSymbolicNamePrefix" value="com.liferay.arquillian." />
-			<property name="exportPackageBundleSymbolicNamePrefix" value="com.liferay.frontend." />
-			<property name="exportPackageBundleSymbolicNamePrefix" value="com.liferay.gradle." />
-			<property name="exportPackageBundleSymbolicNamePrefix" value="com.liferay.portal." />
-			<property name="exportPackageBundleSymbolicNamePrefix" value="com.liferay.project." />
-			<property name="exportPackageBundleSymbolicNamePrefix" value="com.liferay.util." />
-			<property name="exportPackageBundleSymbolicNamePrefix" value="com.liferay.webjars." />
-			<property name="exportPackageBundleSymbolicNamePrefix" value="com.liferay.whip" />
-		</check>
+		<check name="GradleExportedPackageDependenciesCheck" />
 		<check name="GradleImportsCheck" />
 		<check name="GradleIndentationCheck" />
 		<check name="GradlePropertiesCheck" />
@@ -166,7 +158,7 @@
 		<check name="EmptyCollectionCheck" />
 		<check name="GetterUtilCheck" />
 		<check name="Java2HTMLCheck" />
-		<check name="JavaAggregateTestRuleParameterOrder" />
+		<check name="JavaAggregateTestRuleParameterOrderCheck" />
 		<check name="JavaAnnotationsCheck" />
 		<check name="JavaAssertEqualsCheck" />
 		<check name="JavaBooleanStatementCheck" />
@@ -174,12 +166,13 @@
 		<check name="JavaCollatorUtilCheck" />
 		<check name="JavaCombineLinesCheck" />
 		<check name="JavaConfigurationAdminCheck" />
-		<check name="JavaConstructorParameterOrder" />
+		<check name="JavaConstructorParameterOrderCheck" />
 		<check name="JavaConstructorSuperCallCheck" />
 		<check name="JavaDataAccessConnectionCheck" />
 		<check name="JavaDeprecatedJavadocCheck" />
 		<check name="JavaDiamondOperatorCheck" />
 		<check name="JavaDeserializationSecurityCheck" />
+		<check name="JavaEmptyLineAfterSuperCallCheck" />
 		<check name="JavaEmptyLinesCheck" />
 		<check name="JavaExceptionCheck" />
 		<check name="JavaForLoopCheck" />
@@ -274,6 +267,12 @@
 
 		<!-- Portal checks -->
 
+		<check name="JavaAPISignatureCheck">
+			<property name="illegalAPIParameterType" value="HttpServletRequest" />
+			<property name="illegalAPIParameterType" value="HttpServletResponse" />
+			<property name="illegalAPIParameterType" value="ThemeDisplay" />
+			<property name="illegalAPIServiceParameterType" value="ServiceContext" />
+		</check>
 		<check name="JavaCleanUpMethodSuperCleanUpCheck" />
 		<check name="JavaCleanUpMethodVariablesCheck" />
 		<check name="JavaFinderCacheCheck" />
@@ -378,6 +377,7 @@
 		<check name="WhitespaceCheck" />
 	</source-processor>
 	<source-processor name="PropertiesSourceProcessor">
+		<check name="PropertiesCommentsCheck" />
 		<check name="PropertiesDefinitionKeysCheck" />
 		<check name="PropertiesDependenciesFileCheck" />
 		<check name="PropertiesImportedFilesContentCheck" />
@@ -429,9 +429,11 @@
 		<check name="XMLPortletFileCheck" />
 		<check name="XMLPortletPreferencesFileCheck" />
 		<check name="XMLPoshiFileCheck" />
+		<check name="XMLProjectElementCheck" />
 		<check name="XMLResourceActionsFileCheck" />
 		<check name="XMLServiceFileCheck" />
 		<check name="XMLSolrSchemaFileCheck" />
+		<check name="XMLSuppressionsFileCheck" />
 		<check name="XMLTagAttributesCheck" />
 		<check name="XMLToggleFileCheck" />
 		<check name="XMLWhitespaceCheck" />
