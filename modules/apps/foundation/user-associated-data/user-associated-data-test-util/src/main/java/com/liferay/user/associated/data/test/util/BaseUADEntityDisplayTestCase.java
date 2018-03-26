@@ -14,20 +14,17 @@
 
 package com.liferay.user.associated.data.test.util;
 
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.model.BaseModel;
 import com.liferay.portal.kernel.model.User;
-import com.liferay.portal.kernel.test.AssertUtils;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.kernel.test.util.UserTestUtil;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.user.associated.data.aggregator.UADEntityAggregator;
 import com.liferay.user.associated.data.display.UADEntityDisplay;
 import com.liferay.user.associated.data.entity.UADEntity;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -46,78 +43,38 @@ public abstract class BaseUADEntityDisplayTestCase {
 	}
 
 	@Test
-	public void testGetEntityNonanonymizableFieldValues() throws Exception {
-		UADEntity uadEntity = _createUADEntity();
-
-		String entityNonanonymizableFieldValues =
-			_uadEntityDisplay.getEntityNonanonymizableFieldValues(uadEntity);
-
-		Map<String, Object> entityNonanonymizableFieldValuesMap =
-			uadEntity.getEntityNonanonymizableFieldValues();
-
-		for (Map.Entry<String, Object> entry :
-				entityNonanonymizableFieldValuesMap.entrySet()) {
-
-			Assert.assertTrue(
-				entityNonanonymizableFieldValues.contains(
-					entry.getKey() + ": " + entry.getValue()));
-		}
-	}
-
-	@Test
-	public void testGetEntityTypeDescription() {
+	public void testGetApplicationName() {
 		Assert.assertEquals(
-			getEntityTypeDescription(),
-			_uadEntityDisplay.getEntityTypeDescription());
+			getApplicationName(), _uadEntityDisplay.getApplicationName());
 	}
 
 	@Test
-	public void testGetEntityTypeName() throws Exception {
+	public void testGetUADEntityTypeDescription() {
+		Assert.assertEquals(
+			getUADEntityTypeDescription(),
+			_uadEntityDisplay.getUADEntityTypeDescription());
+	}
+
+	@Test
+	public void testGetUADEntityTypeName() throws Exception {
 		BaseModel baseModel = addBaseModel(_user.getUserId());
 
 		String simpleClassName = StringUtil.extractLast(
 			baseModel.getModelClassName(), StringPool.PERIOD);
 
 		Assert.assertEquals(
-			simpleClassName, _uadEntityDisplay.getEntityTypeName());
-	}
-
-	@Test
-	public void testGetEntityTypeNonanonymizableFieldNames() {
-		String entityTypeNonanonymizableFieldNames =
-			_uadEntityDisplay.getEntityTypeNonanonymizableFieldNames();
-
-		for (String entityTypeNonanonymizableFieldName :
-				_uadEntityDisplay.
-					getEntityTypeNonanonymizableFieldNamesList()) {
-
-			Assert.assertTrue(
-				entityTypeNonanonymizableFieldNames.contains(
-					entityTypeNonanonymizableFieldName));
-		}
-	}
-
-	@Test
-	public void testGetEntityTypeNonanonymizableFieldNamesList()
-		throws Exception {
-
-		UADEntity uadEntity = _createUADEntity();
-
-		Map<String, Object> entityNonanonymizableFieldValuesMap =
-			uadEntity.getEntityNonanonymizableFieldValues();
-
-		AssertUtils.assertEquals(
-			new ArrayList<>(entityNonanonymizableFieldValuesMap.keySet()),
-			_uadEntityDisplay.getEntityTypeNonanonymizableFieldNamesList());
+			simpleClassName, _uadEntityDisplay.getUADEntityTypeName());
 	}
 
 	protected abstract BaseModel<?> addBaseModel(long userId) throws Exception;
 
-	protected abstract String getEntityTypeDescription();
+	protected abstract String getApplicationName();
 
 	protected abstract UADEntityAggregator getUADEntityAggregator();
 
 	protected abstract UADEntityDisplay getUADEntityDisplay();
+
+	protected abstract String getUADEntityTypeDescription();
 
 	private UADEntity _createUADEntity() throws Exception {
 		addBaseModel(_user.getUserId());
