@@ -108,6 +108,35 @@ AUI.add(
 						instance.on('*:valueChange', A.bind(instance._handleActionUpdates, instance));
 					},
 
+					createDateField: function(context) {
+						var instance = this;
+
+						var config = A.merge(
+							context,
+							{
+								bubbleTargets: [instance],
+								context: A.clone(context),
+								dataType: 'date'
+							}
+						);
+
+						return new Liferay.DDM.Field.Date(config);
+					},
+
+					createNumericField: function(context) {
+						var instance = this;
+
+						var config = A.merge(
+							context,
+							{
+								bubbleTargets: [instance],
+								context: A.clone(context)
+							}
+						);
+
+						return new Liferay.DDM.Field.Numeric(config);
+					},
+
 					createSelectField: function(context) {
 						var instance = this;
 
