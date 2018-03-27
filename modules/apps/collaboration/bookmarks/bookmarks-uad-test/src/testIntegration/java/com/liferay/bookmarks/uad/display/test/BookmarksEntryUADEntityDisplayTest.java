@@ -57,8 +57,8 @@ public class BookmarksEntryUADEntityDisplayTest
 	}
 
 	@Override
-	protected String getEntityTypeDescription() {
-		return "A link to another page or website";
+	protected String getApplicationName() {
+		return BookmarksUADConstants.UAD_ENTITY_SET_NAME;
 	}
 
 	@Override
@@ -69,6 +69,11 @@ public class BookmarksEntryUADEntityDisplayTest
 	@Override
 	protected UADEntityDisplay getUADEntityDisplay() {
 		return _uadEntityDisplay;
+	}
+
+	@Override
+	protected String getUADEntityTypeDescription() {
+		return "A link to another page or website";
 	}
 
 	@DeleteAfterTestRun
