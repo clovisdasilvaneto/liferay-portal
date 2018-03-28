@@ -48,9 +48,9 @@ AUI.add(
 				instance._renderFirstOperand(index, condition, contentBox.one('.condition-if-' + index));
 				instance._renderOperator(index, condition, contentBox.one('.condition-operator-' + index));
 				instance._renderSecondOperandType(index, condition, contentBox.one('.condition-the-' + index));
+				instance._renderSecondOperandDate(index, condition, contentBox.one('.condition-type-value-' + index));
 				instance._renderSecondOperandInput(index, condition, contentBox.one('.condition-type-value-' + index));
 				instance._renderSecondOperandNumeric(index, condition, contentBox.one('.condition-type-value-' + index));
-				instance._renderSecondOperandDate(index, condition, contentBox.one('.condition-type-value-' + index));
 				instance._renderSecondOperandSelectField(index, condition, contentBox.one('.condition-type-value-' + index));
 				instance._renderSecondOperandSelectOptions(index, condition, contentBox.one('.condition-type-value-options-' + index));
 
@@ -332,7 +332,6 @@ AUI.add(
 				var instance = this;
 
 				var option;
-
 				var type;
 
 				for (var i = 0; i < options.length; i++) {
@@ -388,18 +387,16 @@ AUI.add(
 
 					if (fieldName.match('-condition-first-operand')) {
 						var operatorSelected = instance._getOperator(index);
-
 						var type;
 
-						if (instance._getType(field.getValue(), options) === 'date') {
+						if (instance._getType(field.getValue(), options) == 'date') {
 							type = 'date';
 							instance._conditions[index + '-condition-second-operand-input-text'].set('value', '');
 							instance._conditions[index + '-condition-second-operand-numeric'].set('value', '');
 						}
 						else {
 							type = instance._getDataType(field.getValue(), options);
-
-							if (instance._getType(field.getValue(), options) === 'numeric') {
+							if (instance._getType(field.getValue(), options) == 'numeric') {
 								instance._conditions[index + '-condition-second-operand-input-text'].set('value', '');
 								instance._conditions[index + '-condition-second-operand-date'].set('value', '');
 							}
@@ -503,7 +500,7 @@ AUI.add(
 			_isDate: function(operandTypeValue) {
 				var instance = this;
 
-				return operandTypeValue === 'date';
+				return operandTypeValue == 'date';
 			},
 
 			_isFieldList: function(field) {
@@ -517,13 +514,13 @@ AUI.add(
 			_isNumber: function(operandTypeValue) {
 				var instance = this;
 
-				return operandTypeValue === 'double' || operandTypeValue === 'integer';
+				return operandTypeValue == 'double' || operandTypeValue == 'integer';
 			},
 
 			_isText: function(operandTypeValue) {
 				var instance = this;
 
-				return operandTypeValue === 'string';
+				return operandTypeValue == 'string';
 			},
 
 			_isUnaryCondition: function(index) {
@@ -694,12 +691,9 @@ AUI.add(
 			_renderSecondOperandNumeric: function(index, condition, container) {
 				var instance = this;
 
-				var value = '';
-
 				var firstOperand = instance._getFirstOperand(index);
-
 				var secondOperandTypeValue = instance._getSecondOperandTypeValue(index);
-
+				var value = '';
 				var visible = instance._isNumber(secondOperandTypeValue) && !instance._isFieldList(firstOperand);
 
 				if (condition && instance._isBinaryCondition(index) && visible) {
@@ -873,7 +867,7 @@ AUI.add(
 						);
 					}
 				}
-				else if (dataType === 'date' || dataType === 'double' || dataType === 'integer') {
+				else if ((dataType == 'date') || (dataType == 'double') || (dataType == 'integer')) {
 					for (var j = 0; j < operatorTypes.number.length; j++) {
 						options.push(
 							A.merge(
@@ -927,13 +921,13 @@ AUI.add(
 
 						var secondOperand = '';
 
-						if (options.length > 0 && instance._getFieldType(instance._getFirstOperandValue(index)) !== 'text') {
+						if ((options.length > 0) && (instance._getFieldType(instance._getFirstOperandValue(index)) != 'text')) {
 							secondOperandOptions.set('options', options);
 							secondOperandOptions.set('visible', true);
 
 							secondOperandFields.cleanSelect();
 						}
-						else if ((secondOperandTypeValue === 'integer') || (secondOperandTypeValue === 'double') || (secondOperandTypeValue === 'date')) {
+						else if ((secondOperandTypeValue == 'integer') || (secondOperandTypeValue == 'double') || (secondOperandTypeValue == 'date')) {
 							secondOperand = instance._getSecondOperand(index, secondOperandTypeValue);
 
 							if (secondOperand) {
@@ -959,18 +953,16 @@ AUI.add(
 			_updateSecondOperandType: function(operator, index) {
 				var instance = this;
 
-				var secondOperandType = instance._getSecondOperandType(index);
-
 				var options = [];
-
+				var secondOperandType = instance._getSecondOperandType(index);
 				var typeValue = '';
 
 				if (secondOperandType) {
-					if (operator === 'belongs-to') {
+					if (operator == 'belongs-to') {
 						options = instance.get('roles');
 					}
 					else {
-						if (instance._getFieldType(instance._getFirstOperandValue(index)) === 'date') {
+						if (instance._getFieldType(instance._getFirstOperandValue(index)) == 'date') {
 							typeValue = 'date';
 						}
 						else {
