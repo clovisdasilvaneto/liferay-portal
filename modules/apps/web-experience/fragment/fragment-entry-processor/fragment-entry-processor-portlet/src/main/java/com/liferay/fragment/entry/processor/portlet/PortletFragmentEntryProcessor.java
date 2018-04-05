@@ -79,12 +79,12 @@ public class PortletFragmentEntryProcessor implements FragmentEntryProcessor {
 		for (Element element : document.select("*")) {
 			String tagName = element.tagName();
 
-			if (!StringUtil.startsWith(tagName, "lfr-app-")) {
+			if (!StringUtil.startsWith(tagName, "lfr-widget-")) {
 				continue;
 			}
 
 			String alias = StringUtil.replace(
-				tagName, "lfr-app-", StringPool.BLANK);
+				tagName, "lfr-widget-", StringPool.BLANK);
 
 			String portletName = _portletRegistry.getPortletName(alias);
 
@@ -101,36 +101,23 @@ public class PortletFragmentEntryProcessor implements FragmentEntryProcessor {
 				_fragmentEntryLinkLocalService.fetchFragmentEntryLink(
 					fragmentEntryLink.getOriginalFragmentEntryLinkId());
 
-			String defaultPreferences = StringPool.BLANK;
+			String portletPreferences = StringPool.BLANK;
 
 			if (originalFragmentEntryLink != null) {
-				String portletId = PortletIdCodec.encode(
-					PortletIdCodec.decodePortletName(portletName),
-					PortletIdCodec.decodeUserId(portletName),
-					String.valueOf(
-						originalFragmentEntryLink.getFragmentEntryLinkId()));
+				String defaultPreferences = _getPreferences(
+					portletName, originalFragmentEntryLink, StringPool.BLANK);
 
-				Group group = _groupLocalService.getGroup(
-					originalFragmentEntryLink.getGroupId());
-
-				long defaultPlid = _portal.getControlPanelPlid(
-					group.getCompanyId());
-
-				PortletPreferences portletPreferences =
-					PortletPreferencesFactoryUtil.getLayoutPortletSetup(
-						group.getCompanyId(), 0,
-						PortletKeys.PREFS_OWNER_TYPE_LAYOUT, defaultPlid,
-						portletId, StringPool.BLANK);
-
-				defaultPreferences = PortletPreferencesFactoryUtil.toXML(
-					portletPreferences);
+				portletPreferences = _getPreferences(
+					portletName, fragmentEntryLink, defaultPreferences);
 			}
+
+			runtimeTagElement.attr("defaultPreferences", portletPreferences);
 
 			String instanceId = String.valueOf(
 				fragmentEntryLink.getFragmentEntryLinkId());
 
-			runtimeTagElement.attr("defaultPreferences", defaultPreferences);
 			runtimeTagElement.attr("instanceId", instanceId);
+
 			runtimeTagElement.attr("persistSettings=false", true);
 			runtimeTagElement.attr("portletName", portletName);
 
@@ -172,12 +159,12 @@ public class PortletFragmentEntryProcessor implements FragmentEntryProcessor {
 		for (Element element : document.select("*")) {
 			String htmlTagName = element.tagName();
 
-			if (!StringUtil.startsWith(htmlTagName, "lfr-app-")) {
+			if (!StringUtil.startsWith(htmlTagName, "lfr-widget-")) {
 				continue;
 			}
 
 			String alias = StringUtil.replace(
-				htmlTagName, "lfr-app-", StringPool.BLANK);
+				htmlTagName, "lfr-widget-", StringPool.BLANK);
 
 			if (Validator.isNull(_portletRegistry.getPortletName(alias))) {
 				throw new FragmentEntryContentException(
@@ -258,20 +245,26 @@ public class PortletFragmentEntryProcessor implements FragmentEntryProcessor {
 		menuElement.attr("id", "portlet-topper-toolbar_" + portletId);
 		menuElement.attr("type", "toolbar");
 
-		Element iconElement = new Element("@liferay_ui.icon");
+		Element buttonElement = new Element("button");
 
-		iconElement.attr("icon", "cog");
-		iconElement.attr("markupView", "lexicon");
-		iconElement.attr("url", "javascript:;");
+		buttonElement.attr("class", "btn btn-primary btn-sm");
 
 		try {
-			iconElement.attr("onClick", _getConfigurationURL(portletId));
+			buttonElement.attr("onClick", _getConfigurationURL(portletId));
 		}
 		catch (Exception e) {
 			throw new PortalException(e);
 		}
 
-		menuElement.appendChild(iconElement);
+		buttonElement.attr("url", "javascript:;");
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		buttonElement.text(
+			LanguageUtil.get(serviceContext.getRequest(), "configure"));
+
+		menuElement.appendChild(buttonElement);
 
 		return menuElement;
 	}
@@ -305,6 +298,29 @@ public class PortletFragmentEntryProcessor implements FragmentEntryProcessor {
 			_getPortletMenuElement(portletName, instanceId));
 
 		return portletTopperElement;
+	}
+
+	private String _getPreferences(
+			String portletName, FragmentEntryLink fragmentEntryLink,
+			String defaultPreferences)
+		throws PortalException {
+
+		Group group = _groupLocalService.getGroup(
+			fragmentEntryLink.getGroupId());
+
+		long defaultPlid = _portal.getControlPanelPlid(group.getCompanyId());
+
+		String portletId = PortletIdCodec.encode(
+			PortletIdCodec.decodePortletName(portletName),
+			PortletIdCodec.decodeUserId(portletName),
+			String.valueOf(fragmentEntryLink.getFragmentEntryLinkId()));
+
+		PortletPreferences portletPreferences =
+			PortletPreferencesFactoryUtil.getLayoutPortletSetup(
+				group.getCompanyId(), 0, PortletKeys.PREFS_OWNER_TYPE_LAYOUT,
+				defaultPlid, portletId, defaultPreferences);
+
+		return PortletPreferencesFactoryUtil.toXML(portletPreferences);
 	}
 
 	@Reference
