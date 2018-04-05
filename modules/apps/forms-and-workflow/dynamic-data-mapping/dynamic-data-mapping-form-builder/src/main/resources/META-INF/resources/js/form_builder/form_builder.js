@@ -251,7 +251,8 @@ AUI.add(
 								{
 									builder: instance,
 									evaluatorURL: instance.get('evaluatorURL'),
-									readOnly: true
+									readOnly: true,
+									editMode: true
 								},
 								config
 							)
@@ -1206,7 +1207,23 @@ AUI.add(
 							}
 						);
 
-						field.render();
+						if (!field.__metal_component__) {
+							field.render();
+						}
+					},
+
+					getFieldRow: function(field) {
+						return A.one(field.get('content')).ancestor('.layout-row');
+					},
+
+					_syncFieldHeight: function(field) {
+						var instance = this;
+
+						var activeLayout = instance.getActiveLayout();
+
+						var row = instance.getFieldRow(field);
+
+						activeLayout.normalizeColsHeight(new A.NodeList(row));
 					},
 
 					_renderFields: function() {
