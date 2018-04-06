@@ -27,7 +27,7 @@ import com.liferay.portal.kernel.portlet.bridges.mvc.MVCRenderCommand;
 import com.liferay.portal.kernel.util.JavaConstants;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
-import com.liferay.user.associated.data.aggregator.UADEntityAggregator;
+import com.liferay.user.associated.data.aggregator.UADAggregator;
 import com.liferay.user.associated.data.constants.UserAssociatedDataPortletKeys;
 import com.liferay.user.associated.data.display.UADEntityDisplay;
 import com.liferay.user.associated.data.web.internal.constants.UADWebKeys;
@@ -141,8 +141,7 @@ public class ViewUADEntitiesMVCRenderCommand implements MVCRenderCommand {
 					navigationItem.setHref(
 						tabPortletURL, "uadRegistryKey",
 						uadEntityDisplay.getKey());
-					navigationItem.setLabel(
-						uadEntityDisplay.getUADEntityTypeName());
+					navigationItem.setLabel(uadEntityDisplay.getTypeName());
 				});
 		}
 
@@ -156,10 +155,10 @@ public class ViewUADEntitiesMVCRenderCommand implements MVCRenderCommand {
 		SearchContainer<UADEntity> searchContainer = new SearchContainer<>(
 			portletRequest, currentURL, null, null);
 
-		UADEntityAggregator uadEntityAggregator =
-			_uadRegistry.getUADEntityAggregator(uadRegistryKey);
+		UADAggregator uadAggregator = _uadRegistry.getUADAggregator(
+			uadRegistryKey);
 
-		List<Object> entities = uadEntityAggregator.getEntities(
+		List<Object> entities = uadAggregator.getRange(
 			selectedUserId, searchContainer.getStart(),
 			searchContainer.getEnd());
 
@@ -167,14 +166,11 @@ public class ViewUADEntitiesMVCRenderCommand implements MVCRenderCommand {
 
 		for (Object entity : entities) {
 			uadEntities.add(
-				new UADEntity(
-					entity, uadEntityAggregator.getPrimaryKeyObj(entity),
-					uadRegistryKey));
+				new UADEntity(entity, uadAggregator.getPrimaryKey(entity)));
 		}
 
 		searchContainer.setResults(uadEntities);
-		searchContainer.setTotal(
-			(int)uadEntityAggregator.count(selectedUserId));
+		searchContainer.setTotal((int)uadAggregator.count(selectedUserId));
 
 		return searchContainer;
 	}

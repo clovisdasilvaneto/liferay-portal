@@ -12,7 +12,7 @@ import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
-import com.liferay.user.associated.data.aggregator.UADEntityAggregator;
+import com.liferay.user.associated.data.aggregator.UADAggregator;
 import com.liferay.user.associated.data.anonymizer.UADEntityAnonymizer;
 import com.liferay.user.associated.data.test.util.BaseUADEntityAnonymizerTestCase;
 
@@ -23,6 +23,7 @@ import com.liferay.user.associated.data.test.util.BaseUADEntityAnonymizerTestCas
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.After;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
@@ -66,8 +67,8 @@ public class ${entity.name}UADEntityAnonymizerTest extends BaseUADEntityAnonymiz
 	}
 
 	@Override
-	protected UADEntityAggregator getUADEntityAggregator() {
-		return _uadEntityAggregator;
+	protected UADAggregator getUADAggregator() {
+		return _uadAggregator;
 	}
 
 	@Override
@@ -118,6 +119,11 @@ public class ${entity.name}UADEntityAnonymizerTest extends BaseUADEntityAnonymiz
 		return false;
 	}
 
+	@After
+	public void tearDown() throws Exception {
+		_${entity.varName}UADEntityTestHelper.cleanUpDependencies(_${entity.varNames});
+	}
+
 	@DeleteAfterTestRun
 	private final List<${entity.name}> _${entity.varNames} = new ArrayList<${entity.name}>();
 
@@ -130,7 +136,7 @@ public class ${entity.name}UADEntityAnonymizerTest extends BaseUADEntityAnonymiz
 	@Inject(
 		filter = "model.class.name=" + ${portletShortName}UADConstants.CLASS_NAME_${entity.constantName}
 	)
-	private UADEntityAggregator _uadEntityAggregator;
+	private UADAggregator _uadAggregator;
 
 	@Inject(
 		filter = "model.class.name=" + ${portletShortName}UADConstants.CLASS_NAME_${entity.constantName}

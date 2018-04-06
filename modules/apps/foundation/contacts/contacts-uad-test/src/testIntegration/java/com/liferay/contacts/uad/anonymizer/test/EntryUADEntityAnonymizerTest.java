@@ -28,10 +28,11 @@ import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
-import com.liferay.user.associated.data.aggregator.UADEntityAggregator;
+import com.liferay.user.associated.data.aggregator.UADAggregator;
 import com.liferay.user.associated.data.anonymizer.UADEntityAnonymizer;
 import com.liferay.user.associated.data.test.util.BaseUADEntityAnonymizerTestCase;
 
+import org.junit.After;
 import org.junit.ClassRule;
 import org.junit.Rule;
 
@@ -69,8 +70,8 @@ public class EntryUADEntityAnonymizerTest
 	}
 
 	@Override
-	protected UADEntityAggregator getUADEntityAggregator() {
-		return _uadEntityAggregator;
+	protected UADAggregator getUADAggregator() {
+		return _uadAggregator;
 	}
 
 	@Override
@@ -102,6 +103,11 @@ public class EntryUADEntityAnonymizerTest
 		return false;
 	}
 
+	@After
+	public void tearDown() throws Exception {
+		_entryUADEntityTestHelper.cleanUpDependencies(_entries);
+	}
+
 	@DeleteAfterTestRun
 	private final List<Entry> _entries = new ArrayList<Entry>();
 	@Inject
@@ -110,7 +116,7 @@ public class EntryUADEntityAnonymizerTest
 	private EntryUADEntityTestHelper _entryUADEntityTestHelper;
 	@Inject(filter = "model.class.name=" +
 	ContactsUADConstants.CLASS_NAME_ENTRY)
-	private UADEntityAggregator _uadEntityAggregator;
+	private UADAggregator _uadAggregator;
 	@Inject(filter = "model.class.name=" +
 	ContactsUADConstants.CLASS_NAME_ENTRY)
 	private UADEntityAnonymizer _uadEntityAnonymizer;
