@@ -1,19 +1,32 @@
-const Analytics = window.Analytics;
-const assert = chai.assert;
-const expect = chai.expect;
+import AnalyticsClient from '../../src/analytics';
+import {assert, expect} from 'chai';
+
+let Analytics = AnalyticsClient.create();
 
 describe('Forms Plugin', () => {
+	beforeEach(() => {
+		// Force attaching DOM Content Loaded event
+		Object.defineProperty(document, 'readyState', {
+			value: 'loading',
+			writable: false
+		});
+
+		Analytics.create();
+	});
+
+	afterEach(() => {
+		Analytics.dispose();
+	});
+
 	describe('formViewed event', () => {
 		it('should be fired for every form on the page', () => {
-			Analytics.create();
-
 			const form = document.createElement('form');
-			form.dataset.analytics = 'true';
-			form.id = 'myId';
+			form.dataset.analyticsAssetId = 'formId';
+			form.dataset.analyticsAssetTitle = 'Form Title';
 			document.body.appendChild(form);
 
-			const event = new Event('load');
-			window.dispatchEvent(event);
+			const domContentLoaded = new Event('DOMContentLoaded');
+			document.dispatchEvent(domContentLoaded);
 
 			const events = Analytics.events.filter(
 				({eventId}) => eventId === 'formViewed'
@@ -25,7 +38,8 @@ describe('Forms Plugin', () => {
 				applicationId: 'forms',
 				eventId: 'formViewed',
 				properties: {
-					formId: 'myId'
+					formId: 'formId',
+					title: 'Form Title'
 				}
 			});
 		});
@@ -33,11 +47,9 @@ describe('Forms Plugin', () => {
 
 	describe('formSubmitted event', () => {
 		it('should be fired when a form is submitted', () => {
-			Analytics.create();
-
 			const form = document.createElement('form');
-			form.dataset.analytics = 'true';
-			form.id = 'myId';
+			form.dataset.analyticsAssetId = 'formId';
+			form.dataset.analyticsAssetTitle = 'Form Title';
 			document.body.appendChild(form);
 			form.addEventListener('submit', event => event.preventDefault());
 
@@ -56,7 +68,7 @@ describe('Forms Plugin', () => {
 				applicationId: 'forms',
 				eventId: 'formSubmitted',
 				properties: {
-					formId: 'myId'
+					formId: 'formId'
 				}
 			});
 		});
@@ -64,11 +76,9 @@ describe('Forms Plugin', () => {
 
 	describe('fieldFocused event', () => {
 		it('should be fired whenever a field is focused', () => {
-			Analytics.create();
-
 			const form = document.createElement('form');
-			form.dataset.analytics = 'true';
-			form.id = 'myId';
+			form.dataset.analyticsAssetId = 'formId';
+			form.dataset.analyticsAssetTitle = 'Form Title';
 			document.body.appendChild(form);
 			const field = document.createElement('input');
 			field.name = 'myField';
@@ -87,7 +97,7 @@ describe('Forms Plugin', () => {
 				applicationId: 'forms',
 				eventId: 'fieldFocused',
 				properties: {
-					formId: 'myId',
+					formId: 'formId',
 					fieldName: 'myField'
 				}
 			});
@@ -96,11 +106,9 @@ describe('Forms Plugin', () => {
 
 	describe('fieldBlurred event', () => {
 		it('should be fired whenever a field is blurred', (done) => {
-			Analytics.create();
-
 			const form = document.createElement('form');
-			form.dataset.analytics = 'true';
-			form.id = 'myId';
+			form.dataset.analyticsAssetId = 'formId';
+			form.dataset.analyticsAssetTitle = 'Form Title';
 			document.body.appendChild(form);
 			const field = document.createElement('input');
 			field.name = 'myField';
@@ -120,7 +128,7 @@ describe('Forms Plugin', () => {
 
 				events[0].applicationId.should.equal('forms');
 				events[0].eventId.should.equal('fieldBlurred');
-				events[0].properties.formId.should.equal('myId');
+				events[0].properties.formId.should.equal('formId');
 				events[0].properties.fieldName.should.equal('myField');
 				events[0].properties.focusDuration.should.be.at.least(1500);
 

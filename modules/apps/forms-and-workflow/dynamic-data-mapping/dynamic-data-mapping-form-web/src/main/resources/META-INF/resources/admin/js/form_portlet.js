@@ -402,6 +402,7 @@ AUI.add(
 									},
 									width: 600
 								},
+								id: 'leaveFormDialog',
 								title: Liferay.Language.get('leave-form')
 							}
 						);
@@ -622,6 +623,17 @@ AUI.add(
 
 						if (ddmStructureIdNode.val() === '0') {
 							ddmStructureIdNode.val(response.ddmStructureId);
+						}
+					},
+
+					_fillRuleDraft: function() {
+						var instance = this;
+
+						var ruleBuilder = instance.get('ruleBuilder');
+						var ruleDraft = ruleBuilder.get('ruleDraft');
+
+						if ((!ruleBuilder.isRuleDraftEmpty(ruleDraft)) || (typeof ruleDraft == 'undefined')) {
+							ruleBuilder.renderRule();
 						}
 					},
 
@@ -908,6 +920,8 @@ AUI.add(
 						instance._showRuleBuilder();
 
 						instance._addRuleButton();
+
+						instance._fillRuleDraft();
 					},
 
 					_onSaveButtonClick: function(event) {
