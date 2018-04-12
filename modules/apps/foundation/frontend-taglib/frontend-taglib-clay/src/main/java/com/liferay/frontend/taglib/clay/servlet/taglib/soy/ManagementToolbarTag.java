@@ -17,6 +17,7 @@ package com.liferay.frontend.taglib.clay.servlet.taglib.soy;
 import com.liferay.frontend.js.loader.modules.extender.npm.NPMResolver;
 import com.liferay.frontend.taglib.clay.internal.js.loader.modules.extender.npm.NPMResolverProvider;
 import com.liferay.frontend.taglib.clay.servlet.taglib.soy.base.BaseClayTag;
+import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenu;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItemList;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.ViewTypeItemList;
 import com.liferay.petra.string.StringPool;
@@ -95,12 +96,20 @@ public class ManagementToolbarTag extends BaseClayTag {
 		putValue("contentRenderer", contentRenderer);
 	}
 
-	public void setCreationMenu(Object creationMenu) {
+	public void setCreationMenu(CreationMenu creationMenu) {
 		putValue("creationMenu", creationMenu);
+	}
+
+	public void setDisabled(Boolean disabled) {
+		putValue("disabled", disabled);
 	}
 
 	public void setFilterItems(DropdownItemList filterItems) {
 		putValue("filterItems", filterItems);
+	}
+
+	public void setInfoPanelId(String infoPanelId) {
+		putValue("infoPanelId", infoPanelId);
 	}
 
 	public void setSearchActionURL(String searchActionURL) {
@@ -133,6 +142,10 @@ public class ManagementToolbarTag extends BaseClayTag {
 
 	public void setShowAdvancedSearch(Boolean showAdvancedSearch) {
 		putValue("showAdvancedSearch", showAdvancedSearch);
+	}
+
+	public void setShowCreationMenu(Boolean showCreationMenu) {
+		putValue("showCreationMenu", showCreationMenu);
 	}
 
 	public void setShowFiltersDoneButton(Boolean showFiltersDoneButton) {
@@ -168,7 +181,8 @@ public class ManagementToolbarTag extends BaseClayTag {
 		return _NAMESPACED_PARAMS;
 	}
 
-	private static final String[] _NAMESPACED_PARAMS =
-		{"searchContainerId", "searchFormName", "searchInputName"};
+	private static final String[] _NAMESPACED_PARAMS = {
+		"infoPanelId", "searchContainerId", "searchFormName", "searchInputName"
+	};
 
 }
