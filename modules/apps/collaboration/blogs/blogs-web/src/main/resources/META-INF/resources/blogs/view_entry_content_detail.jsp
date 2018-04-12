@@ -123,7 +123,7 @@ RatingsStats ratingsStats = (RatingsStats)request.getAttribute("view_entry_conte
 
 		<!-- text resume -->
 
-		<div class="container widget-mode-detail-header">
+		<div class="container widget-mode-detail-header" id="<portlet:namespace /><%= entry.getEntryId() %>">
 			<div class="row">
 				<div class="col-md-8 mx-auto widget-mode-detail-text">
 					<%= entry.getContent() %>
@@ -155,15 +155,17 @@ RatingsStats ratingsStats = (RatingsStats)request.getAttribute("view_entry_conte
 								</c:choose>
 							</portlet:renderURL>
 
-							<a class="btn btn-outline-borderless btn-outline-secondary btn-sm" href="<%= viewEntryCommentsURL.toString() %>">
-								<span class="inline-item inline-item-before">
-									<clay:icon
-										symbol="comments"
-									/>
-								</span>
+							<liferay-util:whitespace-remover>
+								<a class="btn btn-outline-borderless btn-outline-secondary btn-sm" href="<%= viewEntryCommentsURL.toString() %>">
+									<span class="inline-item inline-item-before">
+										<clay:icon
+											symbol="comments"
+										/>
+									</span>
 
-								<%= String.valueOf(messagesCount) %>
-							</a>
+									<%= String.valueOf(messagesCount) %>
+								</a>
+							</liferay-util:whitespace-remover>
 						</div>
 					</c:if>
 
@@ -218,6 +220,19 @@ RatingsStats ratingsStats = (RatingsStats)request.getAttribute("view_entry_conte
 					</div>
 				</div>
 
+				<liferay-asset:asset-tags-available
+					className="<%= BlogsEntry.class.getName() %>"
+					classPK="<%= entry.getEntryId() %>"
+				>
+					<div class="entry-tags">
+						<liferay-asset:asset-tags-summary
+							className="<%= BlogsEntry.class.getName() %>"
+							classPK="<%= entry.getEntryId() %>"
+							portletURL="<%= renderResponse.createRenderURL() %>"
+						/>
+					</div>
+				</liferay-asset:asset-tags-available>
+
 				<c:if test="<%= blogsPortletInstanceConfiguration.enableRelatedAssets() %>">
 					<div class="entry-links">
 						<liferay-asset:asset-links
@@ -240,19 +255,6 @@ RatingsStats ratingsStats = (RatingsStats)request.getAttribute("view_entry_conte
 						/>
 					</div>
 				</liferay-asset:asset-categories-available>
-
-				<liferay-asset:asset-tags-available
-					className="<%= BlogsEntry.class.getName() %>"
-					classPK="<%= entry.getEntryId() %>"
-				>
-					<div class="entry-tags">
-						<liferay-asset:asset-tags-summary
-							className="<%= BlogsEntry.class.getName() %>"
-							classPK="<%= entry.getEntryId() %>"
-							portletURL="<%= renderResponse.createRenderURL() %>"
-						/>
-					</div>
-				</liferay-asset:asset-tags-available>
 			</div>
 		</div>
 	</c:when>
