@@ -46,15 +46,14 @@ import org.osgi.service.component.annotations.ReferencePolicy;
  * @author Pavel Savinov
  */
 @Component(
-	immediate = true,
-	property = {"fragment.entry.processor.priority:Integer=2"},
+	immediate = true, property = "fragment.entry.processor.priority:Integer=2",
 	service = FragmentEntryProcessor.class
 )
 public class EditableFragmentEntryProcessor implements FragmentEntryProcessor {
 
 	@Override
 	public String processFragmentEntryLinkHTML(
-			FragmentEntryLink fragmentEntryLink, String html)
+			FragmentEntryLink fragmentEntryLink, String html, String mode)
 		throws PortalException {
 
 		JSONObject jsonObject = JSONFactoryUtil.createJSONObject(
