@@ -25,7 +25,6 @@ import com.liferay.source.formatter.ExcludeSyntax;
 import com.liferay.source.formatter.ExcludeSyntaxPattern;
 import com.liferay.source.formatter.SourceFormatterExcludes;
 import com.liferay.source.formatter.checks.util.SourceUtil;
-import com.liferay.source.formatter.checkstyle.util.AlloyMVCCheckstyleUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -128,7 +127,7 @@ public class SourceFormatterUtil {
 
 		outerLoop:
 		for (String fileName : allFileNames) {
-			String encodedFileName = SourceUtil.getAbsolutePath(fileName);
+			String encodedFileName = _getEncodedFileName(fileName);
 
 			for (String includeRegex : includeRegexList) {
 				if (encodedFileName.matches(includeRegex)) {
@@ -336,9 +335,6 @@ public class SourceFormatterUtil {
 			suppressionsFiles.add(new File(moduleSuppressionsFileName));
 		}
 
-		suppressionsFiles.addAll(
-			AlloyMVCCheckstyleUtil.getSuppressionsFiles(suppressionsFiles));
-
 		return suppressionsFiles;
 	}
 
@@ -523,6 +519,17 @@ public class SourceFormatterUtil {
 		catch (IOException ioe) {
 			throw new RuntimeException(ioe);
 		}
+	}
+
+	private static String _getEncodedFileName(String fileName) {
+		String absolutePath = SourceUtil.getAbsolutePath(fileName);
+
+		if (!absolutePath.startsWith("/home/travis/")) {
+			return absolutePath;
+		}
+
+		return StringUtil.replace(
+			fileName, CharPool.BACK_SLASH, CharPool.SLASH);
 	}
 
 	private static PathMatchers _getPathMatchers(
