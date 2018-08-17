@@ -1,5 +1,4 @@
 import Component from 'metal-jsx';
-import dom from 'metal-dom';
 import LayoutRenderer from '../../components/Layout/index.es';
 import Sidebar from '../../components/Sidebar/index.es';
 
@@ -71,23 +70,6 @@ class Builder extends Component {
 
 	_handleDuplicateButtonClicked(indexes) {
 		this.emit('duplicateField', indexes);
-	}
-
-	/**
-	 * Continues the propagation of event.
-	 * @param {!Event} event
-	 * @private
-	 */
-
-	_handleCreationButtonClicked() {
-		const Sidebar = this.refs.sidebar;
-
-		Sidebar.props.mode = 'add';
-		Sidebar.show();
-	}
-
-	attached() {
-		dom.on('#addFieldButton', 'click', this._handleCreationButtonClicked.bind(this));
 	}
 
 	/**
