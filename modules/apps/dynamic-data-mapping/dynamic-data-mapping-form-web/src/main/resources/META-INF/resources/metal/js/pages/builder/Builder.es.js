@@ -96,11 +96,11 @@ class Builder extends Component {
 
 	render() {
 		const {
-			context,
 			fieldContext,
 			fieldsList,
 			focusedField,
 			mode,
+			pages,
 			spritemap
 		} = this.props;
 
@@ -123,19 +123,19 @@ class Builder extends Component {
 						<LayoutRenderer
 							editable={true}
 							events={layoutRendererEvents}
-							pages={context}
+							pages={pages}
 							ref="layoutRenderer"
 							spritemap={spritemap}
 						/>
 					</div>
 				</div>
 				<Sidebar
-					context={context}
 					events={sidebarEvents}
 					fieldContext={fieldContext}
 					fieldLists={fieldsList}
 					focusedField={focusedField}
 					mode={mode}
+					pages={pages}
 					ref="sidebar"
 					spritemap={spritemap}
 				/>
