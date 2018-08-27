@@ -189,6 +189,8 @@ class LayoutProvider extends Component {
 			name: LayoutSupport.generateFieldName(field)
 		};
 
+		duplicatedField.label = 'Copy of ' + duplicatedField.label;
+
 		const newRowIndex = rowIndex + 1;
 
 		const newContext = LayoutSupport.addRow(context, newRowIndex, pageIndex);
