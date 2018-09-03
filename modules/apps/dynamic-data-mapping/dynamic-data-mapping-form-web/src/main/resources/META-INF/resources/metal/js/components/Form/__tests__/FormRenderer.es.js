@@ -143,10 +143,9 @@ describe(
 
 				jest.runAllTimers();
 
-				component._handleDeleteButtonClicked(context);
-
+				component._handleDeleteFieldClicked(context);
 				expect(spy).toHaveBeenCalled();
-				expect(spy).toHaveBeenCalledWith('deleteButtonClicked', expect.any(Object));
+				expect(spy).toHaveBeenCalledWith('deleteFieldClicked', expect.any(Object));
 
 				expect(component).toMatchSnapshot();
 			}
