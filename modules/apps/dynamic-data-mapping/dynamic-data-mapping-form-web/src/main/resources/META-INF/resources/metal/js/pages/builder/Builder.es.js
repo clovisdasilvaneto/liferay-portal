@@ -12,6 +12,7 @@ import autobind from 'autobind-decorator';
 
 class Builder extends Component {
 	static STATE = {
+
 		/**
 		 * @default []
 		 * @instance
@@ -19,7 +20,7 @@ class Builder extends Component {
 		 * @type {?array<object>}
 		 */
 
-		indexes: Config.object(),
+		indexes: Config.object()
 	}
 
 	/**
@@ -83,9 +84,11 @@ class Builder extends Component {
 	 */
 
 	_handleDeleteFieldClicked(indexes) {
-		this.setState({
-			indexes
-		});
+		this.setState(
+			{
+				indexes
+			}
+		);
 		this._handleModal();
 	}
 
@@ -136,7 +139,7 @@ class Builder extends Component {
 			this._handleSidebarOpened({mode});
 		}
 	}
-	
+
 	@autobind
 	_handleModalButtonClicked(event) {
 		event.stopPropagation();
@@ -189,7 +192,7 @@ class Builder extends Component {
 			pages,
 			spritemap
 		} = props;
-		
+
 		const FormRendererEvents = {
 			activePageUpdated: this._handleActivePageUpdated.bind(this),
 			deleteFieldClicked: this._handleDeleteFieldClicked.bind(this),
@@ -238,8 +241,8 @@ class Builder extends Component {
 								}
 							]}
 							ref="modal"
-							spritemap={spritemap}
 							size="sm"
+							spritemap={spritemap}
 							title={Liferay.Language.get('delete-field-dialog-title')}
 						/>
 					</div>

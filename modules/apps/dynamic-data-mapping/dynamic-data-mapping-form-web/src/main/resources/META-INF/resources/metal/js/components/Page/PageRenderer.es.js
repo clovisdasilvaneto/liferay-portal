@@ -215,7 +215,6 @@ class PageRenderer extends Component {
 
 	_handleOnClickResize() {}
 
-
 	/**
 	 * @param {!Event} event
 	 * @private
