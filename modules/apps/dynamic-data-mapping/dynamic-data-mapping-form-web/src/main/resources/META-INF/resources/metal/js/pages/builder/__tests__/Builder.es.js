@@ -87,20 +87,6 @@ describe(
 		);
 
 		it(
-			'should continue to propagate the deleteField event',
-			() => {
-				const spy = jest.spyOn(component, 'emit');
-				const {FormRenderer} = component.refs;
-				const mockEvent = jest.fn();
-
-				FormRenderer.emit('deleteButtonClicked', mockEvent);
-
-				expect(spy).toHaveBeenCalled();
-				expect(spy).toHaveBeenCalledWith('deleteField', expect.anything());
-			}
-		);
-
-		it(
 			'should continue to propagate pagesUpdated event',
 			() => {
 				const spy = jest.spyOn(component, 'emit');
@@ -188,6 +174,42 @@ describe(
 				jest.runAllTimers();
 
 				expect(component).toMatchSnapshot();
+			}
+		);
+
+		it(
+			'should show modal when trash button gets clicked',
+			() => {
+				const {FormRenderer} = component.refs;
+				const mockEvent = jest.fn();
+
+				FormRenderer.emit('deleteFieldClicked', mockEvent);
+
+				const modal = document.querySelector('.modal');
+
+				jest.runAllTimers();
+
+				expect(modal.classList.contains('show')).toEqual(true);
+
+				expect(component).toMatchSnapshot();
+			}
+		);
+
+		it(
+			'should emit deleteField event when yes is clicked in the modal',
+			() => {
+				const spy = jest.spyOn(component, 'emit');
+				const {FormRenderer} = component.refs;
+				const mockEvent = jest.fn();
+
+				FormRenderer.emit('deleteFieldClicked', mockEvent);
+
+				component.element.querySelectorAll('.modal-content .btn-group .btn-group-item button')[1].click();
+
+				jest.runAllTimers();
+
+				expect(spy).toHaveBeenCalled();
+				expect(spy).toHaveBeenCalledWith('deleteField', expect.anything());
 			}
 		);
 	}
