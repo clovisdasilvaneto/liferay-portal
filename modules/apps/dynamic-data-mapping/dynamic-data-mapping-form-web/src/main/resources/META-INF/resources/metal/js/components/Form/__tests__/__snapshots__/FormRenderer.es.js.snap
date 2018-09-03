@@ -191,39 +191,6 @@ exports[`FormRenderer PagesSettings should delete the current page on layout ren
         </div>
       </div>
     </div>
-    <div class="fade modal" role="dialog" tabindex="-1">
-      <div class="modal-dialog modal-sm">
-        <div class="modal-content">
-          <div class="modal-header">
-            <div class="modal-title">delete-field-dialog-title</div>
-            <button class="btn close btn-unstyled" aria-label="close" type="button">
-              <svg aria-hidden="true" class="lexicon-icon lexicon-icon-times" focusable="false">
-                <title>times</title>
-                <use xlink:href="icons.svg#times"></use>
-              </svg>
-            </button>
-          </div>
-          <div class="modal-body">
-            <h4>are-you-sure-you-want-to-delete-this-field</h4>
-          </div>
-          <div class="modal-footer">
-            <div class="modal-item-first">
-              <div class="btn-group"></div>
-            </div>
-            <div class="modal-item-last">
-              <div class="btn-group">
-                <div class="btn-group-item">
-                  <button class="btn close-modal btn-secondary" type="button">dismiss</button>
-                </div>
-                <div class="btn-group-item">
-                  <button class="btn btn-primary" type="button">delete</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
   <div class="ddm-page-container-layout"></div>
 </div>
@@ -381,39 +348,6 @@ exports[`FormRenderer PagesSettings should reset the current page on layout rend
           <div class="row">
             <div class="col-md-12" data-ddm-field-row="3" data-ddm-field-page="0">
               <div class="col-empty ddm-target"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="fade modal" role="dialog" tabindex="-1">
-      <div class="modal-dialog modal-sm">
-        <div class="modal-content">
-          <div class="modal-header">
-            <div class="modal-title">delete-field-dialog-title</div>
-            <button class="btn close btn-unstyled" aria-label="close" type="button">
-              <svg aria-hidden="true" class="lexicon-icon lexicon-icon-times" focusable="false">
-                <title>times</title>
-                <use xlink:href="icons.svg#times"></use>
-              </svg>
-            </button>
-          </div>
-          <div class="modal-body">
-            <h4>are-you-sure-you-want-to-delete-this-field</h4>
-          </div>
-          <div class="modal-footer">
-            <div class="modal-item-first">
-              <div class="btn-group"></div>
-            </div>
-            <div class="modal-item-last">
-              <div class="btn-group">
-                <div class="btn-group-item">
-                  <button class="btn close-modal btn-secondary" type="button">dismiss</button>
-                </div>
-                <div class="btn-group-item">
-                  <button class="btn btn-primary" type="button">delete</button>
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -596,39 +530,6 @@ exports[`FormRenderer should change the active page 1`] = `
         </div>
       </div>
     </div>
-    <div class="fade modal" role="dialog" tabindex="-1">
-      <div class="modal-dialog modal-sm">
-        <div class="modal-content">
-          <div class="modal-header">
-            <div class="modal-title">delete-field-dialog-title</div>
-            <button class="btn close btn-unstyled" aria-label="close" type="button">
-              <svg aria-hidden="true" class="lexicon-icon lexicon-icon-times" focusable="false">
-                <title>times</title>
-                <use xlink:href="icons.svg#times"></use>
-              </svg>
-            </button>
-          </div>
-          <div class="modal-body">
-            <h4>are-you-sure-you-want-to-delete-this-field</h4>
-          </div>
-          <div class="modal-footer">
-            <div class="modal-item-first">
-              <div class="btn-group"></div>
-            </div>
-            <div class="modal-item-last">
-              <div class="btn-group">
-                <div class="btn-group-item">
-                  <button class="btn close-modal btn-secondary" type="button">dismiss</button>
-                </div>
-                <div class="btn-group-item">
-                  <button class="btn btn-primary" type="button">delete</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
   <div class="ddm-page-container-layout"></div>
 </div>
@@ -682,39 +583,6 @@ exports[`FormRenderer should change the active page for a empty page 1`] = `
         <div class="layout-page">
           <div class="col col-empty col-md-12 last-col lfr-initial-col">
             <div id="lfr-initial-col-message">drag-from-sidebar-and-drop-here</div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="fade modal" role="dialog" tabindex="-1">
-      <div class="modal-dialog modal-sm">
-        <div class="modal-content">
-          <div class="modal-header">
-            <div class="modal-title">delete-field-dialog-title</div>
-            <button class="btn close btn-unstyled" aria-label="close" type="button">
-              <svg aria-hidden="true" class="lexicon-icon lexicon-icon-times" focusable="false">
-                <title>times</title>
-                <use xlink:href="icons.svg#times"></use>
-              </svg>
-            </button>
-          </div>
-          <div class="modal-body">
-            <h4>are-you-sure-you-want-to-delete-this-field</h4>
-          </div>
-          <div class="modal-footer">
-            <div class="modal-item-first">
-              <div class="btn-group"></div>
-            </div>
-            <div class="modal-item-last">
-              <div class="btn-group">
-                <div class="btn-group-item">
-                  <button class="btn close-modal btn-secondary" type="button">dismiss</button>
-                </div>
-                <div class="btn-group-item">
-                  <button class="btn btn-primary" type="button">delete</button>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -881,39 +749,6 @@ exports[`FormRenderer should change the form page description 1`] = `
         </div>
       </div>
     </div>
-    <div class="fade modal" role="dialog" tabindex="-1">
-      <div class="modal-dialog modal-sm">
-        <div class="modal-content">
-          <div class="modal-header">
-            <div class="modal-title">delete-field-dialog-title</div>
-            <button class="btn close btn-unstyled" aria-label="close" type="button">
-              <svg aria-hidden="true" class="lexicon-icon lexicon-icon-times" focusable="false">
-                <title>times</title>
-                <use xlink:href="icons.svg#times"></use>
-              </svg>
-            </button>
-          </div>
-          <div class="modal-body">
-            <h4>are-you-sure-you-want-to-delete-this-field</h4>
-          </div>
-          <div class="modal-footer">
-            <div class="modal-item-first">
-              <div class="btn-group"></div>
-            </div>
-            <div class="modal-item-last">
-              <div class="btn-group">
-                <div class="btn-group-item">
-                  <button class="btn close-modal btn-secondary" type="button">dismiss</button>
-                </div>
-                <div class="btn-group-item">
-                  <button class="btn btn-primary" type="button">delete</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 </div>
 <div class="dropdown-menu" ref="menu">
@@ -1075,39 +910,6 @@ exports[`FormRenderer should change the form page title 1`] = `
         </div>
       </div>
     </div>
-    <div class="fade modal" role="dialog" tabindex="-1">
-      <div class="modal-dialog modal-sm">
-        <div class="modal-content">
-          <div class="modal-header">
-            <div class="modal-title">delete-field-dialog-title</div>
-            <button class="btn close btn-unstyled" aria-label="close" type="button">
-              <svg aria-hidden="true" class="lexicon-icon lexicon-icon-times" focusable="false">
-                <title>times</title>
-                <use xlink:href="icons.svg#times"></use>
-              </svg>
-            </button>
-          </div>
-          <div class="modal-body">
-            <h4>are-you-sure-you-want-to-delete-this-field</h4>
-          </div>
-          <div class="modal-footer">
-            <div class="modal-item-first">
-              <div class="btn-group"></div>
-            </div>
-            <div class="modal-item-last">
-              <div class="btn-group">
-                <div class="btn-group-item">
-                  <button class="btn close-modal btn-secondary" type="button">dismiss</button>
-                </div>
-                <div class="btn-group-item">
-                  <button class="btn btn-primary" type="button">delete</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 </div>
 <div class="dropdown-menu" ref="menu">
@@ -1152,39 +954,6 @@ exports[`FormRenderer should not render the layout with the field empty in non-e
           </div>
           <div class="row">
             <div class="col-md-12 col-ddm" data-ddm-field-row="2" data-ddm-field-page="0" data-ddm-field-column="0"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="fade modal" role="dialog" tabindex="-1">
-      <div class="modal-dialog modal-sm">
-        <div class="modal-content">
-          <div class="modal-header">
-            <div class="modal-title">delete-field-dialog-title</div>
-            <button class="btn close btn-unstyled" aria-label="close" type="button">
-              <svg aria-hidden="true" class="lexicon-icon lexicon-icon-times" focusable="false">
-                <title>times</title>
-                <use xlink:href="icons.svg#times"></use>
-              </svg>
-            </button>
-          </div>
-          <div class="modal-body">
-            <h4>are-you-sure-you-want-to-delete-this-field</h4>
-          </div>
-          <div class="modal-footer">
-            <div class="modal-item-first">
-              <div class="btn-group"></div>
-            </div>
-            <div class="modal-item-last">
-              <div class="btn-group">
-                <div class="btn-group-item">
-                  <button class="btn close-modal btn-secondary" type="button">dismiss</button>
-                </div>
-                <div class="btn-group-item">
-                  <button class="btn btn-primary" type="button">delete</button>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -1345,39 +1114,6 @@ exports[`FormRenderer should receive a delete button event and propage it 1`] = 
           <div class="row">
             <div class="col-md-12" data-ddm-field-row="3" data-ddm-field-page="0">
               <div class="col-empty ddm-target"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="fade modal" role="dialog" tabindex="-1">
-      <div class="modal-dialog modal-sm">
-        <div class="modal-content">
-          <div class="modal-header">
-            <div class="modal-title">delete-field-dialog-title</div>
-            <button class="btn close btn-unstyled" aria-label="close" type="button">
-              <svg aria-hidden="true" class="lexicon-icon lexicon-icon-times" focusable="false">
-                <title>times</title>
-                <use xlink:href="icons.svg#times"></use>
-              </svg>
-            </button>
-          </div>
-          <div class="modal-body">
-            <h4>are-you-sure-you-want-to-delete-this-field</h4>
-          </div>
-          <div class="modal-footer">
-            <div class="modal-item-first">
-              <div class="btn-group"></div>
-            </div>
-            <div class="modal-item-last">
-              <div class="btn-group">
-                <div class="btn-group-item">
-                  <button class="btn close-modal btn-secondary" type="button">dismiss</button>
-                </div>
-                <div class="btn-group-item">
-                  <button class="btn btn-primary" type="button">delete</button>
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -1544,39 +1280,6 @@ exports[`FormRenderer should receive a duplicate button event and propage it 1`]
         </div>
       </div>
     </div>
-    <div class="fade modal" role="dialog" tabindex="-1">
-      <div class="modal-dialog modal-sm">
-        <div class="modal-content">
-          <div class="modal-header">
-            <div class="modal-title">delete-field-dialog-title</div>
-            <button class="btn close btn-unstyled" aria-label="close" type="button">
-              <svg aria-hidden="true" class="lexicon-icon lexicon-icon-times" focusable="false">
-                <title>times</title>
-                <use xlink:href="icons.svg#times"></use>
-              </svg>
-            </button>
-          </div>
-          <div class="modal-body">
-            <h4>are-you-sure-you-want-to-delete-this-field</h4>
-          </div>
-          <div class="modal-footer">
-            <div class="modal-item-first">
-              <div class="btn-group"></div>
-            </div>
-            <div class="modal-item-last">
-              <div class="btn-group">
-                <div class="btn-group-item">
-                  <button class="btn close-modal btn-secondary" type="button">dismiss</button>
-                </div>
-                <div class="btn-group-item">
-                  <button class="btn btn-primary" type="button">delete</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 </div>
 <div class="dropdown-menu" ref="menu">
@@ -1738,39 +1441,6 @@ exports[`FormRenderer should receive an update page event and propage it 1`] = `
         </div>
       </div>
     </div>
-    <div class="fade modal" role="dialog" tabindex="-1">
-      <div class="modal-dialog modal-sm">
-        <div class="modal-content">
-          <div class="modal-header">
-            <div class="modal-title">delete-field-dialog-title</div>
-            <button class="btn close btn-unstyled" aria-label="close" type="button">
-              <svg aria-hidden="true" class="lexicon-icon lexicon-icon-times" focusable="false">
-                <title>times</title>
-                <use xlink:href="icons.svg#times"></use>
-              </svg>
-            </button>
-          </div>
-          <div class="modal-body">
-            <h4>are-you-sure-you-want-to-delete-this-field</h4>
-          </div>
-          <div class="modal-footer">
-            <div class="modal-item-first">
-              <div class="btn-group"></div>
-            </div>
-            <div class="modal-item-last">
-              <div class="btn-group">
-                <div class="btn-group-item">
-                  <button class="btn close-modal btn-secondary" type="button">dismiss</button>
-                </div>
-                <div class="btn-group-item">
-                  <button class="btn btn-primary" type="button">delete</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 </div>
 <div class="dropdown-menu" ref="menu">
@@ -1927,39 +1597,6 @@ exports[`FormRenderer should render a layout in editable mode 1`] = `
           <div class="row">
             <div class="col-md-12" data-ddm-field-row="3" data-ddm-field-page="0">
               <div class="col-empty ddm-target"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="fade modal" role="dialog" tabindex="-1">
-      <div class="modal-dialog modal-sm">
-        <div class="modal-content">
-          <div class="modal-header">
-            <div class="modal-title">delete-field-dialog-title</div>
-            <button class="btn close btn-unstyled" aria-label="close" type="button">
-              <svg aria-hidden="true" class="lexicon-icon lexicon-icon-times" focusable="false">
-                <title>times</title>
-                <use xlink:href="icons.svg#times"></use>
-              </svg>
-            </button>
-          </div>
-          <div class="modal-body">
-            <h4>are-you-sure-you-want-to-delete-this-field</h4>
-          </div>
-          <div class="modal-footer">
-            <div class="modal-item-first">
-              <div class="btn-group"></div>
-            </div>
-            <div class="modal-item-last">
-              <div class="btn-group">
-                <div class="btn-group-item">
-                  <button class="btn close-modal btn-secondary" type="button">dismiss</button>
-                </div>
-                <div class="btn-group-item">
-                  <button class="btn btn-primary" type="button">delete</button>
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -2146,39 +1783,6 @@ exports[`FormRenderer should render a layout with an empty field only in editabl
         </div>
       </div>
     </div>
-    <div class="fade modal" role="dialog" tabindex="-1">
-      <div class="modal-dialog modal-sm">
-        <div class="modal-content">
-          <div class="modal-header">
-            <div class="modal-title">delete-field-dialog-title</div>
-            <button class="btn close btn-unstyled" aria-label="close" type="button">
-              <svg aria-hidden="true" class="lexicon-icon lexicon-icon-times" focusable="false">
-                <title>times</title>
-                <use xlink:href="icons.svg#times"></use>
-              </svg>
-            </button>
-          </div>
-          <div class="modal-body">
-            <h4>are-you-sure-you-want-to-delete-this-field</h4>
-          </div>
-          <div class="modal-footer">
-            <div class="modal-item-first">
-              <div class="btn-group"></div>
-            </div>
-            <div class="modal-item-last">
-              <div class="btn-group">
-                <div class="btn-group-item">
-                  <button class="btn close-modal btn-secondary" type="button">dismiss</button>
-                </div>
-                <div class="btn-group-item">
-                  <button class="btn btn-primary" type="button">delete</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 </div>
 <div class="dropdown-menu" ref="menu">
@@ -2222,39 +1826,6 @@ exports[`FormRenderer should render a layout with pages 1`] = `
           </div>
           <div class="row">
             <div class="col-md-12 col-ddm" data-ddm-field-row="2" data-ddm-field-page="0" data-ddm-field-column="0"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="fade modal" role="dialog" tabindex="-1">
-      <div class="modal-dialog modal-sm">
-        <div class="modal-content">
-          <div class="modal-header">
-            <div class="modal-title">delete-field-dialog-title</div>
-            <button class="btn close btn-unstyled" aria-label="close" type="button">
-              <svg aria-hidden="true" class="lexicon-icon lexicon-icon-times" focusable="false">
-                <title>times</title>
-                <use xlink:href="icons.svg#times"></use>
-              </svg>
-            </button>
-          </div>
-          <div class="modal-body">
-            <h4>are-you-sure-you-want-to-delete-this-field</h4>
-          </div>
-          <div class="modal-footer">
-            <div class="modal-item-first">
-              <div class="btn-group"></div>
-            </div>
-            <div class="modal-item-last">
-              <div class="btn-group">
-                <div class="btn-group-item">
-                  <button class="btn close-modal btn-secondary" type="button">dismiss</button>
-                </div>
-                <div class="btn-group-item">
-                  <button class="btn btn-primary" type="button">delete</button>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
