@@ -217,6 +217,31 @@ class Builder extends Component {
 							ref="FormRenderer"
 							spritemap={spritemap}
 						/>
+
+						<ClayModal
+							body={Liferay.Language.get('are-you-sure-you-want-to-delete-this-field')}
+							events={{
+								clickButton: _handleModalButtonClicked
+							}}
+							footerButtons={[
+								{
+									alignment: 'right',
+									label: Liferay.Language.get('dismiss'),
+									style: 'primary',
+									type: 'close'
+								},
+								{
+									alignment: 'right',
+									label: Liferay.Language.get('delete'),
+									style: 'primary',
+									type: 'button'
+								}
+							]}
+							ref="modal"
+							spritemap={spritemap}
+							size="sm"
+							title={Liferay.Language.get('delete-field-dialog-title')}
+						/>
 					</div>
 				</div>
 				<Sidebar
