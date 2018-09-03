@@ -1,17 +1,13 @@
 import {Config} from 'metal-state';
+import {EventHandler} from 'metal-events';
 import {pageStructure} from './util/config.es';
+import {PagesVisitor} from './util/visitors.es';
 import Builder from './pages/builder/index.es';
 import Component from 'metal-jsx';
 import dom from 'metal-dom';
 import LayoutProvider from './components/LayoutProvider/index.es';
 import loader from './components/FieldsLoader/index.es';
 import RuleBuilder from './pages/RuleBuilder/index.es';
-import withAppComposer from './hocs/withAppComposer/index.es';
-import {EventHandler} from 'metal-events';
-
-const STR_UNTITLED_FORM = Liferay.Language.get('untitled-form');
-
-const LayoutProviderWithAppComposer = withAppComposer(LayoutProvider);
 
 /**
  * Form.
@@ -37,7 +33,7 @@ class Form extends Component {
 		).required().setter('_setContext'),
 
 		/**
-		 * The context for rendering a layout that represents a form.
+		 * The default language id of the form.
 		 * @default undefined
 		 * @instance
 		 * @memberof Form
@@ -47,7 +43,17 @@ class Form extends Component {
 		defaultLanguageId: Config.string().value(themeDisplay.getDefaultLanguageId()),
 
 		/**
-		 * The context for rendering a layout that represents a form.
+		 * The default language id of the form.
+		 * @default undefined
+		 * @instance
+		 * @memberof Form
+		 * @type {!array}
+		 */
+
+		editingLanguageId: Config.string().value(themeDisplay.getDefaultLanguageId()),
+
+		/**
+		 * A map with all translated values available as the form description.
 		 * @default undefined
 		 * @instance
 		 * @memberof Form
@@ -57,7 +63,7 @@ class Form extends Component {
 		localizedDescription: Config.object().value({}),
 
 		/**
-		 * The context for rendering a layout that represents a form.
+		 * A map with all translated values available as the form name.
 		 * @default undefined
 		 * @instance
 		 * @memberof Form
@@ -101,20 +107,40 @@ class Form extends Component {
 
 		/**
 		 * The represent the current active screen mode where 0 => FormBuilder and 1 => RuleBuilder
-		 * @default undefined
+		 * @default 0
+		 * @instance
+		 * @memberof Form
+		 * @type {!number}
+		 */
+
+		activeFormMode: Config.number().value(0),
+
+		/**
+		 * The represent the current active screen mode where 0 => FormBuilder and 1 => RuleBuilder
+		 * @default _pagesValueFn
 		 * @instance
 		 * @memberof Form
 		 * @type {!array}
 		 */
 
-		activeFormMode: Config.number().value(0),
+		pages: Config.arrayOf(pageStructure).valueFn('_pagesValueFn'),
+
+		/**
+		 * The represent the current active screen mode where 0 => FormBuilder and 1 => RuleBuilder
+		 * @default 'save-form'
+		 * @instance
+		 * @memberof Form
+		 * @type {!string}
+		 */
 
 		saveButtonLabel: Config.string().value(Liferay.Language.get('save-form'))
 	}
 
-	_getFormContext(pages) {
-		return {...this.props.context, pages};
-	}
+	/*
+	 * Returns the map with all translated names or a map with just "Intitled Form" in case
+	 * there are no translations available.
+	 * @private
+	 */
 
 	_setContext(context) {
 		if (!context.pages.length) {
@@ -123,7 +149,22 @@ class Form extends Component {
 				pages: [
 					{
 						description: '',
-						rows: [],
+						localizedDescription: {
+							[themeDisplay.getLanguageId()]: ''
+						},
+						localizedTitle: {
+							[themeDisplay.getLanguageId()]: ''
+						},
+						rows: [
+							{
+								columns: [
+									{
+										fields: [],
+										size: 12
+									}
+								]
+							}
+						],
 						title: ''
 					}
 				]
@@ -140,14 +181,49 @@ class Form extends Component {
 		} = this.props;
 
 		if (!localizedName[defaultLanguageId].trim()) {
-			localizedName[defaultLanguageId] = STR_UNTITLED_FORM;
+			localizedName[defaultLanguageId] = Liferay.Language.get('untitled-form');
 		}
 
 		return localizedName;
 	}
 
+	_getLocalizedDescription() {
+		const {localizedDescription} = this.props;
+
+		return localizedDescription;
+	}
+
+	_getDescriptionEditor() {
+		const {namespace} = this.props;
+
+		return window[`${namespace}descriptionEditor`];
+	}
+
+	_getNameEditor() {
+		const {namespace} = this.props;
+
+		return window[`${namespace}nameEditor`];
+	}
+
 	_getSerializedFormBuilderContext() {
-		return JSON.stringify(this.getState());
+		const state = this.getState();
+
+		const visitor = new PagesVisitor(state.pages);
+
+		return JSON.stringify(
+			{
+				...state,
+				pages: visitor.mapPages(
+					page => {
+						return {
+							...page,
+							description: page.localizedDescription,
+							title: page.localizedTitle
+						};
+					}
+				)
+			}
+		);
 	}
 
 	/*
@@ -157,7 +233,25 @@ class Form extends Component {
 	 */
 
 	_handlePagesChanged(event) {
-		this.refs.serializedFormBuilderContextInput.value = JSON.stringify(this._getFormContext(event.newVal));
+		this.setState(
+			{
+				pages: event.newVal
+			}
+		);
+	}
+
+	_handleNameEditorChanged(event) {
+		const {editingLanguageId, localizedName} = this.props;
+		const nameEditor = this._getNameEditor();
+
+		localizedName[editingLanguageId] = nameEditor.getHTML();
+	}
+
+	_handleDescriptionEditorChanged(event) {
+		const {editingLanguageId, localizedDescription} = this.props;
+		const descriptionEditor = this._getDescriptionEditor();
+
+		localizedDescription[editingLanguageId] = descriptionEditor.getHTML();
 	}
 
 	/**
@@ -178,24 +272,67 @@ class Form extends Component {
 		this.submitForm();
 	}
 
+	_openSidebar() {
+		const {builder} = this.refs;
+
+		if (builder) {
+			const {sidebar} = builder.refs;
+
+			sidebar.open();
+		}
+	}
+
 	/**
 	 * Handles click on plus button. Button shows Sidebar when clicked.
 	 * @private
 	 */
 
 	_handleAddFieldButtonClicked() {
-		const {builder} = this.refs;
-
-		if (builder) {
-			const {sidebar} = builder.refs;
-
-			sidebar.props.mode = 'add';
-			sidebar.show();
-		}
+		this._openSidebar();
 	}
 
 	created() {
 		this._eventHandler = new EventHandler();
+	}
+
+	_pagesValueFn() {
+		const {context} = this.props;
+
+		return context.pages;
+	}
+
+	_createEditor(name) {
+		const {namespace} = this.props;
+
+		const editorName = `${namespace}${name}`;
+
+		const editor = window[editorName];
+
+		let promise;
+
+		if (editor) {
+			editor.create();
+
+			promise = Promise.resolve(CKEDITOR.instances[editorName]);
+		}
+		else {
+			promise = new Promise(
+				resolve => {
+					Liferay.on(
+						'editorAPIReady',
+						event => {
+							if (event.editorName === editorName) {
+								event.editor.create();
+
+								resolve(CKEDITOR.instances[editorName]);
+							}
+						}
+					);
+				}
+			);
+		}
+
+		return promise;
 	}
 
 	attached() {
@@ -203,6 +340,11 @@ class Form extends Component {
 			dom.on('#addFieldButton', 'click', this._handleAddFieldButtonClicked.bind(this)),
 			dom.on('.forms-management-bar li', 'click', this._handleFormNavClicked.bind(this))
 		);
+
+		this._createEditor('nameEditor').then(editor => editor.on('change', this._handleNameEditorChanged.bind(this)));
+		this._createEditor('descriptionEditor').then(editor => editor.on('change', this._handleDescriptionEditorChanged.bind(this)));
+
+		this._openSidebar();
 	}
 
 	_handleFormNavClicked(event) {
@@ -233,11 +375,12 @@ class Form extends Component {
 
 	getState() {
 		const {
-			context,
 			defaultLanguageId,
 			localizedDescription,
 			namespace
 		} = this.props;
+		const {pages} = this.state;
+
 		const translationManager = Liferay.component(`${namespace}translationManager`);
 
 		return {
@@ -245,12 +388,20 @@ class Form extends Component {
 			defaultLanguageId,
 			description: localizedDescription,
 			name: this._getLocalizedName(),
-			pages: context.pages
+			pages,
+			rules: [],
+			successPageSettings: {
+				body: {},
+				enabled: false,
+				title: {}
+			}
 		};
 	}
 
 	submitForm() {
 		const {namespace} = this.props;
+
+		this.refs.nameInput.value = JSON.stringify(this._getLocalizedName());
 
 		this.syncInputValues();
 
@@ -264,9 +415,12 @@ class Form extends Component {
 			name
 		} = state;
 
+		const settingsDDMForm = Liferay.component('settingsDDMForm');
+
 		this.refs.descriptionInput.value = JSON.stringify(description);
 		this.refs.nameInput.value = JSON.stringify(name);
 		this.refs.serializedFormBuilderContextInput.value = this._getSerializedFormBuilderContext();
+		this.refs.serializedSettingsContextInput.value = JSON.stringify(settingsDDMForm.toJSON());
 	}
 
 	/**
@@ -284,30 +438,32 @@ class Form extends Component {
 			saveButtonLabel
 		} = this.state;
 
-		const events = {
-			pagesChanged: this._handlePagesChanged.bind(this)
-		};
-
 		const layoutProviderProps = {
 			...this.props,
-			pages: context.pages
+			events: {
+				pagesChanged: this._handlePagesChanged.bind(this)
+			},
+			initialPages: context.pages
 		};
 
-		let mode = <Builder events={events} namespace={this.props.namespace} ref="builder" />;
+		let currentBuilder = <Builder namespace={this.props.namespace} ref="builder" />;
+
 		if (parseInt(this.state.activeFormMode, 10)) {
-			mode = <RuleBuilder pages={context.pages} rules={this.props.rules} spritemap={spritemap} />;
+			currentBuilder = <RuleBuilder pages={context.pages} rules={this.props.rules} spritemap={spritemap} />;
 		}
+
+		const settingsDDMForm = Liferay.component('settingsDDMForm');
 
 		return (
 			<div>
-				<input name={`${namespace}description`} ref="descriptionInput" type="hidden" />
-				<input name={`${namespace}name`} ref="nameInput" type="hidden" />
+				<input name={`${namespace}description`} ref="descriptionInput" type="hidden" value={JSON.stringify(this._getLocalizedDescription())} />
+				<input name={`${namespace}name`} ref="nameInput" type="hidden" value={JSON.stringify(this._getLocalizedName())} />
 				<input name={`${namespace}serializedFormBuilderContext`} ref="serializedFormBuilderContextInput" type="hidden" value={this._getSerializedFormBuilderContext()} />
-				<input name={`${namespace}serializedSettingsContext`} ref="serializedSettingsContextInput" type="hidden" />
+				<input name={`${namespace}serializedSettingsContext`} ref="serializedSettingsContextInput" type="hidden" value={settingsDDMForm && JSON.stringify(settingsDDMForm.get('context'))} />
 
-				<LayoutProviderWithAppComposer {...layoutProviderProps}>
-					{mode}
-				</LayoutProviderWithAppComposer>
+				<LayoutProvider {...layoutProviderProps}>
+					{currentBuilder}
+				</LayoutProvider>
 
 				<div class="container-fluid-1280">
 					<div class="button-holder ddm-form-builder-buttons">

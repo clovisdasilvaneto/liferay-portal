@@ -25,7 +25,7 @@ class FormRenderer extends Component {
 		 * @type {?number}
 		 */
 
-		activePage: Config.number().internal().value(0),
+		activePage: Config.number().value(0),
 
 		/**
 		 * @default false
@@ -122,7 +122,9 @@ class FormRenderer extends Component {
 			this.editable &&
 			!this.dragAndDropDisabled
 		) {
-			this._dragAndDrop.disposeInternal();
+			if (this._dragAndDrop) {
+				this._dragAndDrop.disposeInternal();
+			}
 			this._startDrag();
 		}
 	}
@@ -135,7 +137,6 @@ class FormRenderer extends Component {
 	_addPage() {
 		const {activePage, pages} = this;
 		const newPage = this.createNewPage();
-		const newPageIndex = pages.length;
 
 		pages[activePage].enabled = false;
 
@@ -144,8 +145,11 @@ class FormRenderer extends Component {
 			newPage
 		];
 
-		this.pageSettingsItem = this._changeRemoveLabel(newPages);
-		this.activePage = newPageIndex;
+		this.setState(
+			{
+				pageSettingsItem: this._changeRemoveLabel(newPages)
+			}
+		);
 
 		this.emit('pageAdded', newPages);
 	}
@@ -227,28 +231,11 @@ class FormRenderer extends Component {
 	}
 
 	_handleChangePage({delegateTarget: {dataset}}) {
-		const {pages} = this;
 		const {pageId} = dataset;
-		let mode;
-
-		const openSidebar = !pages[pageId].rows.some(
-			({columns}) => columns.some(
-				({fields}) => fields.length
-			)
-		);
 
 		this.activePage = parseInt(pageId, 10);
 
-		if (openSidebar) {
-			mode = 'add';
-		}
-
-		this.emit(
-			'activePageUpdated',
-			{
-				mode
-			}
-		);
+		this.emit('activePageUpdated', this.activePage);
 	}
 
 	/**
@@ -282,15 +269,17 @@ class FormRenderer extends Component {
 	 * @private
 	 */
 
-	_handleFieldMoved({data, target, source}) {
-		this.emit(
-			'fieldMoved',
-			{
-				data,
-				source,
-				target
-			}
-		);
+	_handleFieldEdited(event) {
+		this.emit('fieldEdited', event);
+	}
+
+	/**
+	 * @param {!Object} payload
+	 * @private
+	 */
+
+	_handleFieldMoved(event) {
+		this.emit('fieldMoved', event);
 	}
 
 	/**
@@ -351,7 +340,7 @@ class FormRenderer extends Component {
 		const page = {
 			description: '',
 			enabled: true,
-			rows: [],
+			rows: [FormSupport.implAddRow(12, [])],
 			showRequiredFieldsWarning: true,
 			title: ''
 		};
