@@ -266,7 +266,12 @@ public class AssetPublisherDisplayContext {
 			WebKeys.THEME_DISPLAY);
 
 		if (isSelectionStyleAssetList() && (assetListEntry != null)) {
-			_assetEntryQuery = assetListEntry.getAssetEntryQuery();
+			long[] groupIds = AssetPublisherUtil.getGroupIds(
+				_portletPreferences, themeDisplay.getScopeGroupId(),
+				themeDisplay.getLayout());
+
+			_assetEntryQuery = assetListEntry.getAssetEntryQuery(
+				groupIds, themeDisplay.getLayout());
 		}
 		else {
 			_assetEntryQuery = AssetPublisherUtil.getAssetEntryQuery(
@@ -510,13 +515,20 @@ public class AssetPublisherDisplayContext {
 		return null;
 	}
 
-	public long[] getClassNameIds() {
+	public long[] getClassNameIds() throws Exception {
 		if (_classNameIds != null) {
 			return _classNameIds;
 		}
 
-		_classNameIds = AssetPublisherUtil.getClassNameIds(
-			_portletPreferences, getAvailableClassNameIds());
+		if (isSelectionStyleAssetList()) {
+			AssetEntryQuery assetEntryQuery = getAssetEntryQuery();
+
+			_classNameIds = assetEntryQuery.getClassNameIds();
+		}
+		else {
+			_classNameIds = AssetPublisherUtil.getClassNameIds(
+				_portletPreferences, getAvailableClassNameIds());
+		}
 
 		return _classNameIds;
 	}
