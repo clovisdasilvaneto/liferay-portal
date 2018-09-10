@@ -1,5 +1,6 @@
 import 'clay-button';
 import 'clay-modal';
+import 'clay-dropdown';
 import {Config} from 'metal-state';
 import {dom} from 'metal-dom';
 import {pageStructure} from '../../util/config.es';
