@@ -117,6 +117,7 @@ describe(
 					{
 						fieldTypes,
 						pages,
+						paginationMode: 'wizard',
 						spritemap
 					}
 				);
@@ -355,6 +356,38 @@ describe(
 					...pages
 				];
 				component.props.activePage = 1;
+
+				jest.runAllTimers();
+
+				expect(spy).not.toHaveBeenCalled();
+			}
+		);
+
+		it(
+			'should not open sidebar when the delete current page option item is clicked',
+			() => {
+				const componentPages = [...pages, ...pages];
+
+				const builderComponent = new Builder(
+					{
+						fieldTypes,
+						pages: componentPages,
+						paginationMode: 'wizard',
+						spritemap
+					}
+				);
+				const data = {
+					item: {
+						settingsItem: 'reset-page'
+					}
+				};
+				const {FormRenderer, sidebar} = builderComponent.refs;
+
+				FormRenderer._handleSettingsPageClicked(
+					{
+						data
+					}
+				);
 
 				jest.runAllTimers();
 
