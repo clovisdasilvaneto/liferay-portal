@@ -383,7 +383,7 @@ describe(
 				};
 				const {FormRenderer, sidebar} = builderComponent.refs;
 
-				FormRenderer._handleSettingsPageClicked(
+				FormRenderer._handlePageSettingsClicked(
 					{
 						data
 					}
