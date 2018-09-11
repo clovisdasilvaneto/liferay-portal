@@ -5,7 +5,6 @@ import {PagesVisitor} from '../../util/visitors.es';
 import Component from 'metal-jsx';
 import FormRenderer from '../../components/Form/index.es';
 import Sidebar from '../../components/Sidebar/index.es';
-import {pageStructure} from '../../util/config.es';
 
 /**
  * Builder.
@@ -41,7 +40,7 @@ class Builder extends Component {
 		 * @type {?array<object>}
 		 */
 
-		pages: Config.arrayOf(pageStructure).value([])
+		pages: Config.arrayOf(pageStructure).value([]),
 
 		/**
 		 * @instance
@@ -330,7 +329,7 @@ class Builder extends Component {
 			pageAdded: this._handlePageAdded.bind(this),
 			pageDeleted: this._handlePageDeleted.bind(this),
 			pageReset: this._handlePageReset.bind(this),
-			pagesUpdated: this._handlePagesUpdated.bind(this)
+			pagesUpdated: this._handlePagesUpdated.bind(this),
 			paginationModeUpdated: this._handlePaginationModeUpdated.bind(this)
 		};
 
