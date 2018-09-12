@@ -528,9 +528,8 @@ public class PluginPackageUtil {
 
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	private boolean _isInstalled(String context) {
@@ -540,9 +539,8 @@ public class PluginPackageUtil {
 		if (pluginPackage != null) {
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	private boolean _isTrusted(String repositoryURL)
@@ -554,9 +552,8 @@ public class PluginPackageUtil {
 			if (ArrayUtil.contains(trusted, repositoryURL)) {
 				return true;
 			}
-			else {
-				return false;
-			}
+
+			return false;
 		}
 		catch (Exception e) {
 			throw new PluginPackageException(
@@ -993,12 +990,12 @@ public class PluginPackageUtil {
 
 		String servletContextName = servletContext.getServletContextName();
 
-		if (_log.isInfoEnabled()) {
+		if (_log.isDebugEnabled()) {
 			if (servletContextName == null) {
-				_log.info("Reading plugin package for the root context");
+				_log.debug("Reading plugin package for the root context");
 			}
 			else {
-				_log.info("Reading plugin package for " + servletContextName);
+				_log.debug("Reading plugin package for " + servletContextName);
 			}
 		}
 
@@ -1260,8 +1257,8 @@ public class PluginPackageUtil {
 	}
 
 	private RepositoryReport _reloadRepositories() throws PortalException {
-		if (_log.isInfoEnabled()) {
-			_log.info("Reloading repositories");
+		if (_log.isDebugEnabled()) {
+			_log.debug("Reloading repositories");
 		}
 
 		RepositoryReport repositoryReport = new RepositoryReport();

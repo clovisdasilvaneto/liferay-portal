@@ -49,7 +49,6 @@
 		<suppress checks="PersistenceCallCheck" files="modules/apps/portal/portal-upgrade-test/src/testIntegration/java/com/liferay/portal/upgrade/test/BaseBuildAutoUpgradeTestCase\.java" />
 		<suppress checks="PlusStatementCheck" files="portal-kernel/src/com/liferay/portal/kernel/io/BigEndianCodec\.java" />
 		<suppress checks="ReferenceAnnotationCheck" files="portal-impl/test/integration/.*" />
-		<suppress checks="StaticCollectionCheck" files="portal-impl/src/com/liferay/portal/metadata/BaseRawMetadataProcessor\.java" />
 		<suppress checks="StaticVariableNameCheck" files="portal-impl/src/com/liferay/portal/language/LanguageResources\.java" />
 		<suppress checks="StaticVariableNameCheck" files="portal-impl/src/com/liferay/portal/util/PropsValues\.java" />
 		<suppress checks="StaticVariableNameCheck" files="portal-impl/test/integration/com/liferay/portal/security/pwd/bundle/pwdtoolkitutil/TestToolkit\.java" />
@@ -70,6 +69,11 @@
 		<!-- Temporary suppressions for private repos and subrepos -->
 
 		<suppress checks="ReferenceAnnotationCheck" files="modules/private/.*" />
+		<suppress checks="UnprocessedExceptionCheck" files="modules/apps/apio-architect/.*" />
+		<suppress checks="UnprocessedExceptionCheck" files="modules/apps/commerce/.*" />
+		<suppress checks="UnprocessedExceptionCheck" files="modules/private/apps/commerce/.*" />
+		<suppress checks="UnprocessedExceptionCheck" files="modules/private/apps/lcs/.*" />
+		<suppress checks="UnprocessedExceptionCheck" files="modules/test/poshi-runner/.*" />
 		<suppress checks="VariableNameCheck" files="modules/private/.*" />
 	</checkstyle>
 	<source-check>
@@ -153,6 +157,20 @@
 		<suppress checks="JavaConfigurationCategoryCheck" files="modules/apps/commerce/.*" />
 		<suppress checks="JavaConfigurationCategoryCheck" files="modules/private/.*" />
 		<suppress checks="JavaDeprecatedKernelClassesCheck" files="modules/private/.*" />
+		<suppress checks="JavaElseStatementCheck" files="modules/apps/apio-architect/.*" />
+		<suppress checks="JavaElseStatementCheck" files="modules/apps/commerce/.*" />
+		<suppress checks="JavaElseStatementCheck" files="modules/private/apps/commerce/.*" />
+		<suppress checks="JavaElseStatementCheck" files="modules/private/apps/lcs/.*" />
+		<suppress checks="JavaElseStatementCheck" files="modules/test/poshi-runner/.*" />
+		<suppress checks="JavaInnerClassImportsCheck" files="modules/apps/apio-architect/.*" />
+		<suppress checks="JavaInnerClassImportsCheck" files="modules/apps/commerce/.*" />
+		<suppress checks="JavaInnerClassImportsCheck" files="modules/private/.*" />
+		<suppress checks="JavaInnerClassImportsCheck" files="modules/test/poshi-runner/.*" />
+		<suppress checks="JSONLineBreakCheck" files="modules/apps/apio-architect/.*" />
+		<suppress checks="JSONLineBreakCheck" files="modules/apps/commerce/.*" />
+		<suppress checks="JSONLineBreakCheck" files="modules/private/apps/commerce/.*" />
+		<suppress checks="JSONLineBreakCheck" files="modules/private/apps/lcs/.*" />
+		<suppress checks="JSONLineBreakCheck" files="modules/test/poshi-runner/.*" />
 		<suppress checks="PropertiesLiferayPluginPackageLiferayVersionsCheck" files="modules/private/apio-architect/.*" />
 		<suppress checks="PropertiesLiferayPluginPackageLiferayVersionsCheck" files="modules/private/commerce/.*" />
 		<suppress checks="XMLLookAndFeelCompatibilityVersionCheck" files="modules/private/apio-architect/.*" />

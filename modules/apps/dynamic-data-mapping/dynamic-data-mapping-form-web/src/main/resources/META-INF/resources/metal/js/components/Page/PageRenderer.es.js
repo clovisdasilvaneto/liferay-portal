@@ -1,11 +1,13 @@
 import 'clay-button';
 import 'clay-modal';
+import 'clay-dropdown';
 import {Config} from 'metal-state';
 import {dom} from 'metal-dom';
 import {pageStructure} from '../../util/config.es';
 import {setLocalizedValue} from '../../util/i18n.es';
 import {sub} from '../../util/strings.es';
 import Component from 'metal-component';
+import core from 'metal';
 import FormSupport from '../Form/FormSupport.es';
 import Soy from 'metal-soy';
 import templates from './PageRenderer.soy.js';
@@ -27,8 +29,40 @@ class PageRenderer extends Component {
 		 * @type {?string}
 		 */
 
-		descriptionPlaceholder: Config.string()
-			.value(Liferay.Language.get('add-a-short-description-for-this-page')),
+		descriptionPlaceholder: Config.string().value(Liferay.Language.get('add-a-short-description-for-this-page')),
+
+		/**
+		 * @instance
+		 * @memberof FormPage
+		 * @type {?object}
+		 */
+
+		localizedTitle: Config.object().value(
+			{
+				en_US: ''
+			}
+		),
+
+		/**
+		 * @instance
+		 * @memberof FormPage
+		 * @type {?object}
+		 */
+
+		localizedDescription: Config.object().value(
+			{
+				en_US: ''
+			}
+		),
+
+		/**
+		 * @default []
+		 * @instance
+		 * @memberof FormRenderer
+		 * @type {?array<object>}
+		 */
+
+		page: pageStructure.setter('_setPage'),
 
 		/**
 		 * @default 1
@@ -38,15 +72,6 @@ class PageRenderer extends Component {
 		 */
 
 		pageId: Config.number().value(0),
-
-		/**
-		 * @default []
-		 * @instance
-		 * @memberof FormRenderer
-		 * @type {?array<object>}
-		 */
-
-		page: pageStructure,
 
 		/**
 		 * @default undefined
@@ -74,21 +99,21 @@ class PageRenderer extends Component {
 		),
 
 		/**
+		 * @instance
+		 * @memberof FormPage
+		 * @type {?string}
+		 */
+
+		titlePlaceholder: Config.string(),
+
+		/**
 		 * @default 1
 		 * @instance
 		 * @memberof FormPage
 		 * @type {?number}
 		 */
 
-		total: Config.number().value(1),
-
-		/**
-		 * @instance
-		 * @memberof FormPage
-		 * @type {?string}
-		 */
-
-		titlePlaceholder: Config.string()
+		total: Config.number().value(1)
 	}
 
 	prepareStateForRender(states) {
@@ -115,7 +140,7 @@ class PageRenderer extends Component {
 	_changePageForm({delegateTarget}, pageProperty) {
 		const {value} = delegateTarget;
 
-		const languageId = Liferay.ThemeDisplay.getLanguageId();
+		const languageId = themeDisplay.getLanguageId();
 		const page = {...this.page};
 
 		setLocalizedValue(page, languageId, pageProperty, value);
@@ -203,8 +228,8 @@ class PageRenderer extends Component {
 	 * @private
 	 */
 
-	_handleFieldChanged(data) {
-		this.emit('fieldEdited', data);
+	_handleFieldEdited(event) {
+		this.emit('fieldEdited', event);
 	}
 
 	/**
@@ -295,6 +320,22 @@ class PageRenderer extends Component {
 			);
 		}
 		return empty;
+	}
+
+	_setPage(page) {
+		if (core.isObject(page.description)) {
+			page = {
+				...page,
+				description: page.description[themeDisplay.getLanguageId()]
+			};
+		}
+		if (core.isObject(page.title)) {
+			page = {
+				...page,
+				title: page.title[themeDisplay.getLanguageId()]
+			};
+		}
+		return page;
 	}
 }
 

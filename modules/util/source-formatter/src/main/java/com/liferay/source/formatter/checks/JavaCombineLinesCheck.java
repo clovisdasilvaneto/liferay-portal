@@ -144,7 +144,7 @@ public class JavaCombineLinesCheck extends BaseFileCheck {
 
 							if (Validator.isNull(indent)) {
 								for (int i = 0; i < lineLeadingTabCount - 1;
-										i++) {
+									 i++) {
 
 									indent += StringPool.TAB;
 								}
@@ -904,12 +904,11 @@ public class JavaCombineLinesCheck extends BaseFileCheck {
 									lineNumber, previousLine, null, false, true,
 									0);
 							}
-							else {
-								return _getCombinedLinesContent(
-									content, line, trimmedLine, lineLength,
-									lineNumber, previousLine,
-									linePart + StringPool.SPACE, true, true, 0);
-							}
+
+							return _getCombinedLinesContent(
+								content, line, trimmedLine, lineLength,
+								lineNumber, previousLine,
+								linePart + StringPool.SPACE, true, true, 0);
 						}
 
 						String partAfterComma = trimmedLine.substring(x + 1);

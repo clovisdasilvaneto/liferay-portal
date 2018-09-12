@@ -1,17 +1,14 @@
 import {Config} from 'metal-state';
+import {EventHandler} from 'metal-events';
 import {pageStructure} from './util/config.es';
+import {PagesVisitor} from './util/visitors.es';
+import {isKeyInSet, isModifyingKey} from './util/dom.es';
 import Builder from './pages/builder/index.es';
 import Component from 'metal-jsx';
 import dom from 'metal-dom';
 import LayoutProvider from './components/LayoutProvider/index.es';
 import loader from './components/FieldsLoader/index.es';
 import RuleBuilder from './pages/RuleBuilder/index.es';
-import withAppComposer from './hocs/withAppComposer/index.es';
-import {EventHandler} from 'metal-events';
-
-const STR_UNTITLED_FORM = Liferay.Language.get('untitled-form');
-
-const LayoutProviderWithAppComposer = withAppComposer(LayoutProvider);
 
 /**
  * Form.
@@ -32,12 +29,13 @@ class Form extends Component {
 		context: Config.shapeOf(
 			{
 				pages: Config.arrayOf(pageStructure),
+				paginationMode: Config.string(),
 				rules: Config.array()
 			}
 		).required().setter('_setContext'),
 
 		/**
-		 * The context for rendering a layout that represents a form.
+		 * The default language id of the form.
 		 * @default undefined
 		 * @instance
 		 * @memberof Form
@@ -47,7 +45,27 @@ class Form extends Component {
 		defaultLanguageId: Config.string().value(themeDisplay.getDefaultLanguageId()),
 
 		/**
-		 * The context for rendering a layout that represents a form.
+		 * The default language id of the form.
+		 * @default undefined
+		 * @instance
+		 * @memberof Form
+		 * @type {!array}
+		 */
+
+		editingLanguageId: Config.string().value(themeDisplay.getDefaultLanguageId()),
+
+		/**
+		 * A map with all translated values available as the form description.
+		 * @default 0
+		 * @instance
+		 * @memberof Form
+		 * @type {!array}
+		 */
+
+		formInstanceId: Config.number().value(0),
+
+		/**
+		 * A map with all translated values available as the form description.
 		 * @default undefined
 		 * @instance
 		 * @memberof Form
@@ -57,7 +75,7 @@ class Form extends Component {
 		localizedDescription: Config.object().value({}),
 
 		/**
-		 * The context for rendering a layout that represents a form.
+		 * A map with all translated values available as the form name.
 		 * @default undefined
 		 * @instance
 		 * @memberof Form
@@ -101,36 +119,278 @@ class Form extends Component {
 
 		/**
 		 * The represent the current active screen mode where 0 => FormBuilder and 1 => RuleBuilder
-		 * @default undefined
+		 * @default 0
+		 * @instance
+		 * @memberof Form
+		 * @type {!number}
+		 */
+
+		activeFormMode: Config.number().value(0),
+
+		/**
+		 * The represent the current active screen mode where 0 => FormBuilder and 1 => RuleBuilder
+		 * @default _pagesValueFn
 		 * @instance
 		 * @memberof Form
 		 * @type {!array}
 		 */
 
-		activeFormMode: Config.number().value(0),
+		pages: Config.arrayOf(pageStructure).valueFn('_pagesValueFn'),
+
+		/**
+		 * @default _paginationModeValueFn
+		 * @instance
+		 * @memberof Form
+		 * @type {!array}
+		 */
+
+		paginationMode: Config.string().valueFn('_paginationModeValueFn'),
+
+		/**
+		 * The represent the current active screen mode where 0 => FormBuilder and 1 => RuleBuilder
+		 * @default 'save-form'
+		 * @instance
+		 * @memberof Form
+		 * @type {!string}
+		 */
 
 		saveButtonLabel: Config.string().value(Liferay.Language.get('save-form'))
 	}
 
-	_getFormContext(pages) {
-		return {...this.props.context, pages};
+	checkEditorLimit(event, limit) {
+		const charCode = (event.which) ? event.which : event.keyCode;
+
+		if (this.isForbiddenKey(event, limit) && (charCode != 91)) {
+			event.preventDefault();
+		}
 	}
 
-	_setContext(context) {
-		if (!context.pages.length) {
-			context = {
-				...context,
-				pages: [
-					{
-						description: '',
-						rows: [],
-						title: ''
-					}
-				]
-			};
+	/**
+	 * @inheritDoc
+	 */
+
+	created() {
+		this._eventHandler = new EventHandler();
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+
+	attached() {
+		this._eventHandler.add(
+			dom.on('#addFieldButton', 'click', this._handleAddFieldButtonClicked.bind(this)),
+			dom.on('.forms-management-bar li', 'click', this._handleFormNavClicked.bind(this))
+		);
+
+		this._createEditor('nameEditor').then(
+			editor => {
+				this._eventHandler.add(
+					dom.on(editor.element.$, 'keydown', this._handleTitleEditorKeydown.bind(this)),
+					dom.on(editor.element.$, 'keyup', this._handleTitleEditorCopyAndPaste.bind(this)),
+					dom.on(editor.element.$, 'keypress', this._handleTitleEditorCopyAndPaste.bind(this)),
+					editor.on('change', this._handleNameEditorChanged.bind(this))
+				);
+			}
+		);
+		this._createEditor('descriptionEditor').then(editor => editor.on('change', this._handleDescriptionEditorChanged.bind(this)));
+	}
+
+	getState() {
+		const {
+			defaultLanguageId,
+			localizedDescription,
+			namespace
+		} = this.props;
+		const {pages, paginationMode} = this.state;
+
+		const translationManager = Liferay.component(`${namespace}translationManager`);
+
+		return {
+			availableLanguageIds: translationManager && translationManager.get('availableLocales'),
+			defaultLanguageId,
+			description: localizedDescription,
+			name: this._getLocalizedName(),
+			pages,
+			paginationMode,
+			rules: [],
+			successPageSettings: {
+				body: {},
+				enabled: false,
+				title: {}
+			}
+		};
+	}
+
+	isForbiddenKey(event, limit) {
+		const charCode = event.which ? event.which : event.keyCode;
+		let forbidden = false;
+
+		if (
+			event.target.innerText.length >= limit &&
+			isModifyingKey(charCode) &&
+			!isKeyInSet(charCode, ['BACKSPACE', 'DELETE', 'ESC', 'ENTER'])
+		) {
+			forbidden = true;
+		}
+		return forbidden;
+	}
+
+	preventCopyAndPaste(event, limit) {
+		const {target} = event;
+
+		if (this.isForbiddenKey(event, limit)) {
+			target.innerText = target.innerText.substr(0, limit);
+
+			const range = document.createRange();
+			const sel = window.getSelection();
+
+			range.setStart(target.childNodes[0], target.textContent.length);
+			range.collapse(true);
+
+			sel.removeAllRanges();
+			sel.addRange(range);
+		}
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+
+	render() {
+		const {
+			context,
+			namespace,
+			spritemap
+		} = this.props;
+
+		const {
+			saveButtonLabel
+		} = this.state;
+
+		const layoutProviderProps = {
+			...this.props,
+			events: {
+				pagesChanged: this._handlePagesChanged.bind(this),
+				paginationModeChanged: this._handlePaginationModeChanded.bind(this)
+
+			},
+			initialPages: context.pages,
+			initialPaginationMode: context.paginationMode
+
+		};
+
+		let currentBuilder = <Builder namespace={this.props.namespace} ref="builder" />;
+
+		if (parseInt(this.state.activeFormMode, 10)) {
+			currentBuilder = <RuleBuilder pages={context.pages} rules={this.props.rules} spritemap={spritemap} />;
 		}
 
-		return context;
+		const settingsDDMForm = Liferay.component('settingsDDMForm');
+
+		return (
+			<div>
+				<input name={`${namespace}description`} ref="descriptionInput" type="hidden" value={JSON.stringify(this._getLocalizedDescription())} />
+				<input name={`${namespace}name`} ref="nameInput" type="hidden" value={JSON.stringify(this._getLocalizedName())} />
+				<input name={`${namespace}serializedFormBuilderContext`} ref="serializedFormBuilderContextInput" type="hidden" value={this._getSerializedFormBuilderContext()} />
+				<input name={`${namespace}serializedSettingsContext`} ref="serializedSettingsContextInput" type="hidden" value={settingsDDMForm && JSON.stringify(settingsDDMForm.get('context'))} />
+
+				<LayoutProvider {...layoutProviderProps}>
+					{currentBuilder}
+				</LayoutProvider>
+
+				<div class="container-fluid-1280">
+					<div class="button-holder ddm-form-builder-buttons">
+						<button class="btn btn-primary ddm-button btn-default" ref="publishButton" type="button">
+							{Liferay.Language.get('publish-button')}
+						</button>
+						<button class="btn ddm-button btn-default" data-onclick="_handleSaveButtonClicked" ref="saveButton">
+							{saveButtonLabel}
+						</button>
+						<button class="btn ddm-button btn-link" ref="previewButton" type="button">
+							{Liferay.Language.get('preview-form')}
+						</button>
+					</div>
+				</div>
+			</div>
+		);
+	}
+
+	submitForm() {
+		const {namespace} = this.props;
+
+		this.refs.nameInput.value = JSON.stringify(this._getLocalizedName());
+
+		this.syncInputValues();
+
+		submitForm(document.querySelector(`#${namespace}editForm`));
+	}
+
+	syncInputValues() {
+		const state = this.getState();
+		const {
+			description,
+			name
+		} = state;
+
+		const settingsDDMForm = Liferay.component('settingsDDMForm');
+
+		this.refs.descriptionInput.value = JSON.stringify(description);
+		this.refs.nameInput.value = JSON.stringify(name);
+		this.refs.serializedFormBuilderContextInput.value = this._getSerializedFormBuilderContext();
+		this.refs.serializedSettingsContextInput.value = JSON.stringify(settingsDDMForm.toJSON());
+	}
+
+	_paginationModeValueFn() {
+		const {context} = this.props;
+
+		return context.paginationMode;
+	}
+
+	_createEditor(name) {
+		const {namespace} = this.props;
+
+		const editorName = `${namespace}${name}`;
+
+		const editor = window[editorName];
+
+		let promise;
+
+		if (editor) {
+			editor.create();
+
+			promise = Promise.resolve(CKEDITOR.instances[editorName]);
+		}
+		else {
+			promise = new Promise(
+				resolve => {
+					Liferay.on(
+						'editorAPIReady',
+						event => {
+							if (event.editorName === editorName) {
+								event.editor.create();
+
+								resolve(CKEDITOR.instances[editorName]);
+							}
+						}
+					);
+				}
+			);
+		}
+
+		return promise;
+	}
+
+	_getDescriptionEditor() {
+		const {namespace} = this.props;
+
+		return window[`${namespace}descriptionEditor`];
+	}
+
+	_getLocalizedDescription() {
+		const {localizedDescription} = this.props;
+
+		return localizedDescription;
 	}
 
 	_getLocalizedName() {
@@ -140,42 +400,37 @@ class Form extends Component {
 		} = this.props;
 
 		if (!localizedName[defaultLanguageId].trim()) {
-			localizedName[defaultLanguageId] = STR_UNTITLED_FORM;
+			localizedName[defaultLanguageId] = Liferay.Language.get('untitled-form');
 		}
 
 		return localizedName;
 	}
 
+	_getNameEditor() {
+		const {namespace} = this.props;
+
+		return window[`${namespace}nameEditor`];
+	}
+
 	_getSerializedFormBuilderContext() {
-		return JSON.stringify(this.getState());
-	}
+		const state = this.getState();
 
-	/*
-	 * Handles "pagesChanged" event. Updates hidden input with serialized From Builder context.
-	 * @param {!Event} event
-	 * @private
-	 */
+		const visitor = new PagesVisitor(state.pages);
 
-	_handlePagesChanged(event) {
-		this.refs.serializedFormBuilderContextInput.value = JSON.stringify(this._getFormContext(event.newVal));
-	}
-
-	/**
-	 * Handles click on save button. Saves Form when clicked.
-	 * @param {!Event} event
-	 * @private
-	 */
-
-	_handleSaveButtonClicked(event) {
-		event.preventDefault();
-
-		this.setState(
+		return JSON.stringify(
 			{
-				saveButtonLabel: Liferay.Language.get('saving')
+				...state,
+				pages: visitor.mapPages(
+					page => {
+						return {
+							...page,
+							description: page.localizedDescription,
+							title: page.localizedTitle
+						};
+					}
+				)
 			}
 		);
-
-		this.submitForm();
 	}
 
 	/**
@@ -184,24 +439,26 @@ class Form extends Component {
 	 */
 
 	_handleAddFieldButtonClicked() {
-		const {builder} = this.refs;
-
-		if (builder) {
-			const {sidebar} = builder.refs;
-
-			sidebar.props.mode = 'add';
-			sidebar.show();
-		}
+		this._openSidebar();
 	}
 
-	created() {
-		this._eventHandler = new EventHandler();
+	_handleDescriptionEditorChanged(event) {
+		const {editingLanguageId, localizedDescription} = this.props;
+		const descriptionEditor = this._getDescriptionEditor();
+
+		localizedDescription[editingLanguageId] = descriptionEditor.getHTML();
 	}
 
-	attached() {
-		this._eventHandler.add(
-			dom.on('#addFieldButton', 'click', this._handleAddFieldButtonClicked.bind(this)),
-			dom.on('.forms-management-bar li', 'click', this._handleFormNavClicked.bind(this))
+	/**
+	 * @param newVal
+	 * Handles "paginationModeChanged" event. Updates the page mode to use it when form builder is saved.
+	 */
+
+	_handlePaginationModeChanded({newVal}) {
+		this.setState(
+			{
+				paginationMode: newVal
+			}
 		);
 	}
 
@@ -231,99 +488,106 @@ class Form extends Component {
 		}
 	}
 
-	getState() {
-		const {
-			context,
-			defaultLanguageId,
-			localizedDescription,
-			namespace
-		} = this.props;
-		const translationManager = Liferay.component(`${namespace}translationManager`);
+	_handleNameEditorChanged(event) {
+		const {editingLanguageId, localizedName} = this.props;
+		const nameEditor = this._getNameEditor();
 
-		return {
-			availableLanguageIds: translationManager && translationManager.get('availableLocales'),
-			defaultLanguageId,
-			description: localizedDescription,
-			name: this._getLocalizedName(),
-			pages: context.pages
-		};
+		localizedName[editingLanguageId] = nameEditor.getHTML();
 	}
 
-	submitForm() {
-		const {namespace} = this.props;
+	/*
+	 * Handles "pagesChanged" event. Updates hidden input with serialized From Builder context.
+	 * @param {!Event} event
+	 * @private
+	 */
 
-		this.syncInputValues();
-
-		submitForm(document.querySelector(`#${namespace}editForm`));
-	}
-
-	syncInputValues() {
-		const state = this.getState();
-		const {
-			description,
-			name
-		} = state;
-
-		this.refs.descriptionInput.value = JSON.stringify(description);
-		this.refs.nameInput.value = JSON.stringify(name);
-		this.refs.serializedFormBuilderContextInput.value = this._getSerializedFormBuilderContext();
+	_handlePagesChanged(event) {
+		this.setState(
+			{
+				pages: event.newVal
+			}
+		);
 	}
 
 	/**
-	 * @inheritDoc
+	 * Handles click on save button. Saves Form when clicked.
+	 * @param {!Event} event
+	 * @private
 	 */
 
-	render() {
-		const {
-			context,
-			namespace,
-			spritemap
-		} = this.props;
+	_handleSaveButtonClicked(event) {
+		event.preventDefault();
 
-		const {
-			saveButtonLabel
-		} = this.state;
+		this.setState(
+			{
+				saveButtonLabel: Liferay.Language.get('saving')
+			}
+		);
 
-		const events = {
-			pagesChanged: this._handlePagesChanged.bind(this)
-		};
+		this.submitForm();
+	}
 
-		const layoutProviderProps = {
-			...this.props,
-			pages: context.pages
-		};
+	_handleTitleEditorCopyAndPaste(event) {
+		return this.preventCopyAndPaste(event, 120);
+	}
 
-		let mode = <Builder events={events} namespace={this.props.namespace} ref="builder" />;
-		if (parseInt(this.state.activeFormMode, 10)) {
-			mode = <RuleBuilder pages={context.pages} rules={this.props.rules} spritemap={spritemap} />;
+	_handleTitleEditorKeydown(event) {
+		return this.checkEditorLimit(event, 120);
+	}
+
+	_openSidebar() {
+		const {builder} = this.refs;
+
+		if (builder) {
+			const {sidebar} = builder.refs;
+
+			sidebar.open();
+		}
+	}
+
+	_pagesValueFn() {
+		const {context} = this.props;
+
+		return context.pages;
+	}
+
+	/*
+	 * Returns the map with all translated names or a map with just "Intitled Form" in case
+	 * there are no translations available.
+	 * @private
+	 */
+
+	_setContext(context) {
+		if (!context.pages.length) {
+			context = {
+				...context,
+				pages: [
+					{
+						description: '',
+						localizedDescription: {
+							[themeDisplay.getLanguageId()]: ''
+						},
+						localizedTitle: {
+							[themeDisplay.getLanguageId()]: ''
+						},
+						rows: [
+							{
+								columns: [
+									{
+										fields: [],
+										size: 12
+									}
+								]
+							}
+						],
+						title: ''
+					}
+				],
+				paginationMode: 'wizard'
+			};
 		}
 
-		return (
-			<div>
-				<input name={`${namespace}description`} ref="descriptionInput" type="hidden" />
-				<input name={`${namespace}name`} ref="nameInput" type="hidden" />
-				<input name={`${namespace}serializedFormBuilderContext`} ref="serializedFormBuilderContextInput" type="hidden" value={this._getSerializedFormBuilderContext()} />
-				<input name={`${namespace}serializedSettingsContext`} ref="serializedSettingsContextInput" type="hidden" />
-
-				<LayoutProviderWithAppComposer {...layoutProviderProps}>
-					{mode}
-				</LayoutProviderWithAppComposer>
-
-				<div class="container-fluid-1280">
-					<div class="button-holder ddm-form-builder-buttons">
-						<button class="btn btn-primary ddm-button btn-default" ref="publishButton" type="button">
-							{Liferay.Language.get('publish-button')}
-						</button>
-						<button class="btn ddm-button btn-default" data-onclick="_handleSaveButtonClicked" ref="saveButton">
-							{saveButtonLabel}
-						</button>
-						<button class="btn ddm-button btn-link" ref="previewButton" type="button">
-							{Liferay.Language.get('preview-form')}
-						</button>
-					</div>
-				</div>
-			</div>
-		);
+		return context;
 	}
 }
 

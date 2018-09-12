@@ -88,7 +88,7 @@ renderResponse.setTitle((formInstance == null) ? LanguageUtil.get(request, "new-
 			<div class="container-fluid-1280">
 				<h1>
 					<liferay-ui:input-editor
-						autoCreate="<%= true %>"
+						autoCreate="<%= false %>"
 						contents="<%= HtmlUtil.escape(HtmlUtil.unescape(ddmFormAdminDisplayContext.getFormName())) %>"
 						cssClass="ddm-form-name"
 						editorName="alloyeditor"
@@ -100,7 +100,7 @@ renderResponse.setTitle((formInstance == null) ? LanguageUtil.get(request, "new-
 
 				<h5>
 					<liferay-ui:input-editor
-						autoCreate="<%= true %>"
+						autoCreate="<%= false %>"
 						contents="<%= HtmlUtil.escape(HtmlUtil.unescape(ddmFormAdminDisplayContext.getFormDescription())) %>"
 						cssClass="ddm-form-description h5"
 						editorName="alloyeditor"
@@ -125,161 +125,59 @@ renderResponse.setTitle((formInstance == null) ? LanguageUtil.get(request, "new-
 	</div>
 </div>
 
-<aui:script require="<%= mainRequire %>">
-	const spritemap = '<%= themeDisplay.getPathThemeImages() %>/clay/icons.svg';
+<aui:script>
+	var rawModuleName = '<%= mainRequire %>'.split(' ')[0];
 
-	const fieldsList = [
-		{
-			icon: 'calendar',
-			name: '<%= LanguageUtil.get(request, "date") %>',
-			type: 'date'
+	Liferay.Forms.App = {
+		dispose: function() {
+			if (Liferay.Forms.instance) {
+				Liferay.Forms.instance.dispose();
+				Liferay.Forms.instance = null;
+			}
 		},
-		{
-			icon: 'text',
-			name: '<%= LanguageUtil.get(request, "text-field") %>',
-			type: 'text'
-		},
-		{
-			icon: 'radio-button',
-			name: '<%= LanguageUtil.get(request, "radio-field-type-label") %>',
-			type: 'radio'
-		},
-		{
-			icon: 'list',
-			name: '<%= LanguageUtil.get(request, "select-field-type-label") %>',
-			type: 'select'
-		},
-		{
-			icon: 'grid',
-			name: '<%= LanguageUtil.get(request, "grid-field-type-label") %>',
-			type: 'grid'
-		},
-		{
-			icon: 'select-from-list',
-			name: '<%= LanguageUtil.get(request, "checkbox-field-type-label") %>',
-			type: 'checkbox'
-		}
-	];
+		reset: function() {
+			var pages;
 
-	const fieldContext = [
-		{
-			rows: [
-				{
-					columns: [
+			if (Liferay.Forms.instance) {
+				pages = Liferay.Forms.instance.state.pages;
+			}
+			this.dispose();
+			this.start(pages);
+		},
+		start: function(sessionPages) {
+			Liferay.Loader.require(
+				rawModuleName,
+				function(packageName) {
+					var context = <%= serializedFormBuilderContext %>;
+
+					if (context.pages.length === 0 && sessionPages) {
+						context.pages = sessionPages;
+					}
+					packageName.DDMForm(
 						{
-							fields: [
-								{
-									key: 'label',
-									label: '<%= LanguageUtil.get(request, "label") %>',
-									required: false,
-									spritemap: spritemap,
-									type: 'text'
-								}
-							],
-							size: 12
+							context: context,
+							defaultLanguageId: '<%= ddmFormAdminDisplayContext.getDefaultLanguageId() %>',
+							dependencies: ['dynamic-data-mapping-form-field-type/metal'],
+							fieldTypes: <%= ddmFormAdminDisplayContext.getDDMFormFieldTypesJSONArray() %>,
+							formInstanceId: <%= formInstanceId %>,
+							localizedDescription: <%= ddmFormAdminDisplayContext.getFormLocalizedDescription() %>,
+							localizedName: <%= ddmFormAdminDisplayContext.getFormLocalizedName() %>,
+							modules: Liferay.MODULES,
+							namespace: '<portlet:namespace />',
+							rules: <%= serializedDDMFormRules %>,
+							spritemap: '<%= themeDisplay.getPathThemeImages() %>/clay/icons.svg'
+						},
+						'#<portlet:namespace />-container',
+						function(ddmForm) {
+							Liferay.Forms.instance = ddmForm;
 						}
-					]
+					);
 				},
-				{
-					columns: [
-						{
-							fields: [
-								{
-									key: 'helpText',
-									label: '<%= LanguageUtil.get(request, "help-text") %>',
-									required: false,
-									spritemap: spritemap,
-									type: 'text'
-								}
-							],
-							size: 12
-						}
-					]
-				},
-				{
-					columns: [
-						{
-							fields: [
-								{
-									items: [
-										{label: '￿0￿'}
-									],
-									key: 'required',
-									required: false,
-									showAsSwitcher: true,
-									spritemap: spritemap,
-									type: 'checkbox'
-								}
-							],
-							size: 12
-						}
-					]
-				},
-				{
-					columns: [
-						{
-							fields: [
-								{
-									items: [
-										{
-											disabled: false,
-											label: '<%= LanguageUtil.get(request, "option") %>'
-										}
-									],
-									key: 'items',
-									label: '<%= LanguageUtil.get(request, "options") %>',
-									placeholder: '<%= LanguageUtil.get(request, "enter-an-option") %>',
-									required: true,
-									spritemap: spritemap,
-									type: 'options'
-								}
-							],
-							size: 12
-						}
-					]
+				function(error) {
 				}
-			]
-		},
-		{
-			rows: [
-				{
-					columns: [
-						{
-							fields: [
-								{
-									key: 'value',
-									label: '<%= LanguageUtil.get(request, "predefined-value") %>',
-									required: false,
-									spritemap: spritemap,
-									type: 'select'
-								}
-							],
-							size: 12
-						}
-					]
-				}
-			]
+			);
 		}
-	];
+	};
 
-	const serializedFormBuilderContext = <%= serializedFormBuilderContext %>;
-
-	main.DDMForm(
-		{
-			context: serializedFormBuilderContext,
-			defaultLanguageId: '<%= ddmFormAdminDisplayContext.getDefaultLanguageId() %>',
-			dependencies: ['dynamic-data-mapping-form-field-type/metal'],
-			fieldContext,
-			fieldsList,
-			localizedDescription: <%= ddmFormAdminDisplayContext.getFormLocalizedDescription() %>,
-			localizedName: <%= ddmFormAdminDisplayContext.getFormLocalizedName() %>,
-			modules: Liferay.MODULES,
-			namespace: '<portlet:namespace />',
-			rules: <%= serializedDDMFormRules %>,
-			spritemap
-		},
-		'#<portlet:namespace />-container',
-		function() {
-		}
-	);
+	Liferay.Forms.App.start();
 </aui:script>

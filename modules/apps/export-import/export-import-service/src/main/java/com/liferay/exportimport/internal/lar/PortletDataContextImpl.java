@@ -1530,9 +1530,8 @@ public class PortletDataContextImpl implements PortletDataContext {
 		if (_startDate != null) {
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	@Override
@@ -1800,9 +1799,8 @@ public class PortletDataContextImpl implements PortletDataContext {
 
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	@Override
@@ -1812,9 +1810,8 @@ public class PortletDataContextImpl implements PortletDataContext {
 
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	@Override
@@ -1954,9 +1951,8 @@ public class PortletDataContextImpl implements PortletDataContext {
 
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	@Override
@@ -2275,8 +2271,13 @@ public class PortletDataContextImpl implements PortletDataContext {
 
 		// Permissions
 
+		String xml = getZipEntryAsString(
+			ExportImportPathUtil.getSourceRootPath(this) +
+				"/portlet-data-permissions.xml");
+
 		if (!MapUtil.getBoolean(
-				_parameterMap, PortletDataHandlerKeys.PERMISSIONS)) {
+				_parameterMap, PortletDataHandlerKeys.PERMISSIONS) ||
+			Validator.isNull(xml)) {
 
 			serviceContext.setAddGroupPermissions(true);
 			serviceContext.setAddGuestPermissions(true);
