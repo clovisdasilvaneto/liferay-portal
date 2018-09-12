@@ -366,6 +366,8 @@ describe(
 		it(
 			'should not open sidebar when the delete current page option item is clicked',
 			() => {
+				const spy = jest.spyOn(component, 'openSidebar');
+
 				const componentPages = [...pages, ...pages];
 
 				const builderComponent = new Builder(
@@ -381,7 +383,7 @@ describe(
 						settingsItem: 'reset-page'
 					}
 				};
-				const {FormRenderer, sidebar} = builderComponent.refs;
+				const {FormRenderer} = builderComponent.refs;
 
 				FormRenderer._handlePageSettingsClicked(
 					{
