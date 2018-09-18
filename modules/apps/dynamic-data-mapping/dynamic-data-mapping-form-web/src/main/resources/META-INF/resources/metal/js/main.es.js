@@ -11,9 +11,10 @@ import Component from 'metal-jsx';
 import dom from 'metal-dom';
 import LayoutProvider from './components/LayoutProvider/index.es';
 import loader from './components/FieldsLoader/index.es';
-import PublishButton from './components/PublishButton/PublishButton.es';
 import PreviewButton from './components/PreviewButton/PreviewButton.es';
+import PublishButton from './components/PublishButton/PublishButton.es';
 import RuleBuilder from './pages/RuleBuilder/index.es';
+import ShareFormPopover from './components/ShareFormPopover/ShareFormPopover.es';
 import StateSyncronizer from './util/StateSyncronizer.es';
 
 /**
@@ -469,6 +470,11 @@ class Form extends Component {
 				<div class="container-fluid-1280">
 					<div class="button-holder ddm-form-builder-buttons">
 						<PublishButton
+							events={
+								{
+									publishedChanged: this._handlePublishedChanged
+								}
+							}
 							formInstanceId={formInstanceId}
 							namespace={namespace}
 							published={published}
@@ -510,6 +516,9 @@ class Form extends Component {
 						title={strings['leave-form']}
 					/>
 				</div>
+				<ShareFormPopover
+					url={'test'}
+				/>
 			</div>
 		);
 	}
@@ -573,6 +582,20 @@ class Form extends Component {
 				paginationMode: newVal
 			}
 		);
+	}
+
+	@autobind
+	_handlePublishedChanged({newVal}) {
+		const shareFormIcon = document.querySelector('.share-form-icon');
+
+		this.props.published = newVal;
+
+		if (newVal) {
+			shareFormIcon.classList.remove('hide');
+		}
+		else {
+			shareFormIcon.classList.add('hide');
+		}
 	}
 
 	_handleFormNavClicked(event) {

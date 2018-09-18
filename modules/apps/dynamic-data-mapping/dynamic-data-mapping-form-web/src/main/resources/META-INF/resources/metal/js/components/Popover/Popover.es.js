@@ -1,7 +1,7 @@
 import {Align} from 'metal-position';
 import Component, {Config} from 'metal-jsx';
 import getCN from 'classnames';
-import PopoverBase from 'shared/components/PopoverBase';
+import PopoverBase from './PopoverBase.es';
 
 const POSITIONS = ['top', 'left', 'right', 'bottom'];
 
@@ -14,13 +14,14 @@ const getAlignPosition = (source, target, suggestedPosition) => {
 	return POSITIONS[position];
 };
 
-const CLASSNAME = 'analytics-popover';
+const CLASSNAME = 'ddm-forms-popover';
 
 class Popover extends Component {
 	static PROPS = {
 		alignElement: Config.object(),
 		content: Config.string(),
-		isDescription: Config.bool(),
+		placement: Config.number(),
+		secondary: Config.bool(),
 		title: Config.string()
 	};
 
@@ -43,33 +44,49 @@ class Popover extends Component {
 		element.style.visibility = 'visible';
 		element.style.display = 'none';
 
-		this.state.width = width;
+		this.setState(
+			{
+				width
+			}
+		);
 	}
 
 	render() {
 		const {
 			alignElement,
 			content,
+			placement,
+			secondary,
 			title,
-			visible,
-			isDescription
+			visible
 		} = this.props;
 		const {position, width} = this.state;
 		const withoutContent = !content || content === title;
-		const classes = getCN(CLASSNAME, {
-			'no-content': withoutContent,
-			'popover-large': width > 600
-		});
+
+		const classes = getCN(
+			CLASSNAME,
+			{
+				'no-content': withoutContent,
+				'popover-large': width > 600
+			}
+		);
 
 		return (
 			<PopoverBase
 				elementClasses={classes}
 				events={{
 					stateSynced: () => {
-						if (!visible) return;
-						this.state.position = getAlignPosition(
-							this.refs.popover.element,
-							alignElement
+						if (!visible) {
+							return;
+						}
+						this.setState(
+							{
+								position: getAlignPosition(
+									this.refs.popover.element,
+									alignElement,
+									placement
+								)
+							}
 						);
 					}
 				}}
@@ -77,7 +94,7 @@ class Popover extends Component {
 				ref="popover"
 				visible={visible}
 			>
-				{isDescription && withoutContent ? (
+				{secondary && withoutContent ? (
 					<PopoverBase.Body>
 						<span class="text-secondary">{title}</span>
 					</PopoverBase.Body>
@@ -87,10 +104,10 @@ class Popover extends Component {
 
 				{content &&
 					content !== title && (
-						<PopoverBase.Body>
-							<span class="text-secondary">{content}</span>
-						</PopoverBase.Body>
-					)}
+					<PopoverBase.Body>
+						<span class="text-secondary">{content}</span>
+					</PopoverBase.Body>
+				)}
 			</PopoverBase>
 		);
 	}
