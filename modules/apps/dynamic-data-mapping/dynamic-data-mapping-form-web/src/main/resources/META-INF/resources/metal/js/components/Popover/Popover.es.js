@@ -11,17 +11,17 @@ const getAlignPosition = (source, target, suggestedPosition) => {
 	}
 
 	const position = Align.align(source, target, suggestedPosition);
+
 	return POSITIONS[position];
 };
 
-const CLASSNAME = 'ddm-forms-popover';
+const CLASSNAME = 'ddm-share-url-popover';
 
 class Popover extends Component {
 	static PROPS = {
 		alignElement: Config.object(),
 		content: Config.string(),
 		placement: Config.number(),
-		secondary: Config.bool(),
 		title: Config.string()
 	};
 
@@ -36,6 +36,7 @@ class Popover extends Component {
 
 	setPopoverWidth() {
 		const {element} = this;
+
 		element.style.visibility = 'hidden';
 		element.style.display = 'block';
 
@@ -54,19 +55,17 @@ class Popover extends Component {
 	render() {
 		const {
 			alignElement,
+			children,
 			content,
 			placement,
-			secondary,
 			title,
 			visible
 		} = this.props;
 		const {position, width} = this.state;
-		const withoutContent = !content || content === title;
 
 		const classes = getCN(
 			CLASSNAME,
 			{
-				'no-content': withoutContent,
 				'popover-large': width > 600
 			}
 		);
@@ -94,20 +93,17 @@ class Popover extends Component {
 				ref="popover"
 				visible={visible}
 			>
-				{secondary && withoutContent ? (
-					<PopoverBase.Body>
-						<span class="text-secondary">{title}</span>
-					</PopoverBase.Body>
-				) : (
+				{title && (
 					<PopoverBase.Header>{title}</PopoverBase.Header>
 				)}
 
-				{content &&
-					content !== title && (
-					<PopoverBase.Body>
+				<PopoverBase.Body>
+					{content && (
 						<span class="text-secondary">{content}</span>
-					</PopoverBase.Body>
-				)}
+					)}
+
+					{children.length && children}
+				</PopoverBase.Body>
 			</PopoverBase>
 		);
 	}

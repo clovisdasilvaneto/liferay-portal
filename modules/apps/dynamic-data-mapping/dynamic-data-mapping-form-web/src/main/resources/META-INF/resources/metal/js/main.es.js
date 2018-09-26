@@ -311,9 +311,7 @@ class Form extends Component {
 
 		const settingsDDMForm = Liferay.component('settingsDDMForm');
 
-		const requireAuthenticationField = settingsDDMForm.getField('requireAuthentication');
-
-		if (requireAuthenticationField.getValue()) {
+		if (settingsDDMForm && settingsDDMForm.getField('requireAuthentication').getValue()) {
 			formURL = Liferay.DDM.FormSettings.restrictedFormURL;
 		}
 		else {
@@ -517,7 +515,8 @@ class Form extends Component {
 					/>
 				</div>
 				<ShareFormPopover
-					url={'test'}
+					spritemap={spritemap}
+					url={this._createFormURL()}
 				/>
 			</div>
 		);
