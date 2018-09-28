@@ -200,7 +200,7 @@ exports[`Builder should render the default markup 1`] = `
             <li class="tbar-item">
               <a class="component-action" href="#1" ref="close" role="button">
                 <svg aria-hidden="true" class="lexicon-icon lexicon-icon-times">
-                  <use xlinkHref="icons.svg#times"></use>
+                  <use xlink:href="icons.svg#times"></use>
                 </svg>
               </a>
             </li>
@@ -482,7 +482,7 @@ exports[`Builder should show modal when trash button gets clicked 1`] = `
             <li class="tbar-item">
               <a class="component-action" href="#1" ref="close" role="button">
                 <svg aria-hidden="true" class="lexicon-icon lexicon-icon-times">
-                  <use xlinkHref="icons.svg#times"></use>
+                  <use xlink:href="icons.svg#times"></use>
                 </svg>
               </a>
             </li>
