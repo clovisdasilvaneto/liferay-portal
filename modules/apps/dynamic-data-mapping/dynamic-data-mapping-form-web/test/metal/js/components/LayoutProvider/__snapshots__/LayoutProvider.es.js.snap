@@ -11,7 +11,45 @@ Array [
               Object {
                 "label": "Radio",
                 "settingsContext": Object {
-                  "pages": Array [],
+                  "pages": Array [
+                    Object {
+                      "rows": Array [
+                        Object {
+                          "columns": Array [
+                            Object {
+                              "fields": Array [
+                                Object {
+                                  "fieldName": "label",
+                                  "localizable": true,
+                                  "settingsContext": Object {
+                                    "pages": Array [
+                                      Object {
+                                        "rows": Array [
+                                          Object {
+                                            "columns": Array [],
+                                          },
+                                        ],
+                                      },
+                                    ],
+                                  },
+                                },
+                                Object {
+                                  "fieldName": "name",
+                                },
+                                Object {
+                                  "fieldName": "required",
+                                },
+                                Object {
+                                  "fieldName": "type",
+                                },
+                              ],
+                              "size": 12,
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
                 },
                 "type": "radio",
               },
@@ -102,7 +140,45 @@ Array [
               Object {
                 "label": "Radio",
                 "settingsContext": Object {
-                  "pages": Array [],
+                  "pages": Array [
+                    Object {
+                      "rows": Array [
+                        Object {
+                          "columns": Array [
+                            Object {
+                              "fields": Array [
+                                Object {
+                                  "fieldName": "label",
+                                  "localizable": true,
+                                  "settingsContext": Object {
+                                    "pages": Array [
+                                      Object {
+                                        "rows": Array [
+                                          Object {
+                                            "columns": Array [],
+                                          },
+                                        ],
+                                      },
+                                    ],
+                                  },
+                                },
+                                Object {
+                                  "fieldName": "name",
+                                },
+                                Object {
+                                  "fieldName": "required",
+                                },
+                                Object {
+                                  "fieldName": "type",
+                                },
+                              ],
+                              "size": 12,
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
                 },
                 "type": "radio",
               },
@@ -184,7 +260,46 @@ Array [
                 "label": "Radio",
                 "name": "name0000",
                 "settingsContext": Object {
-                  "pages": Array [],
+                  "pages": Array [
+                    Object {
+                      "rows": Array [
+                        Object {
+                          "columns": Array [
+                            Object {
+                              "fields": Array [
+                                Object {
+                                  "fieldName": "label",
+                                  "localizable": true,
+                                  "settingsContext": Object {
+                                    "pages": Array [
+                                      Object {
+                                        "rows": Array [
+                                          Object {
+                                            "columns": Array [],
+                                          },
+                                        ],
+                                      },
+                                    ],
+                                  },
+                                },
+                                Object {
+                                  "fieldName": "name",
+                                  "value": "Liferay",
+                                },
+                                Object {
+                                  "fieldName": "required",
+                                },
+                                Object {
+                                  "fieldName": "type",
+                                },
+                              ],
+                              "size": 12,
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
                 },
                 "type": "radio",
               },
@@ -206,7 +321,47 @@ Array [
                 "label": "copy-of-x",
                 "name": "name0010",
                 "settingsContext": Object {
-                  "pages": Array [],
+                  "pages": Array [
+                    Object {
+                      "rows": Array [
+                        Object {
+                          "columns": Array [
+                            Object {
+                              "fields": Array [
+                                Object {
+                                  "fieldName": "label",
+                                  "localizable": true,
+                                  "settingsContext": Object {
+                                    "pages": Array [
+                                      Object {
+                                        "rows": Array [
+                                          Object {
+                                            "columns": Array [],
+                                          },
+                                        ],
+                                      },
+                                    ],
+                                  },
+                                  "value": "copy-of-x",
+                                },
+                                Object {
+                                  "fieldName": "name",
+                                  "value": "Liferay",
+                                },
+                                Object {
+                                  "fieldName": "required",
+                                },
+                                Object {
+                                  "fieldName": "type",
+                                },
+                              ],
+                              "size": 12,
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
                 },
                 "type": "radio",
               },
@@ -300,7 +455,45 @@ Array [
                 "pageIndex": 0,
                 "rowIndex": 0,
                 "settingsContext": Object {
-                  "pages": Array [],
+                  "pages": Array [
+                    Object {
+                      "rows": Array [
+                        Object {
+                          "columns": Array [
+                            Object {
+                              "fields": Array [
+                                Object {
+                                  "fieldName": "label",
+                                  "localizable": true,
+                                  "settingsContext": Object {
+                                    "pages": Array [
+                                      Object {
+                                        "rows": Array [
+                                          Object {
+                                            "columns": Array [],
+                                          },
+                                        ],
+                                      },
+                                    ],
+                                  },
+                                },
+                                Object {
+                                  "fieldName": "name",
+                                },
+                                Object {
+                                  "fieldName": "required",
+                                },
+                                Object {
+                                  "fieldName": "type",
+                                },
+                              ],
+                              "size": 12,
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
                 },
                 "type": "radio",
               },
@@ -423,7 +616,45 @@ Array [
               Object {
                 "label": "Radio",
                 "settingsContext": Object {
-                  "pages": Array [],
+                  "pages": Array [
+                    Object {
+                      "rows": Array [
+                        Object {
+                          "columns": Array [
+                            Object {
+                              "fields": Array [
+                                Object {
+                                  "fieldName": "label",
+                                  "localizable": true,
+                                  "settingsContext": Object {
+                                    "pages": Array [
+                                      Object {
+                                        "rows": Array [
+                                          Object {
+                                            "columns": Array [],
+                                          },
+                                        ],
+                                      },
+                                    ],
+                                  },
+                                },
+                                Object {
+                                  "fieldName": "name",
+                                },
+                                Object {
+                                  "fieldName": "required",
+                                },
+                                Object {
+                                  "fieldName": "type",
+                                },
+                              ],
+                              "size": 12,
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
                 },
                 "type": "radio",
               },
@@ -512,7 +743,45 @@ Array [
               Object {
                 "label": "Radio",
                 "settingsContext": Object {
-                  "pages": Array [],
+                  "pages": Array [
+                    Object {
+                      "rows": Array [
+                        Object {
+                          "columns": Array [
+                            Object {
+                              "fields": Array [
+                                Object {
+                                  "fieldName": "label",
+                                  "localizable": true,
+                                  "settingsContext": Object {
+                                    "pages": Array [
+                                      Object {
+                                        "rows": Array [
+                                          Object {
+                                            "columns": Array [],
+                                          },
+                                        ],
+                                      },
+                                    ],
+                                  },
+                                },
+                                Object {
+                                  "fieldName": "name",
+                                },
+                                Object {
+                                  "fieldName": "required",
+                                },
+                                Object {
+                                  "fieldName": "type",
+                                },
+                              ],
+                              "size": 12,
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
                 },
                 "type": "radio",
               },
@@ -592,7 +861,45 @@ Array [
               Object {
                 "label": "Radio",
                 "settingsContext": Object {
-                  "pages": Array [],
+                  "pages": Array [
+                    Object {
+                      "rows": Array [
+                        Object {
+                          "columns": Array [
+                            Object {
+                              "fields": Array [
+                                Object {
+                                  "fieldName": "label",
+                                  "localizable": true,
+                                  "settingsContext": Object {
+                                    "pages": Array [
+                                      Object {
+                                        "rows": Array [
+                                          Object {
+                                            "columns": Array [],
+                                          },
+                                        ],
+                                      },
+                                    ],
+                                  },
+                                },
+                                Object {
+                                  "fieldName": "name",
+                                },
+                                Object {
+                                  "fieldName": "required",
+                                },
+                                Object {
+                                  "fieldName": "type",
+                                },
+                              ],
+                              "size": 12,
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
                 },
                 "type": "radio",
               },
@@ -698,7 +1005,45 @@ Array [
               Object {
                 "label": "Radio",
                 "settingsContext": Object {
-                  "pages": Array [],
+                  "pages": Array [
+                    Object {
+                      "rows": Array [
+                        Object {
+                          "columns": Array [
+                            Object {
+                              "fields": Array [
+                                Object {
+                                  "fieldName": "label",
+                                  "localizable": true,
+                                  "settingsContext": Object {
+                                    "pages": Array [
+                                      Object {
+                                        "rows": Array [
+                                          Object {
+                                            "columns": Array [],
+                                          },
+                                        ],
+                                      },
+                                    ],
+                                  },
+                                },
+                                Object {
+                                  "fieldName": "name",
+                                },
+                                Object {
+                                  "fieldName": "required",
+                                },
+                                Object {
+                                  "fieldName": "type",
+                                },
+                              ],
+                              "size": 12,
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
                 },
                 "type": "radio",
               },
@@ -778,7 +1123,45 @@ Array [
               Object {
                 "label": "Radio",
                 "settingsContext": Object {
-                  "pages": Array [],
+                  "pages": Array [
+                    Object {
+                      "rows": Array [
+                        Object {
+                          "columns": Array [
+                            Object {
+                              "fields": Array [
+                                Object {
+                                  "fieldName": "label",
+                                  "localizable": true,
+                                  "settingsContext": Object {
+                                    "pages": Array [
+                                      Object {
+                                        "rows": Array [
+                                          Object {
+                                            "columns": Array [],
+                                          },
+                                        ],
+                                      },
+                                    ],
+                                  },
+                                },
+                                Object {
+                                  "fieldName": "name",
+                                },
+                                Object {
+                                  "fieldName": "required",
+                                },
+                                Object {
+                                  "fieldName": "type",
+                                },
+                              ],
+                              "size": 12,
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
                 },
                 "type": "radio",
               },
@@ -954,7 +1337,45 @@ Array [
               Object {
                 "label": "Radio",
                 "settingsContext": Object {
-                  "pages": Array [],
+                  "pages": Array [
+                    Object {
+                      "rows": Array [
+                        Object {
+                          "columns": Array [
+                            Object {
+                              "fields": Array [
+                                Object {
+                                  "fieldName": "label",
+                                  "localizable": true,
+                                  "settingsContext": Object {
+                                    "pages": Array [
+                                      Object {
+                                        "rows": Array [
+                                          Object {
+                                            "columns": Array [],
+                                          },
+                                        ],
+                                      },
+                                    ],
+                                  },
+                                },
+                                Object {
+                                  "fieldName": "name",
+                                },
+                                Object {
+                                  "fieldName": "required",
+                                },
+                                Object {
+                                  "fieldName": "type",
+                                },
+                              ],
+                              "size": 12,
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
                 },
                 "type": "radio",
               },
@@ -1094,7 +1515,45 @@ Array [
               Object {
                 "label": "Radio",
                 "settingsContext": Object {
-                  "pages": Array [],
+                  "pages": Array [
+                    Object {
+                      "rows": Array [
+                        Object {
+                          "columns": Array [
+                            Object {
+                              "fields": Array [
+                                Object {
+                                  "fieldName": "label",
+                                  "localizable": true,
+                                  "settingsContext": Object {
+                                    "pages": Array [
+                                      Object {
+                                        "rows": Array [
+                                          Object {
+                                            "columns": Array [],
+                                          },
+                                        ],
+                                      },
+                                    ],
+                                  },
+                                },
+                                Object {
+                                  "fieldName": "name",
+                                },
+                                Object {
+                                  "fieldName": "required",
+                                },
+                                Object {
+                                  "fieldName": "type",
+                                },
+                              ],
+                              "size": 12,
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
                 },
                 "type": "radio",
               },
@@ -1183,7 +1642,45 @@ Array [
               Object {
                 "label": "Radio",
                 "settingsContext": Object {
-                  "pages": Array [],
+                  "pages": Array [
+                    Object {
+                      "rows": Array [
+                        Object {
+                          "columns": Array [
+                            Object {
+                              "fields": Array [
+                                Object {
+                                  "fieldName": "label",
+                                  "localizable": true,
+                                  "settingsContext": Object {
+                                    "pages": Array [
+                                      Object {
+                                        "rows": Array [
+                                          Object {
+                                            "columns": Array [],
+                                          },
+                                        ],
+                                      },
+                                    ],
+                                  },
+                                },
+                                Object {
+                                  "fieldName": "name",
+                                },
+                                Object {
+                                  "fieldName": "required",
+                                },
+                                Object {
+                                  "fieldName": "type",
+                                },
+                              ],
+                              "size": 12,
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
                 },
                 "type": "radio",
               },
@@ -1272,7 +1769,45 @@ Array [
               Object {
                 "label": "Radio",
                 "settingsContext": Object {
-                  "pages": Array [],
+                  "pages": Array [
+                    Object {
+                      "rows": Array [
+                        Object {
+                          "columns": Array [
+                            Object {
+                              "fields": Array [
+                                Object {
+                                  "fieldName": "label",
+                                  "localizable": true,
+                                  "settingsContext": Object {
+                                    "pages": Array [
+                                      Object {
+                                        "rows": Array [
+                                          Object {
+                                            "columns": Array [],
+                                          },
+                                        ],
+                                      },
+                                    ],
+                                  },
+                                },
+                                Object {
+                                  "fieldName": "name",
+                                },
+                                Object {
+                                  "fieldName": "required",
+                                },
+                                Object {
+                                  "fieldName": "type",
+                                },
+                              ],
+                              "size": 12,
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
                 },
                 "type": "radio",
               },
