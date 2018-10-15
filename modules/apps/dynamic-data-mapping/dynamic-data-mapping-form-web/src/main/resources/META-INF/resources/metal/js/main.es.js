@@ -12,10 +12,11 @@ import dom from 'metal-dom';
 import core from 'metal';
 import LayoutProvider from './components/LayoutProvider/index.es';
 import loader from './components/FieldsLoader/index.es';
-import PublishButton from './components/PublishButton/PublishButton.es';
 import PreviewButton from './components/PreviewButton/PreviewButton.es';
+import PublishButton from './components/PublishButton/PublishButton.es';
 import RuleBuilder from './pages/RuleBuilder/index.es';
 import StateSyncronizer from './util/StateSyncronizer.es';
+import ShareFormPopover from './components/ShareFormPopover/ShareFormPopover.es';
 
 /**
  * Form.
@@ -140,6 +141,15 @@ class Form extends Component {
 		 */
 
 		rules: Config.array(),
+
+		/**
+		 * The path to the SVG spritemap file containing the icons.
+		 * @default undefined
+		 * @instance
+		 * @memberof Form
+		 * @type {!boolean}
+		 */
+		saved: Config.bool(),
 
 		/**
 		 * The path to the SVG spritemap file containing the icons.
@@ -321,9 +331,7 @@ class Form extends Component {
 
 		const settingsDDMForm = Liferay.component('settingsDDMForm');
 
-		const requireAuthenticationField = settingsDDMForm.getField('requireAuthentication');
-
-		if (requireAuthenticationField.getValue()) {
+		if (settingsDDMForm && settingsDDMForm.getField('requireAuthentication').getValue()) {
 			formURL = Liferay.DDM.FormSettings.restrictedFormURL;
 		}
 		else {
@@ -431,6 +439,12 @@ class Form extends Component {
 		}
 	}
 
+	willReceiveProps({published = {}}) {
+		if (published.newVal != null) {
+			this._updateShareFormIcon(published.newVal);
+		}
+	}
+
 	_updateShareFormIcon(published) {
 		const {saved, strings} = this.props;
 		const shareFormIcon = document.querySelector('.share-form-icon');
@@ -496,6 +510,11 @@ class Form extends Component {
 				<div class="container-fluid-1280">
 					<div class="button-holder ddm-form-builder-buttons">
 						<PublishButton
+							events={
+								{
+									publishedChanged: this._handlePublishedChanged
+								}
+							}
 							formInstanceId={formInstanceId}
 							namespace={namespace}
 							published={published}
@@ -537,6 +556,13 @@ class Form extends Component {
 						title={strings['leave-form']}
 					/>
 				</div>
+				{published && (
+					<ShareFormPopover
+						spritemap={spritemap}
+						strings={strings}
+						url={this._createFormURL()}
+					/>
+				)}
 			</div>
 		);
 	}
