@@ -84,21 +84,15 @@ const WithEvaluator = ChildComponent => {
 
 			return visitor.mapFields(
 				(field, fieldIndex, columnIndex, rowIndex, pageIndex) => {
-					const currentField = newPages[pageIndex].rows[rowIndex].columns[columnIndex].fields[fieldIndex];
+					const newField = newPages[pageIndex].rows[rowIndex].columns[columnIndex].fields[fieldIndex];
 
-					if (currentField.fieldName === 'name') {
-						currentField.visible = true;
+					if (newField.fieldName === 'name') {
+						newField.visible = true;
 					}
 
 					return {
 						...field,
-						dataType: currentField.dataType,
-						errorMessage: currentField.errorMessage,
-						options: currentField.options,
-						readOnly: currentField.readOnly,
-						required: currentField.required,
-						valid: currentField.valid,
-						visible: currentField.visible
+						...newField
 					};
 				}
 			);
