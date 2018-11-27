@@ -531,6 +531,7 @@ class Form extends Component {
 						visible={showRuleBuilder}
 					/>
 					<FormBuilder
+						addButtonPortalElement={'#addFieldButton'}
 						namespace={this.props.namespace}
 						ref="builder"
 						visible={!showRuleBuilder}
