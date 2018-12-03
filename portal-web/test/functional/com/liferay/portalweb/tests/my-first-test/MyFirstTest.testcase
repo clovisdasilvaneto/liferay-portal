@@ -1,0 +1,23 @@
+<definition component-name="portal-smoke">
+	<property name="testray.main.component.name" value="Smoke" />
+
+	<command name="SuperAdminLogin" priority="5">
+		<!-- Test steps go here -->
+
+		<execute function="Open" locator1="http://localhost:8080" />
+
+		<execute function="Click" locator1="//a[contains(@class,'sign-in')]" />
+		
+		<execute function="Type" locator1="//input[@id='_com_liferay_login_web_portlet_LoginPortlet_login']" value1="test@liferay.com" />
+		<execute function="Type" locator1="//input[@id='_com_liferay_login_web_portlet_LoginPortlet_password']" value1="test" />
+		<execute function="AssertClick" locator1="//button[contains(.,'Sign In')]" value1="Sign In" /> 
+
+		<execute function="AssertClick" locator1="//button[@class='btn btn-primary btn-default']" value1="I Agree" /> 
+		
+		<execute function="Type" locator1="//input[@id='reminderQueryAnswer']" value1="Test" /> 
+		<execute function="AssertClick" locator1="//button[@class='btn btn-primary btn-default']" value1="Save" /> 
+
+		<execute function="AssertTextEquals" locator1="//span[@class='user-full-name']" value1="Test Test" />
+
+	</command>
+</definition>
