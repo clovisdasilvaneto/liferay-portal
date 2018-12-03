@@ -1,11 +1,11 @@
 <html>
 <head>
-<title>LRLogin</title>
+<title>LRWelcome</title>
 </head>
 <body>
 <table cellpadding="1" cellspacing="1" border="1">
 <thead>
-<tr><td rowspan="1" colspan="3">LRLogin</td></tr>
+<tr><td rowspan="1" colspan="3">LRWelcome</td></tr>
 </thead>
 <tbody>
 <tr>

@@ -6,18 +6,18 @@
 
 		<execute function="Open" locator1="http://localhost:8080" />
 
-		<execute function="Click" locator1="//a[contains(@class,'sign-in')]" />
+		<execute function="Click" locator1="LRLogin#SIGN_IN_FIRST_BUTTON" />
 		
-		<execute function="Type" locator1="//input[@id='_com_liferay_login_web_portlet_LoginPortlet_login']" value1="test@liferay.com" />
-		<execute function="Type" locator1="//input[@id='_com_liferay_login_web_portlet_LoginPortlet_password']" value1="test" />
-		<execute function="AssertClick" locator1="//button[contains(.,'Sign In')]" value1="Sign In" /> 
+		<execute function="Type" locator1="LRLogin#EMAIL_ADDRESS_FIELD" value1="test@liferay.com" />
+		<execute function="Type" locator1="LRLogin#PASSWORD_FIELD" value1="test" />
+		<execute function="AssertClick" locator1="LRLogin#SIGN_IN_BUTTON" value1="Sign In" /> 
 
-		<execute function="AssertClick" locator1="//button[@class='btn btn-primary btn-default']" value1="I Agree" /> 
+		<execute function="AssertClick" locator1="LRTermsOfUse#I_AGREE_BUTTON" value1="I Agree" /> 
 		
-		<execute function="Type" locator1="//input[@id='reminderQueryAnswer']" value1="Test" /> 
-		<execute function="AssertClick" locator1="//button[@class='btn btn-primary btn-default']" value1="Save" /> 
+		<execute function="Type" locator1="LRPasswordReminder#ANSWER_FIELD" value1="Test" /> 
+		<execute function="AssertClick" locator1="LRPasswordReminder#SAVE_BUTTON" value1="Save" /> 
 
-		<execute function="AssertTextEquals" locator1="//span[@class='user-full-name']" value1="Test Test" />
+		<execute function="AssertTextEquals" locator1="LRWelcome#SIGN_IN_PORTLET_TEXT" value1="Test Test" />
 
 	</command>
 </definition>
