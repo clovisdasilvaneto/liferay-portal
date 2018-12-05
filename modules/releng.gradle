@@ -355,18 +355,21 @@ lockPrivateDependencyVersions {
 }
 
 portalArtifactsJar {
+	ext {
+		relengPropertiesFiles = null
+	}
+
 	baseName = "portal"
 	classifier = null
-	exclude "*.*"
-	exclude "META-INF/**"
-	exclude "OSGI-INF/**"
 	includeEmptyDirs = false
 	version = _getReleaseInfoVersion()
 
 	doFirst {
+		relengPropertiesFiles = _getRelengPropertiesFiles()
+
 		ConfigurationContainer configurationContainer = project.getConfigurations()
 
-		Configuration detachedConfiguration = configurationContainer.detachedConfiguration(_getPortalArtifactsDependencies() as Dependency[])
+		Configuration detachedConfiguration = configurationContainer.detachedConfiguration(_getPortalArtifactsDependencies(relengPropertiesFiles) as Dependency[])
 
 		detachedConfiguration.resolve()
 
@@ -400,7 +403,7 @@ portalJavadoc {
 	options.stylesheetFile = file("../tools/styles/javadoc.css")
 	source {
 		zipTree(portalSourcesJar.archivePath).matching {
-			include _getPortalJavadocIncludes()
+			include _getPortalJavadocIncludes(portalArtifactsJar.relengPropertiesFiles)
 		}
 	}
 	title = "Portal " + _getReleaseInfoVersion()
@@ -455,16 +458,13 @@ portalJavadocJar {
 portalSourcesJar {
 	baseName = "portal"
 	classifier = "sources"
-	exclude "*.*"
-	exclude "META-INF/**"
-	exclude "OSGI-INF/**"
 	includeEmptyDirs = false
 	version = _getReleaseInfoVersion()
 
 	doFirst {
 		ConfigurationContainer configurationContainer = project.getConfigurations()
 
-		Configuration detachedConfiguration = configurationContainer.detachedConfiguration(_getPortalSourcesDependencies() as Dependency[])
+		Configuration detachedConfiguration = configurationContainer.detachedConfiguration(_getPortalSourcesDependencies(portalArtifactsJar.relengPropertiesFiles) as Dependency[])
 
 		detachedConfiguration.resolve()
 
@@ -813,7 +813,7 @@ syncGitRepoReleases {
 				startParameter.projectProperties = ["syncRelease": "true"]
 				startParameter.taskNames = ["baseline"]
 
-				_executeGradle(startParameter)
+				_executeGradle(startParameter, true)
 			}
 			finally {
 				assert settingsGradleBackupFile.renameTo(settingsGradleFile)
@@ -1077,7 +1077,7 @@ private void _cherryPickPrepNext(Commit commit) {
 			startParameter.projectProperties = ["forced.update.version": newVersion]
 			startParameter.taskNames = [moduleTaskPrefix + "updateVersion"]
 
-			_executeGradle(startParameter)
+			_executeGradle(startParameter, true)
 
 			grgit.add patterns: [moduleDirName]
 
@@ -1097,7 +1097,7 @@ private void _cherryPickPrepNext(Commit commit) {
 		startParameter.taskNames = [moduleTaskPrefix + "baseline"]
 
 		try {
-			_executeGradle(startParameter)
+			_executeGradle(startParameter, true)
 		}
 		finally {
 			_setSystemProperty "baseline.ignoreFailures", baselineIgnoreFailures
@@ -1118,6 +1118,35 @@ private boolean _contains(File dir, String fileName, String s) {
 	}
 
 	return false
+}
+
+private void _downloadFile(String url, File destinationDir) {
+	File file = new File(destinationDir, url.substring(url.lastIndexOf("/") + 1))
+
+	if (file.exists()) {
+		return
+	}
+
+	for (int i = 0; i < 3; i++) {
+		try {
+			download {
+				dest destinationDir
+				quiet true
+				src url
+			}
+
+			break
+		}
+		catch (Exception e) {
+			if (i == 2) {
+				logger.lifecycle "Unable to download {}", url
+
+				e.printStackTrace()
+
+				throw e
+			}
+		}
+	}
 }
 
 private boolean _executeGradle(File moduleDir, List<String> taskNames, Map<String, String> projectProperties, boolean rethrowException) {
@@ -1142,7 +1171,7 @@ private boolean _executeGradle(File moduleDir, List<String> taskNames, Map<Strin
 	}
 
 	try {
-		return _executeGradle(startParameter)
+		return _executeGradle(startParameter, rethrowException)
 	}
 	finally {
 		oldSystemProperties.each {
@@ -1153,7 +1182,7 @@ private boolean _executeGradle(File moduleDir, List<String> taskNames, Map<Strin
 	}
 }
 
-private boolean _executeGradle(StartParameter startParameter) {
+private boolean _executeGradle(StartParameter startParameter, boolean rethrowException) {
 	BuildDefinition buildDefinition = BuildDefinition.fromStartParameter(startParameter, gradle.services.get(PublicBuildPath))
 	BuildStateRegistry buildStateRegistry = gradle.services.get(BuildStateRegistry)
 
@@ -1255,19 +1284,45 @@ private String _getModuleTaskPrefix(File moduleDir) {
 	":" + moduleTaskPrefix.replace(File.separatorChar, ':' as char) + ":"
 }
 
-private List<Dependency> _getPortalArtifactsDependencies() {
+private List<Dependency> _getPortalArtifactsDependencies(List<File> relengPropertiesFiles) {
 	File cacheDir = new File(buildDir, "releng/portalCache")
 	File portalArtifactsDir = new File(buildDir, "releng/portalArtifacts")
 
 	delete portalArtifactsDir
 
-	List<Dependency> dependencies = new ArrayList<>()
+	List<String> artifactURLs = new ArrayList<>()
 
-	for (File artifactPropertiesFile : _getRelengPropertiesFiles(cacheDir)) {
+	for (File artifactPropertiesFile : relengPropertiesFiles) {
 		Properties artifactProperties = GUtil.loadProperties(artifactPropertiesFile)
 
-		String artifactURL = artifactProperties.getProperty("artifact.url")
+		artifactURLs.add(artifactProperties.getProperty("artifact.url"))
+	}
 
+	XmlSlurper xmlSlurper = new XmlSlurper()
+
+	List<String[]> artifactProperties = [
+		["liferay-public-releases", "com.liferay", "com.liferay.arquillian.extension.junit.bridge", "1.0.10"],
+		["maven2", "org.jboss.arquillian.junit", "arquillian-junit-container", "1.1.10.Final"]
+	]
+
+	artifactProperties.each {
+		String repository = it[0]
+		String groupId = it[1]
+		String artifact = it[2]
+		String version = it[3]
+
+		String groupPath = groupId.replace('.' as char, '/' as char)
+
+		String artifactURL = "https://repository-cdn.liferay.com/nexus/service/local/repositories/${repository}/content/${groupPath}/${artifact}/${version}/${artifact}-${version}.jar"
+
+		_downloadFile(artifactURL, cacheDir)
+
+		artifactURLs.add(artifactURL)
+	}
+
+	List<Dependency> dependencies = new ArrayList<>()
+
+	for (String artifactURL : artifactURLs) {
 		File jarFile = new File(cacheDir, artifactURL.substring(artifactURL.lastIndexOf("/") + 1))
 
 		File dir = new File(portalArtifactsDir, jarFile.name[0 .. -5])
@@ -1331,12 +1386,12 @@ private List<Dependency> _getPortalJavadocDependencies() {
 	return dependencies
 }
 
-private List<String> _getPortalJavadocIncludes() {
+private List<String> _getPortalJavadocIncludes(List<File> relengPropertiesFiles) {
 	File cacheDir = new File(buildDir, "releng/portalCache")
 
 	List<String> includes = new ArrayList<>()
 
-	for (File artifactPropertiesFile : _getRelengPropertiesFiles(cacheDir)) {
+	for (File artifactPropertiesFile : relengPropertiesFiles) {
 		Properties artifactProperties = GUtil.loadProperties(artifactPropertiesFile)
 
 		String artifactURL = artifactProperties.getProperty("artifact.url")
@@ -1374,6 +1429,10 @@ private List<String> _getPortalJavadocIncludes() {
 				pattern = pattern.substring(0, pattern.indexOf(';'))
 			}
 
+			if (pattern.equals("org.apache.axis.enum")) {
+				continue
+			}
+
 			pattern = "**/" + pattern.replace('.', '/')
 
 			if (!pattern.endsWith("/*")) {
@@ -1387,7 +1446,7 @@ private List<String> _getPortalJavadocIncludes() {
 	return includes
 }
 
-private List<File> _getPortalSourcesDependencies() {
+private List<File> _getPortalSourcesDependencies(List<File> relengPropertiesFiles) {
 	File cacheDir = new File(buildDir, "releng/portalCache")
 	File portalSourcesDir = new File(buildDir, "releng/portalSources")
 
@@ -1395,7 +1454,7 @@ private List<File> _getPortalSourcesDependencies() {
 
 	List<Dependency> dependencies = new ArrayList<>()
 
-	for (File artifactPropertiesFile : _getRelengPropertiesFiles(cacheDir)) {
+	for (File artifactPropertiesFile : relengPropertiesFiles) {
 		Properties artifactProperties = GUtil.loadProperties(artifactPropertiesFile)
 
 		String artifactSourcesURL = artifactProperties.getProperty("artifact.sources.url")
@@ -1407,12 +1466,7 @@ private List<File> _getPortalSourcesDependencies() {
 		}
 
 		if (artifactSourcesURL && artifactSourcesURL.endsWith(".jar")) {
-			project.download {
-				dest cacheDir
-				onlyIfModified true
-				quiet true
-				src artifactSourcesURL
-			}
+			_downloadFile(artifactSourcesURL, cacheDir)
 
 			File jarFile = new File(cacheDir, artifactSourcesURL.substring(artifactSourcesURL.lastIndexOf("/") + 1))
 
@@ -1442,12 +1496,14 @@ private String _getReleaseInfoVersion() {
 	return matcher[0][1]
 }
 
-private List<File> _getRelengPropertiesFiles(File outputDir) {
-	List<File> artifactPropertiesFiles = new ArrayList<>()
+private List<File> _getRelengPropertiesFiles() {
+	File cacheDir = new File(buildDir, "releng/portalCache")
 
-	if (!outputDir.exists()) {
-		outputDir.mkdirs()
+	if (!cacheDir.exists()) {
+		cacheDir.mkdirs()
 	}
+
+	List<File> artifactPropertiesFiles = new ArrayList<>()
 
 	fileTree(dir: file(".releng"), exclude: "**/test/**", include: "**/*.properties").each {
 		File relengFile ->
@@ -1460,13 +1516,9 @@ private List<File> _getRelengPropertiesFiles(File outputDir) {
 			return
 		}
 
-		project.download {
-			dest outputDir
-			onlyIfModified true
-			src artifactURL
-		}
+		_downloadFile(artifactURL, cacheDir)
 
-		File jarFile = new File(outputDir, artifactURL.substring(artifactURL.lastIndexOf("/") + 1))
+		File jarFile = new File(cacheDir, artifactURL.substring(artifactURL.lastIndexOf("/") + 1))
 
 		aQute.bnd.osgi.Jar jar = new aQute.bnd.osgi.Jar(jarFile)
 
@@ -1487,6 +1539,8 @@ private List<File> _getRelengPropertiesFiles(File outputDir) {
 		}
 
 		artifactPropertiesFiles.add(relengFile)
+
+		logger.lifecycle relengFile.path
 	}
 
 	return artifactPropertiesFiles

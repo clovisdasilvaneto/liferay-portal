@@ -16,6 +16,8 @@ package com.liferay.portal.security.service.access.policy.service.persistence.im
 
 import aQute.bnd.annotation.ProviderType;
 
+import com.liferay.petra.string.StringBundler;
+
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
 import com.liferay.portal.kernel.dao.orm.FinderPath;
@@ -35,7 +37,6 @@ import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.SetUtil;
-import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.uuid.PortalUUIDUtil;
@@ -4058,6 +4059,9 @@ public class SAPEntryPersistenceImpl extends BasePersistenceImpl<SAPEntry>
 	public SAPEntryPersistenceImpl() {
 		setModelClass(SAPEntry.class);
 
+		setModelImplClass(SAPEntryImpl.class);
+		setEntityCacheEnabled(SAPEntryModelImpl.ENTITY_CACHE_ENABLED);
+
 		try {
 			Field field = BasePersistenceImpl.class.getDeclaredField(
 					"_dbColumnNames");
@@ -4537,53 +4541,6 @@ public class SAPEntryPersistenceImpl extends BasePersistenceImpl<SAPEntry>
 	/**
 	 * Returns the sap entry with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the sap entry
-	 * @return the sap entry, or <code>null</code> if a sap entry with the primary key could not be found
-	 */
-	@Override
-	public SAPEntry fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(SAPEntryModelImpl.ENTITY_CACHE_ENABLED,
-				SAPEntryImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		SAPEntry sapEntry = (SAPEntry)serializable;
-
-		if (sapEntry == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				sapEntry = (SAPEntry)session.get(SAPEntryImpl.class, primaryKey);
-
-				if (sapEntry != null) {
-					cacheResult(sapEntry);
-				}
-				else {
-					entityCache.putResult(SAPEntryModelImpl.ENTITY_CACHE_ENABLED,
-						SAPEntryImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(SAPEntryModelImpl.ENTITY_CACHE_ENABLED,
-					SAPEntryImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return sapEntry;
-	}
-
-	/**
-	 * Returns the sap entry with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param sapEntryId the primary key of the sap entry
 	 * @return the sap entry, or <code>null</code> if a sap entry with the primary key could not be found
 	 */
@@ -4879,6 +4836,11 @@ public class SAPEntryPersistenceImpl extends BasePersistenceImpl<SAPEntry>
 	@Override
 	public Set<String> getBadColumnNames() {
 		return _badColumnNames;
+	}
+
+	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
 	}
 
 	@Override

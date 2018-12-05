@@ -22,6 +22,8 @@ import com.liferay.layout.page.template.model.impl.LayoutPageTemplateEntryImpl;
 import com.liferay.layout.page.template.model.impl.LayoutPageTemplateEntryModelImpl;
 import com.liferay.layout.page.template.service.persistence.LayoutPageTemplateEntryPersistence;
 
+import com.liferay.petra.string.StringBundler;
+
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
 import com.liferay.portal.kernel.dao.orm.FinderPath;
@@ -41,7 +43,6 @@ import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.SetUtil;
-import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.uuid.PortalUUIDUtil;
@@ -20288,6 +20289,9 @@ public class LayoutPageTemplateEntryPersistenceImpl extends BasePersistenceImpl<
 	public LayoutPageTemplateEntryPersistenceImpl() {
 		setModelClass(LayoutPageTemplateEntry.class);
 
+		setModelImplClass(LayoutPageTemplateEntryImpl.class);
+		setEntityCacheEnabled(LayoutPageTemplateEntryModelImpl.ENTITY_CACHE_ENABLED);
+
 		try {
 			Field field = BasePersistenceImpl.class.getDeclaredField(
 					"_dbColumnNames");
@@ -21177,54 +21181,6 @@ public class LayoutPageTemplateEntryPersistenceImpl extends BasePersistenceImpl<
 	/**
 	 * Returns the layout page template entry with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the layout page template entry
-	 * @return the layout page template entry, or <code>null</code> if a layout page template entry with the primary key could not be found
-	 */
-	@Override
-	public LayoutPageTemplateEntry fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(LayoutPageTemplateEntryModelImpl.ENTITY_CACHE_ENABLED,
-				LayoutPageTemplateEntryImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		LayoutPageTemplateEntry layoutPageTemplateEntry = (LayoutPageTemplateEntry)serializable;
-
-		if (layoutPageTemplateEntry == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				layoutPageTemplateEntry = (LayoutPageTemplateEntry)session.get(LayoutPageTemplateEntryImpl.class,
-						primaryKey);
-
-				if (layoutPageTemplateEntry != null) {
-					cacheResult(layoutPageTemplateEntry);
-				}
-				else {
-					entityCache.putResult(LayoutPageTemplateEntryModelImpl.ENTITY_CACHE_ENABLED,
-						LayoutPageTemplateEntryImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(LayoutPageTemplateEntryModelImpl.ENTITY_CACHE_ENABLED,
-					LayoutPageTemplateEntryImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return layoutPageTemplateEntry;
-	}
-
-	/**
-	 * Returns the layout page template entry with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param layoutPageTemplateEntryId the primary key of the layout page template entry
 	 * @return the layout page template entry, or <code>null</code> if a layout page template entry with the primary key could not be found
 	 */
@@ -21523,6 +21479,11 @@ public class LayoutPageTemplateEntryPersistenceImpl extends BasePersistenceImpl<
 	@Override
 	public Set<String> getBadColumnNames() {
 		return _badColumnNames;
+	}
+
+	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
 	}
 
 	@Override

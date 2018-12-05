@@ -146,8 +146,8 @@ public class ProjectTemplates {
 				try (InputStream inputStream =
 						ProjectTemplates.class.getResourceAsStream(
 							projectTemplateJarName);
-					JarInputStream jarInputStream =
-						new JarInputStream(inputStream)) {
+					JarInputStream jarInputStream = new JarInputStream(
+						inputStream)) {
 
 					Manifest manifest = jarInputStream.getManifest();
 
@@ -365,11 +365,6 @@ public class ProjectTemplates {
 		else if ((template.equals("freemarker-portlet") ||
 				  template.equals("mvc-portlet") ||
 				  template.equals("npm-angular-portlet") ||
-				  template.equals("npm-billboardjs-portlet") ||
-				  template.equals("npm-isomorphic-portlet") ||
-				  template.equals("npm-jquery-portlet") ||
-				  template.equals("npm-metaljs-portlet") ||
-				  template.equals("npm-portlet") ||
 				  template.equals("npm-react-portlet") ||
 				  template.equals("npm-vuejs-portlet") ||
 				  template.equals("spring-mvc-portlet") ||

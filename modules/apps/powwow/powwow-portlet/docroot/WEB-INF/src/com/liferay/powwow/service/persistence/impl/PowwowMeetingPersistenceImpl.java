@@ -16,7 +16,10 @@ package com.liferay.powwow.service.persistence.impl;
 
 import aQute.bnd.annotation.ProviderType;
 
+import com.liferay.petra.string.StringBundler;
+
 import com.liferay.portal.kernel.bean.BeanReference;
+import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderPath;
@@ -35,7 +38,6 @@ import com.liferay.portal.kernel.service.persistence.CompanyProviderWrapper;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.ProxyUtil;
-import com.liferay.portal.kernel.util.StringBundler;
 
 import com.liferay.powwow.exception.NoSuchMeetingException;
 import com.liferay.powwow.model.PowwowMeeting;
@@ -3072,6 +3074,9 @@ public class PowwowMeetingPersistenceImpl extends BasePersistenceImpl<PowwowMeet
 
 	public PowwowMeetingPersistenceImpl() {
 		setModelClass(PowwowMeeting.class);
+
+		setModelImplClass(PowwowMeetingImpl.class);
+		setEntityCacheEnabled(PowwowMeetingModelImpl.ENTITY_CACHE_ENABLED);
 	}
 
 	/**
@@ -3111,7 +3116,7 @@ public class PowwowMeetingPersistenceImpl extends BasePersistenceImpl<PowwowMeet
 	 * Clears the cache for all powwow meetings.
 	 *
 	 * <p>
-	 * The {@link com.liferay.portal.kernel.dao.orm.EntityCache} and {@link com.liferay.portal.kernel.dao.orm.FinderCache} are both cleared by this method.
+	 * The {@link EntityCache} and {@link com.liferay.portal.kernel.dao.orm.FinderCache} are both cleared by this method.
 	 * </p>
 	 */
 	@Override
@@ -3127,7 +3132,7 @@ public class PowwowMeetingPersistenceImpl extends BasePersistenceImpl<PowwowMeet
 	 * Clears the cache for the powwow meeting.
 	 *
 	 * <p>
-	 * The {@link com.liferay.portal.kernel.dao.orm.EntityCache} and {@link com.liferay.portal.kernel.dao.orm.FinderCache} are both cleared by this method.
+	 * The {@link EntityCache} and {@link com.liferay.portal.kernel.dao.orm.FinderCache} are both cleared by this method.
 	 * </p>
 	 */
 	@Override
@@ -3513,54 +3518,6 @@ public class PowwowMeetingPersistenceImpl extends BasePersistenceImpl<PowwowMeet
 	/**
 	 * Returns the powwow meeting with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the powwow meeting
-	 * @return the powwow meeting, or <code>null</code> if a powwow meeting with the primary key could not be found
-	 */
-	@Override
-	public PowwowMeeting fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = EntityCacheUtil.getResult(PowwowMeetingModelImpl.ENTITY_CACHE_ENABLED,
-				PowwowMeetingImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		PowwowMeeting powwowMeeting = (PowwowMeeting)serializable;
-
-		if (powwowMeeting == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				powwowMeeting = (PowwowMeeting)session.get(PowwowMeetingImpl.class,
-						primaryKey);
-
-				if (powwowMeeting != null) {
-					cacheResult(powwowMeeting);
-				}
-				else {
-					EntityCacheUtil.putResult(PowwowMeetingModelImpl.ENTITY_CACHE_ENABLED,
-						PowwowMeetingImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				EntityCacheUtil.removeResult(PowwowMeetingModelImpl.ENTITY_CACHE_ENABLED,
-					PowwowMeetingImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return powwowMeeting;
-	}
-
-	/**
-	 * Returns the powwow meeting with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param powwowMeetingId the primary key of the powwow meeting
 	 * @return the powwow meeting, or <code>null</code> if a powwow meeting with the primary key could not be found
 	 */
@@ -3852,6 +3809,11 @@ public class PowwowMeetingPersistenceImpl extends BasePersistenceImpl<PowwowMeet
 		}
 
 		return count.intValue();
+	}
+
+	@Override
+	protected EntityCache getEntityCache() {
+		return EntityCacheUtil.getEntityCache();
 	}
 
 	@Override

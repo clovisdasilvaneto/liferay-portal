@@ -163,9 +163,9 @@ exports[`Builder should render the default markup 1`] = `
         <div class="container-fluid">
           <ul class="tbar-nav">
             <li class="tbar-item tbar-item-expand text-left">
-              <div class="tbar-section"><span class="text-truncate-inline"><span class="text-truncate">Add Elements</span></span></div>
+              <div class="tbar-section"><span class="text-truncate-inline"><span class="text-truncate">add-elements</span></span></div>
             </li>
-            <li class="tbar-item"><a class="component-action" href="#1" ref="close" role="button"><svg aria-hidden="true" class="lexicon-icon lexicon-icon-times">
+            <li class="tbar-item"><a class="component-action sidebar-close" href="#1" ref="close" role="button"><svg aria-hidden="true" class="lexicon-icon lexicon-icon-times">
                   <use xlink:href="icons.svg#times"></use>
                 </svg></a></li>
           </ul>
@@ -377,9 +377,9 @@ exports[`Builder should show modal when trash button gets clicked 1`] = `
         <div class="container-fluid">
           <ul class="tbar-nav">
             <li class="tbar-item tbar-item-expand text-left">
-              <div class="tbar-section"><span class="text-truncate-inline"><span class="text-truncate">Add Elements</span></span></div>
+              <div class="tbar-section"><span class="text-truncate-inline"><span class="text-truncate">add-elements</span></span></div>
             </li>
-            <li class="tbar-item"><a class="component-action" href="#1" ref="close" role="button"><svg aria-hidden="true" class="lexicon-icon lexicon-icon-times">
+            <li class="tbar-item"><a class="component-action sidebar-close" href="#1" ref="close" role="button"><svg aria-hidden="true" class="lexicon-icon lexicon-icon-times">
                   <use xlink:href="icons.svg#times"></use>
                 </svg></a></li>
           </ul>

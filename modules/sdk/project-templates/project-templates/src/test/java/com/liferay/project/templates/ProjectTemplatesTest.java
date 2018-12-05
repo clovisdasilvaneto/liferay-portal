@@ -130,6 +130,8 @@ public class ProjectTemplatesTest {
 			gradleDistribution = properties.getProperty("distributionUrl");
 		}
 
+		Assert.assertTrue(gradleDistribution.contains(_GRADLE_WRAPPER_VERSION));
+
 		_gradleDistribution = URI.create(gradleDistribution);
 
 		XPathFactory xPathFactory = XPathFactory.newInstance();
@@ -1302,272 +1304,41 @@ public class ProjectTemplatesTest {
 	}
 
 	@Test
-	public void testBuildTemplateNBPortletWithBOM() throws Exception {
-		File gradleProjectDir = _buildTemplateWithGradle(
-			"npm-billboardjs-portlet", "billboardjs-dependency-management",
-			"--dependency-management-enabled");
-
-		_testNotContains(
-			gradleProjectDir, "build.gradle", "version: \"[0-9].*");
-
-		_testContains(
-			gradleProjectDir, "build.gradle", _DEPENDENCY_PORTAL_KERNEL + "\n");
-	}
-
-	@Test
 	public void testBuildTemplateNpmAngularPortlet70() throws Exception {
-		_testBuildTemplateNpm70(
-			"npm-angular-portlet", "foo", "foo", "Foo",
-			"bootstrapRequire.default('#<portlet:namespace />');");
+		_testBuildTemplateNpmAngular70(
+			"npm-angular-portlet", "foo", "foo", "Foo");
 	}
 
 	@Test
 	public void testBuildTemplateNpmAngularPortlet71() throws Exception {
-		_testBuildTemplateNpm71(
-			"npm-angular-portlet", "foo", "foo", "Foo",
-			"bootstrapRequire.default('#<portlet:namespace />');");
+		_testBuildTemplateNpmAngular71(
+			"npm-angular-portlet", "foo", "foo", "Foo");
 	}
 
 	@Test
 	public void testBuildTemplateNpmAngularPortletWithDashes70()
 		throws Exception {
 
-		_testBuildTemplateNpm70(
-			"npm-angular-portlet", "foo-bar", "foo.bar", "FooBar",
-			"bootstrapRequire.default('#<portlet:namespace />');");
+		_testBuildTemplateNpmAngular70(
+			"npm-angular-portlet", "foo-bar", "foo.bar", "FooBar");
 	}
 
 	@Test
 	public void testBuildTemplateNpmAngularPortletWithDashes71()
 		throws Exception {
 
-		_testBuildTemplateNpm71(
-			"npm-angular-portlet", "foo-bar", "foo.bar", "FooBar",
-			"bootstrapRequire.default('#<portlet:namespace />');");
-	}
-
-	@Test
-	public void testBuildTemplateNpmBillboardjsPortlet70() throws Exception {
-		_testBuildTemplateNpm70(
-			"npm-billboardjs-portlet", "foo", "foo", "Foo",
-			"bootstrapRequire.default('<portlet:namespace />');");
-	}
-
-	@Test
-	public void testBuildTemplateNpmBillboardjsPortlet71() throws Exception {
-		_testBuildTemplateNpm71(
-			"npm-billboardjs-portlet", "foo", "foo", "Foo",
-			"bootstrapRequire.default('<portlet:namespace />');");
-	}
-
-	@Test
-	public void testBuildTemplateNpmBillboardjsPortletWithDashes70()
-		throws Exception {
-
-		_testBuildTemplateNpm70(
-			"npm-billboardjs-portlet", "foo-bar", "foo.bar", "FooBar",
-			"bootstrapRequire.default('<portlet:namespace />');");
-	}
-
-	@Test
-	public void testBuildTemplateNpmBillboardjsPortletWithDashes71()
-		throws Exception {
-
-		_testBuildTemplateNpm71(
-			"npm-billboardjs-portlet", "foo-bar", "foo.bar", "FooBar",
-			"bootstrapRequire.default('<portlet:namespace />');");
-	}
-
-	@Test
-	public void testBuildTemplateNpmIsomorphicPortlet70() throws Exception {
-		_testBuildTemplateNpm70(
-			"npm-isomorphic-portlet", "foo", "foo", "Foo",
-			"bootstrapRequire.default(");
-	}
-
-	@Test
-	public void testBuildTemplateNpmIsomorphicPortlet71() throws Exception {
-		_testBuildTemplateNpm71(
-			"npm-isomorphic-portlet", "foo", "foo", "Foo",
-			"bootstrapRequire.default(");
-	}
-
-	@Test
-	public void testBuildTemplateNpmIsomorphicPortletWithBOM()
-		throws Exception {
-
-		File gradleProjectDir = _buildTemplateWithGradle(
-			"npm-isomorphic-portlet", "isomorphic-dependency-management",
-			"--dependency-management-enabled");
-
-		_testNotContains(
-			gradleProjectDir, "build.gradle", "version: \"[0-9].*");
-
-		_testContains(
-			gradleProjectDir, "build.gradle", _DEPENDENCY_PORTAL_KERNEL + "\n");
-	}
-
-	@Test
-	public void testBuildTemplateNpmIsomorphicPortletWithDashes70()
-		throws Exception {
-
-		_testBuildTemplateNpm70(
-			"npm-isomorphic-portlet", "foo-bar", "foo.bar", "FooBar",
-			"bootstrapRequire.default(");
-	}
-
-	@Test
-	public void testBuildTemplateNpmIsomorphicPortletWithDashes71()
-		throws Exception {
-
-		_testBuildTemplateNpm71(
-			"npm-isomorphic-portlet", "foo-bar", "foo.bar", "FooBar",
-			"bootstrapRequire.default(");
-	}
-
-	@Test
-	public void testBuildTemplateNpmJQueryPortlet70() throws Exception {
-		_testBuildTemplateNpm70(
-			"npm-jquery-portlet", "foo", "foo", "Foo",
-			"bootstrapRequire.default('<portlet:namespace />');");
-	}
-
-	@Test
-	public void testBuildTemplateNpmJQueryPortlet71() throws Exception {
-		_testBuildTemplateNpm71(
-			"npm-jquery-portlet", "foo", "foo", "Foo",
-			"bootstrapRequire.default('<portlet:namespace />');");
-	}
-
-	@Test
-	public void testBuildTemplateNpmJQueryPortletWithBOM() throws Exception {
-		File gradleProjectDir = _buildTemplateWithGradle(
-			"npm-jquery-portlet", "jquery-dependency-management",
-			"--dependency-management-enabled");
-
-		_testNotContains(
-			gradleProjectDir, "build.gradle", "version: \"[0-9].*");
-
-		_testContains(
-			gradleProjectDir, "build.gradle", _DEPENDENCY_PORTAL_KERNEL + "\n");
-	}
-
-	@Test
-	public void testBuildTemplateNpmJQueryPortletWithDashes70()
-		throws Exception {
-
-		_testBuildTemplateNpm70(
-			"npm-jquery-portlet", "foo-bar", "foo.bar", "FooBar",
-			"bootstrapRequire.default('<portlet:namespace />');");
-	}
-
-	@Test
-	public void testBuildTemplateNpmJQueryPortletWithDashes71()
-		throws Exception {
-
-		_testBuildTemplateNpm71(
-			"npm-jquery-portlet", "foo-bar", "foo.bar", "FooBar",
-			"bootstrapRequire.default('<portlet:namespace />');");
-	}
-
-	@Test
-	public void testBuildTemplateNpmMetaljsPortlet70() throws Exception {
-		_testBuildTemplateNpm70(
-			"npm-metaljs-portlet", "foo", "foo", "Foo",
-			"bootstrapRequire.default('<portlet:namespace />');");
-	}
-
-	@Test
-	public void testBuildTemplateNpmMetaljsPortlet71() throws Exception {
-		_testBuildTemplateNpm71(
-			"npm-metaljs-portlet", "foo", "foo", "Foo",
-			"bootstrapRequire.default('<portlet:namespace />');");
-	}
-
-	@Test
-	public void testBuildTemplateNpmMetaljsPortletWithBOM() throws Exception {
-		File gradleProjectDir = _buildTemplateWithGradle(
-			"npm-metaljs-portlet", "metaljs-dependency-management",
-			"--dependency-management-enabled");
-
-		_testNotContains(
-			gradleProjectDir, "build.gradle", "version: \"[0-9].*");
-
-		_testContains(
-			gradleProjectDir, "build.gradle", _DEPENDENCY_PORTAL_KERNEL + "\n");
-	}
-
-	@Test
-	public void testBuildTemplateNpmMetaljsPortletWithDashes70()
-		throws Exception {
-
-		_testBuildTemplateNpm70(
-			"npm-metaljs-portlet", "foo-bar", "foo.bar", "FooBar",
-			"bootstrapRequire.default('<portlet:namespace />');");
-	}
-
-	@Test
-	public void testBuildTemplateNpmMetaljsPortletWithDashes71()
-		throws Exception {
-
-		_testBuildTemplateNpm71(
-			"npm-metaljs-portlet", "foo-bar", "foo.bar", "FooBar",
-			"bootstrapRequire.default('<portlet:namespace />');");
-	}
-
-	@Test
-	public void testBuildTemplateNpmPortlet70() throws Exception {
-		_testBuildTemplateNpm70(
-			"npm-portlet", "foo", "foo", "Foo",
-			"bootstrapRequire.default('<portlet:namespace />');");
-	}
-
-	@Test
-	public void testBuildTemplateNpmPortlet71() throws Exception {
-		_testBuildTemplateNpm71(
-			"npm-portlet", "foo", "foo", "Foo",
-			"bootstrapRequire.default('<portlet:namespace />');");
-	}
-
-	@Test
-	public void testBuildTemplateNpmPortletWithBOM() throws Exception {
-		File gradleProjectDir = _buildTemplateWithGradle(
-			"npm-portlet", "npm-portlet-dependency-management",
-			"--dependency-management-enabled");
-
-		_testNotContains(
-			gradleProjectDir, "build.gradle", "version: \"[0-9].*");
-
-		_testContains(
-			gradleProjectDir, "build.gradle", _DEPENDENCY_PORTAL_KERNEL + "\n");
-	}
-
-	@Test
-	public void testBuildTemplateNpmPortletWithDashes70() throws Exception {
-		_testBuildTemplateNpm70(
-			"npm-portlet", "foo-bar", "foo.bar", "FooBar",
-			"bootstrapRequire.default('<portlet:namespace />');");
-	}
-
-	@Test
-	public void testBuildTemplateNpmPortletWithDashes71() throws Exception {
-		_testBuildTemplateNpm71(
-			"npm-portlet", "foo-bar", "foo.bar", "FooBar",
-			"bootstrapRequire.default('<portlet:namespace />');");
+		_testBuildTemplateNpmAngular71(
+			"npm-angular-portlet", "foo-bar", "foo.bar", "FooBar");
 	}
 
 	@Test
 	public void testBuildTemplateNpmReactPortlet70() throws Exception {
-		_testBuildTemplateNpm70(
-			"npm-react-portlet", "foo", "foo", "Foo",
-			"bootstrapRequire.default('<portlet:namespace />');");
+		_testBuildTemplateNpm70("npm-react-portlet", "foo", "foo", "Foo");
 	}
 
 	@Test
 	public void testBuildTemplateNpmReactPortlet71() throws Exception {
-		_testBuildTemplateNpm71(
-			"npm-react-portlet", "foo", "foo", "Foo",
-			"bootstrapRequire.default('<portlet:namespace />');");
+		_testBuildTemplateNpm71("npm-react-portlet", "foo", "foo", "Foo");
 	}
 
 	@Test
@@ -1588,8 +1359,7 @@ public class ProjectTemplatesTest {
 		throws Exception {
 
 		_testBuildTemplateNpm70(
-			"npm-react-portlet", "foo-bar", "foo.bar", "FooBar",
-			"bootstrapRequire.default('<portlet:namespace />');");
+			"npm-react-portlet", "foo-bar", "foo.bar", "FooBar");
 	}
 
 	@Test
@@ -1597,22 +1367,17 @@ public class ProjectTemplatesTest {
 		throws Exception {
 
 		_testBuildTemplateNpm71(
-			"npm-react-portlet", "foo-bar", "foo.bar", "FooBar",
-			"bootstrapRequire.default('<portlet:namespace />');");
+			"npm-react-portlet", "foo-bar", "foo.bar", "FooBar");
 	}
 
 	@Test
 	public void testBuildTemplateNpmVuejsPortlet70() throws Exception {
-		_testBuildTemplateNpm70(
-			"npm-vuejs-portlet", "foo", "foo", "Foo",
-			"bootstrapRequire.default('<portlet:namespace />');");
+		_testBuildTemplateNpm70("npm-vuejs-portlet", "foo", "foo", "Foo");
 	}
 
 	@Test
 	public void testBuildTemplateNpmVuejsPortlet71() throws Exception {
-		_testBuildTemplateNpm71(
-			"npm-vuejs-portlet", "foo", "foo", "Foo",
-			"bootstrapRequire.default('<portlet:namespace />');");
+		_testBuildTemplateNpm71("npm-vuejs-portlet", "foo", "foo", "Foo");
 	}
 
 	@Test
@@ -1633,8 +1398,7 @@ public class ProjectTemplatesTest {
 		throws Exception {
 
 		_testBuildTemplateNpm70(
-			"npm-vuejs-portlet", "foo-bar", "foo.bar", "FooBar",
-			"bootstrapRequire.default('<portlet:namespace />');");
+			"npm-vuejs-portlet", "foo-bar", "foo.bar", "FooBar");
 	}
 
 	@Test
@@ -1642,8 +1406,7 @@ public class ProjectTemplatesTest {
 		throws Exception {
 
 		_testBuildTemplateNpm71(
-			"npm-vuejs-portlet", "foo-bar", "foo.bar", "FooBar",
-			"bootstrapRequire.default('<portlet:namespace />');");
+			"npm-vuejs-portlet", "foo-bar", "foo.bar", "FooBar");
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -5022,38 +4785,25 @@ public class ProjectTemplatesTest {
 	}
 
 	private void _testBuildTemplateNpm70(
-			String template, String name, String packageName, String className,
-			String bootstrapRequire)
+			String template, String name, String packageName, String className)
 		throws Exception {
 
 		File gradleProjectDir = _buildTemplateWithGradle(
 			template, name, "--liferayVersion", "7.0");
 
-		_testNotContains(
+		_testContains(
 			gradleProjectDir, "build.gradle",
-			"name: \"com.liferay.frontend.js.loader.modules.extender.api\"");
+			_DEPENDENCY_MODULES_EXTENDER_API + ", version: \"1.0.2",
+			_DEPENDENCY_PORTAL_KERNEL + ", version: \"2.0.0");
+
+		_testContains(
+			gradleProjectDir, "package.json",
+			"build/resources/main/META-INF/resources",
+			"liferay-npm-bundler\": \"^2.0.0", "\"main\": \"lib/index.es.js\"");
 
 		_testNotContains(
-			gradleProjectDir, "src/main/resources/META-INF/resources/init.jsp",
-			"<%@ page import=\"" + packageName + ".constants." + className +
-				"WebKeys\" %>");
-		_testNotContains(
-			gradleProjectDir, "src/main/resources/META-INF/resources/view.jsp",
-			"<aui:script require=\"<%= bootstrapRequire %>\">",
-			bootstrapRequire);
-
-		String packagePath = packageName.replaceAll("\\.", "\\/");
-
-		_testNotContains(
-			gradleProjectDir,
-			"src/main/java/" + packagePath + "/portlet/" + className +
-				"Portlet.java",
-			"import " + packageName + ".constants." + className + "WebKeys;");
-
-		_testNotExists(
-			gradleProjectDir,
-			"src/main/java/" + packagePath + "/constants/" + className +
-				"WebKeys.java");
+			gradleProjectDir, "package.json",
+			"target/classes/META-INF/resources");
 
 		File mavenProjectDir = _buildTemplateWithMaven(
 			template, name, "com.test", "-DclassName=" + className,
@@ -5067,10 +4817,6 @@ public class ProjectTemplatesTest {
 			mavenProjectDir, "package.json",
 			"build/resources/main/META-INF/resources");
 
-		_testContains(
-			mavenProjectDir, ".npmbundlerrc",
-			"target/classes/META-INF/resources");
-
 		if (Validator.isNotNull(System.getenv("JENKINS_HOME"))) {
 			_addNpmrc(gradleProjectDir);
 			_addNpmrc(mavenProjectDir);
@@ -5082,30 +4828,24 @@ public class ProjectTemplatesTest {
 	}
 
 	private void _testBuildTemplateNpm71(
-			String template, String name, String packageName, String className,
-			String bootstrapRequire)
+			String template, String name, String packageName, String className)
 		throws Exception {
 
 		File gradleProjectDir = _buildTemplateWithGradle(
 			template, name, "--liferayVersion", "7.1");
 
-		String packagePath = packageName.replaceAll("\\.", "\\/");
-
 		_testContains(
 			gradleProjectDir, "build.gradle",
-			"name: \"com.liferay.frontend.js.loader.modules.extender.api\"",
+			_DEPENDENCY_MODULES_EXTENDER_API + ", version: \"2.0.2",
 			_DEPENDENCY_PORTAL_KERNEL + ", version: \"3.0.0");
 
 		_testContains(
 			gradleProjectDir, "package.json",
-			"build/resources/main/META-INF/resources");
+			"build/resources/main/META-INF/resources",
+			"liferay-npm-bundler\": \"^2.0.0", "\"main\": \"lib/index.es.js\"");
 
 		_testNotContains(
 			gradleProjectDir, "package.json",
-			"target/classes/META-INF/resources");
-
-		_testNotContains(
-			gradleProjectDir, ".npmbundlerrc",
 			"target/classes/META-INF/resources");
 
 		File mavenProjectDir = _buildTemplateWithMaven(
@@ -5123,29 +4863,73 @@ public class ProjectTemplatesTest {
 			mavenProjectDir, "package.json",
 			"build/resources/main/META-INF/resources");
 
-		_testContains(
-			mavenProjectDir, ".npmbundlerrc",
-			"target/classes/META-INF/resources");
+		if (Validator.isNotNull(System.getenv("JENKINS_HOME"))) {
+			_addNpmrc(gradleProjectDir);
+			_addNpmrc(mavenProjectDir);
+			_configureExecuteNpmTask(gradleProjectDir);
+			_configurePomNpmConfiguration(mavenProjectDir);
+		}
+
+		_buildProjects(gradleProjectDir, mavenProjectDir);
+	}
+
+	private void _testBuildTemplateNpmAngular70(
+			String template, String name, String packageName, String className)
+		throws Exception {
+
+		File gradleProjectDir = _buildTemplateWithGradle(
+			template, name, "--liferayVersion", "7.0");
 
 		_testContains(
-			gradleProjectDir, "src/main/resources/META-INF/resources/init.jsp",
-			"<%@ page import=\"" + packageName + ".constants." + className +
-				"WebKeys\" %>");
-		_testContains(
-			gradleProjectDir, "src/main/resources/META-INF/resources/view.jsp",
-			"<aui:script require=\"<%= bootstrapRequire %>\">",
-			bootstrapRequire);
+			gradleProjectDir, "build.gradle",
+			_DEPENDENCY_MODULES_EXTENDER_API + ", version: \"1.0.2",
+			_DEPENDENCY_PORTAL_KERNEL + ", version: \"2.0.0");
 
 		_testContains(
-			gradleProjectDir,
-			"src/main/java/" + packagePath + "/portlet/" + className +
-				"Portlet.java",
-			"import " + packageName + ".constants." + className + "WebKeys;");
+			gradleProjectDir, "package.json", "@angular/animations",
+			"build\": \"tsc && liferay-npm-bundler");
 
 		_testExists(
 			gradleProjectDir,
-			"src/main/java/" + packagePath + "/constants/" + className +
-				"WebKeys.java");
+			"src/main/resources/META-INF/resources/lib/angular-loader.ts");
+
+		File mavenProjectDir = _buildTemplateWithMaven(
+			template, name, "com.test", "-DclassName=" + className,
+			"-Dpackage=" + packageName, "-DliferayVersion=7.0");
+
+		if (Validator.isNotNull(System.getenv("JENKINS_HOME"))) {
+			_addNpmrc(gradleProjectDir);
+			_addNpmrc(mavenProjectDir);
+			_configureExecuteNpmTask(gradleProjectDir);
+			_configurePomNpmConfiguration(mavenProjectDir);
+		}
+
+		_buildProjects(gradleProjectDir, mavenProjectDir);
+	}
+
+	private void _testBuildTemplateNpmAngular71(
+			String template, String name, String packageName, String className)
+		throws Exception {
+
+		File gradleProjectDir = _buildTemplateWithGradle(
+			template, name, "--liferayVersion", "7.1");
+
+		_testContains(
+			gradleProjectDir, "build.gradle",
+			_DEPENDENCY_MODULES_EXTENDER_API + ", version: \"2.0.2",
+			_DEPENDENCY_PORTAL_KERNEL + ", version: \"3.0.0");
+
+		_testContains(
+			gradleProjectDir, "package.json", "@angular/animations",
+			"build\": \"tsc && liferay-npm-bundler");
+
+		_testExists(
+			gradleProjectDir,
+			"src/main/resources/META-INF/resources/lib/angular-loader.ts");
+
+		File mavenProjectDir = _buildTemplateWithMaven(
+			template, name, "com.test", "-DclassName=" + className,
+			"-Dpackage=" + packageName, "-DliferayVersion=7.1");
 
 		if (Validator.isNotNull(System.getenv("JENKINS_HOME"))) {
 			_addNpmrc(gradleProjectDir);
@@ -5673,10 +5457,14 @@ public class ProjectTemplatesTest {
 
 	private static final String _BUNDLES_DIFF_IGNORES = StringTestUtil.merge(
 		Arrays.asList(
-			"*.js.map", "*pom.properties", "*pom.xml", "*package.json",
-			"Archiver-Version", "Build-Jdk", "Built-By", "Javac-Debug",
-			"Javac-Deprecation", "Javac-Encoding"),
+			"*.js.map", "*manifest.json", "*pom.properties", "*pom.xml",
+			"*package.json", "Archiver-Version", "Build-Jdk", "Built-By",
+			"Javac-Debug", "Javac-Deprecation", "Javac-Encoding"),
 		',');
+
+	private static final String _DEPENDENCY_MODULES_EXTENDER_API =
+		"compileOnly group: \"com.liferay\", name: " +
+			"\"com.liferay.frontend.js.loader.modules.extender.api\"";
 
 	private static final String _DEPENDENCY_OSGI_CORE =
 		"compileOnly group: \"org.osgi\", name: \"org.osgi.core\"";
@@ -5699,6 +5487,8 @@ public class ProjectTemplatesTest {
 		"gradlew", "gradlew.bat", "gradle/wrapper/gradle-wrapper.jar",
 		"gradle/wrapper/gradle-wrapper.properties"
 	};
+
+	private static final String _GRADLE_WRAPPER_VERSION = "4.10.2";
 
 	private static final String _MAVEN_GOAL_BUILD_SERVICE =
 		"service-builder:build";

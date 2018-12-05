@@ -783,7 +783,7 @@
 				var selectedItems = box.find('option:selected');
 
 				if (down) {
-					selectedItems.reverse().forEach(
+					selectedItems.get().reverse().forEach(
 						function(item, index) {
 							item = $(item);
 
@@ -801,7 +801,7 @@
 					);
 				}
 				else {
-					selectedItems.forEach(
+					selectedItems.get().forEach(
 						function(item, index) {
 							item = $(item);
 
@@ -979,7 +979,7 @@
 
 			return string.replace ? string.replace(
 				REGEX_SUB,
-				function (match, key) {
+				function(match, key) {
 					return data[key] === undefined ? match : data[key];
 				}
 			) : string;

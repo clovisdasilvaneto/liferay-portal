@@ -16,7 +16,10 @@ package com.liferay.powwow.service.persistence.impl;
 
 import aQute.bnd.annotation.ProviderType;
 
+import com.liferay.petra.string.StringBundler;
+
 import com.liferay.portal.kernel.bean.BeanReference;
+import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderPath;
@@ -34,7 +37,6 @@ import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.SetUtil;
-import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringUtil;
 
 import com.liferay.powwow.exception.NoSuchParticipantException;
@@ -1652,6 +1654,9 @@ public class PowwowParticipantPersistenceImpl extends BasePersistenceImpl<Powwow
 	public PowwowParticipantPersistenceImpl() {
 		setModelClass(PowwowParticipant.class);
 
+		setModelImplClass(PowwowParticipantImpl.class);
+		setEntityCacheEnabled(PowwowParticipantModelImpl.ENTITY_CACHE_ENABLED);
+
 		try {
 			Field field = BasePersistenceImpl.class.getDeclaredField(
 					"_dbColumnNames");
@@ -1721,7 +1726,7 @@ public class PowwowParticipantPersistenceImpl extends BasePersistenceImpl<Powwow
 	 * Clears the cache for all powwow participants.
 	 *
 	 * <p>
-	 * The {@link com.liferay.portal.kernel.dao.orm.EntityCache} and {@link com.liferay.portal.kernel.dao.orm.FinderCache} are both cleared by this method.
+	 * The {@link EntityCache} and {@link com.liferay.portal.kernel.dao.orm.FinderCache} are both cleared by this method.
 	 * </p>
 	 */
 	@Override
@@ -1737,7 +1742,7 @@ public class PowwowParticipantPersistenceImpl extends BasePersistenceImpl<Powwow
 	 * Clears the cache for the powwow participant.
 	 *
 	 * <p>
-	 * The {@link com.liferay.portal.kernel.dao.orm.EntityCache} and {@link com.liferay.portal.kernel.dao.orm.FinderCache} are both cleared by this method.
+	 * The {@link EntityCache} and {@link com.liferay.portal.kernel.dao.orm.FinderCache} are both cleared by this method.
 	 * </p>
 	 */
 	@Override
@@ -2130,54 +2135,6 @@ public class PowwowParticipantPersistenceImpl extends BasePersistenceImpl<Powwow
 	/**
 	 * Returns the powwow participant with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the powwow participant
-	 * @return the powwow participant, or <code>null</code> if a powwow participant with the primary key could not be found
-	 */
-	@Override
-	public PowwowParticipant fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = EntityCacheUtil.getResult(PowwowParticipantModelImpl.ENTITY_CACHE_ENABLED,
-				PowwowParticipantImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		PowwowParticipant powwowParticipant = (PowwowParticipant)serializable;
-
-		if (powwowParticipant == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				powwowParticipant = (PowwowParticipant)session.get(PowwowParticipantImpl.class,
-						primaryKey);
-
-				if (powwowParticipant != null) {
-					cacheResult(powwowParticipant);
-				}
-				else {
-					EntityCacheUtil.putResult(PowwowParticipantModelImpl.ENTITY_CACHE_ENABLED,
-						PowwowParticipantImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				EntityCacheUtil.removeResult(PowwowParticipantModelImpl.ENTITY_CACHE_ENABLED,
-					PowwowParticipantImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return powwowParticipant;
-	}
-
-	/**
-	 * Returns the powwow participant with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param powwowParticipantId the primary key of the powwow participant
 	 * @return the powwow participant, or <code>null</code> if a powwow participant with the primary key could not be found
 	 */
@@ -2474,6 +2431,11 @@ public class PowwowParticipantPersistenceImpl extends BasePersistenceImpl<Powwow
 	@Override
 	public Set<String> getBadColumnNames() {
 		return _badColumnNames;
+	}
+
+	@Override
+	protected EntityCache getEntityCache() {
+		return EntityCacheUtil.getEntityCache();
 	}
 
 	@Override

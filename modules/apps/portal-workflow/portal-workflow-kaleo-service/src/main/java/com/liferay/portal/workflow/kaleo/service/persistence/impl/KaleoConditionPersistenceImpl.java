@@ -16,6 +16,8 @@ package com.liferay.portal.workflow.kaleo.service.persistence.impl;
 
 import aQute.bnd.annotation.ProviderType;
 
+import com.liferay.petra.string.StringBundler;
+
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
 import com.liferay.portal.kernel.dao.orm.FinderPath;
@@ -32,7 +34,6 @@ import com.liferay.portal.kernel.service.persistence.CompanyProviderWrapper;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.ProxyUtil;
-import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.spring.extender.service.ServiceReference;
 import com.liferay.portal.workflow.kaleo.exception.NoSuchConditionException;
@@ -1341,6 +1342,9 @@ public class KaleoConditionPersistenceImpl extends BasePersistenceImpl<KaleoCond
 
 	public KaleoConditionPersistenceImpl() {
 		setModelClass(KaleoCondition.class);
+
+		setModelImplClass(KaleoConditionImpl.class);
+		setEntityCacheEnabled(KaleoConditionModelImpl.ENTITY_CACHE_ENABLED);
 	}
 
 	/**
@@ -1745,54 +1749,6 @@ public class KaleoConditionPersistenceImpl extends BasePersistenceImpl<KaleoCond
 	/**
 	 * Returns the kaleo condition with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the kaleo condition
-	 * @return the kaleo condition, or <code>null</code> if a kaleo condition with the primary key could not be found
-	 */
-	@Override
-	public KaleoCondition fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(KaleoConditionModelImpl.ENTITY_CACHE_ENABLED,
-				KaleoConditionImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		KaleoCondition kaleoCondition = (KaleoCondition)serializable;
-
-		if (kaleoCondition == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				kaleoCondition = (KaleoCondition)session.get(KaleoConditionImpl.class,
-						primaryKey);
-
-				if (kaleoCondition != null) {
-					cacheResult(kaleoCondition);
-				}
-				else {
-					entityCache.putResult(KaleoConditionModelImpl.ENTITY_CACHE_ENABLED,
-						KaleoConditionImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(KaleoConditionModelImpl.ENTITY_CACHE_ENABLED,
-					KaleoConditionImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return kaleoCondition;
-	}
-
-	/**
-	 * Returns the kaleo condition with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param kaleoConditionId the primary key of the kaleo condition
 	 * @return the kaleo condition, or <code>null</code> if a kaleo condition with the primary key could not be found
 	 */
@@ -2084,6 +2040,11 @@ public class KaleoConditionPersistenceImpl extends BasePersistenceImpl<KaleoCond
 		}
 
 		return count.intValue();
+	}
+
+	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
 	}
 
 	@Override

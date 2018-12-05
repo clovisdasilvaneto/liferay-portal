@@ -16,6 +16,8 @@ package com.liferay.sharing.service.persistence.impl;
 
 import aQute.bnd.annotation.ProviderType;
 
+import com.liferay.petra.string.StringBundler;
+
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
 import com.liferay.portal.kernel.dao.orm.FinderPath;
@@ -33,7 +35,6 @@ import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.SetUtil;
-import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.uuid.PortalUUIDUtil;
 import com.liferay.portal.spring.extender.service.ServiceReference;
@@ -6033,6 +6034,9 @@ public class SharingEntryPersistenceImpl extends BasePersistenceImpl<SharingEntr
 	public SharingEntryPersistenceImpl() {
 		setModelClass(SharingEntry.class);
 
+		setModelImplClass(SharingEntryImpl.class);
+		setEntityCacheEnabled(SharingEntryModelImpl.ENTITY_CACHE_ENABLED);
+
 		try {
 			Field field = BasePersistenceImpl.class.getDeclaredField(
 					"_dbColumnNames");
@@ -6704,54 +6708,6 @@ public class SharingEntryPersistenceImpl extends BasePersistenceImpl<SharingEntr
 	/**
 	 * Returns the sharing entry with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the sharing entry
-	 * @return the sharing entry, or <code>null</code> if a sharing entry with the primary key could not be found
-	 */
-	@Override
-	public SharingEntry fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(SharingEntryModelImpl.ENTITY_CACHE_ENABLED,
-				SharingEntryImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		SharingEntry sharingEntry = (SharingEntry)serializable;
-
-		if (sharingEntry == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				sharingEntry = (SharingEntry)session.get(SharingEntryImpl.class,
-						primaryKey);
-
-				if (sharingEntry != null) {
-					cacheResult(sharingEntry);
-				}
-				else {
-					entityCache.putResult(SharingEntryModelImpl.ENTITY_CACHE_ENABLED,
-						SharingEntryImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(SharingEntryModelImpl.ENTITY_CACHE_ENABLED,
-					SharingEntryImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return sharingEntry;
-	}
-
-	/**
-	 * Returns the sharing entry with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param sharingEntryId the primary key of the sharing entry
 	 * @return the sharing entry, or <code>null</code> if a sharing entry with the primary key could not be found
 	 */
@@ -7048,6 +7004,11 @@ public class SharingEntryPersistenceImpl extends BasePersistenceImpl<SharingEntr
 	@Override
 	public Set<String> getBadColumnNames() {
 		return _badColumnNames;
+	}
+
+	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
 	}
 
 	@Override

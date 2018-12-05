@@ -281,8 +281,6 @@ public class DDMFormAdminDisplayContext {
 		HttpServletResponse httpServletResponse =
 			PortalUtil.getHttpServletResponse(_renderResponse);
 
-		ThemeDisplay themeDisplay = formAdminRequestHelper.getThemeDisplay();
-
 		for (int i = 0; i < jsonArray.length(); i++) {
 			DDMFormFieldType ddmFormFieldType = formFieldTypes.get(i);
 
@@ -302,7 +300,8 @@ public class DDMFormAdminDisplayContext {
 			ddmFormRenderingContext.setHttpServletRequest(httpServletRequest);
 			ddmFormRenderingContext.setHttpServletResponse(httpServletResponse);
 			ddmFormRenderingContext.setContainerId("settings");
-			ddmFormRenderingContext.setLocale(themeDisplay.getLocale());
+			ddmFormRenderingContext.setLocale(
+				LocaleUtil.fromLanguageId(getDefaultLanguageId()));
 			ddmFormRenderingContext.setPortletNamespace(
 				_renderResponse.getNamespace());
 
@@ -848,8 +847,8 @@ public class DDMFormAdminDisplayContext {
 		DDMFormBuilderContextRequest ddmFormBuilderContextRequest =
 			DDMFormBuilderContextRequest.with(
 				Optional.ofNullable(null), themeDisplay.getRequest(),
-				themeDisplay.getResponse(), themeDisplay.getSiteDefaultLocale(),
-				true);
+				themeDisplay.getResponse(),
+				LocaleUtil.fromLanguageId(getDefaultLanguageId()), true);
 
 		ddmFormBuilderContextRequest.addProperty(
 			"ddmStructureVersion", getLatestDDMStructureVersion());

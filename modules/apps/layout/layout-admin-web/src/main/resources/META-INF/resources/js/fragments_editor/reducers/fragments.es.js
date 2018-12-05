@@ -11,7 +11,7 @@ import {
 	getColumn,
 	getDropSectionPosition,
 	getFragmentColumn,
-	getFragmentRowIndex,
+	remove,
 	setIn,
 	updateIn,
 	updateLayoutData
@@ -48,7 +48,7 @@ function addFragmentEntryLinkReducer(state, actionType, payload) {
 							fragmentEntryLink = response;
 
 							nextData = _addFragment(
-								fragmentEntryLink,
+								fragmentEntryLink.fragmentEntryLinkId,
 								state.hoveredElementBorder,
 								state.hoveredElementId,
 								state.hoveredElementType,
@@ -111,9 +111,7 @@ function addFragmentEntryLinkReducer(state, actionType, payload) {
  * @param {!object} state
  * @param {!string} actionType
  * @param {!object} payload
- * @param {!string} payload.originFragmentEntryLinkId
- * @param {!string} payload.originFragmentEntryLinkBorder
- * @param {!string} payload.targetFragmentEntryLinkId
+ * @param {!string} payload.fragmentEntryLinkId
  * @return {object}
  * @review
  */
@@ -123,35 +121,20 @@ function moveFragmentEntryLinkReducer(state, actionType, payload) {
 			let nextState = state;
 
 			if (actionType === MOVE_FRAGMENT_ENTRY_LINK) {
-				const border = payload.targetFragmentEntryLinkBorder;
-				const originId = payload.originFragmentEntryLinkId;
-				const targetId = payload.targetFragmentEntryLinkId;
+				let nextData = null;
 
-				const nextData = setIn(
+				nextData = _removeFragment(
 					state.layoutData,
-					['structure'],
-					[...state.layoutData.structure]
+					payload.fragmentEntryLinkId
 				);
 
-				const originIndex = getFragmentRowIndex(
-					nextData.structure,
-					originId
+				nextData = _addFragment(
+					payload.fragmentEntryLinkId,
+					state.hoveredElementBorder,
+					state.hoveredElementId,
+					state.hoveredElementType,
+					nextData
 				);
-
-				const originContent = nextData.structure[originIndex];
-
-				nextData.structure.splice(originIndex, 1);
-
-				let targetIndex = getFragmentRowIndex(
-					nextData.structure,
-					targetId
-				);
-
-				if (border !== DRAG_POSITIONS.top) {
-					targetIndex += 1;
-				}
-
-				nextData.structure.splice(targetIndex, 0, originContent);
 
 				_moveFragmentEntryLink(
 					state.updateLayoutPageTemplateDataURL,
@@ -202,18 +185,13 @@ function removeFragmentEntryLinkReducer(state, actionType, payload) {
 			if (actionType === REMOVE_FRAGMENT_ENTRY_LINK) {
 				const {fragmentEntryLinkId} = payload;
 
-				const nextData = setIn(
+				let nextData = setIn(
 					state.layoutData,
 					['structure'],
 					[...state.layoutData.structure]
 				);
 
-				const index = getFragmentRowIndex(
-					nextData.structure,
-					fragmentEntryLinkId
-				);
-
-				nextData.structure.splice(index, 1);
+				nextData = _removeFragment(nextData, fragmentEntryLinkId);
 
 				_removeFragmentEntryLink(
 					state.deleteFragmentEntryLinkURL,
@@ -324,7 +302,7 @@ function updateEditableValueReducer(state, actionType, payload) {
 
 /**
  * Adds a fragment at the corresponding container in the layout
- * @param {object} fragmentEntryLink
+ * @param {string} fragmentEntryLinkId
  * @param {string} hoveredElementBorder
  * @param {string} hoveredElementId
  * @param {string} hoveredElementType
@@ -333,7 +311,7 @@ function updateEditableValueReducer(state, actionType, payload) {
  * @review
  */
 function _addFragment(
-	fragmentEntryLink,
+	fragmentEntryLinkId,
 	hoveredElementBorder,
 	hoveredElementId,
 	hoveredElementType,
@@ -349,7 +327,7 @@ function _addFragment(
 
 		nextData = _addFragmentToColumn(
 			layoutData,
-			fragmentEntryLink.fragmentEntryLinkId,
+			fragmentEntryLinkId,
 			hoveredElementId,
 			fragmentColumn.fragmentEntryLinkIds.length
 		);
@@ -368,7 +346,7 @@ function _addFragment(
 
 		nextData = _addFragmentToColumn(
 			layoutData,
-			fragmentEntryLink.fragmentEntryLinkId,
+			fragmentEntryLinkId,
 			fragmentColumn.columnId,
 			position
 		);
@@ -382,14 +360,14 @@ function _addFragment(
 
 		nextData = _addSingleFragmentRow(
 			layoutData,
-			fragmentEntryLink.fragmentEntryLinkId,
+			fragmentEntryLinkId,
 			position
 		);
 	}
 	else {
 		nextData = _addSingleFragmentRow(
 			layoutData,
-			fragmentEntryLink.fragmentEntryLinkId,
+			fragmentEntryLinkId,
 			layoutData.structure.length
 		);
 	}
@@ -602,6 +580,38 @@ function _moveFragmentEntryLink(
 			credentials: 'include',
 			method: 'POST'
 		}
+	);
+}
+
+function _removeFragment(layoutData, fragmentEntryLinkId) {
+	const {structure} = layoutData;
+
+	const column = getFragmentColumn(structure, fragmentEntryLinkId);
+	const section = structure.find(
+		section => section.columns.find(
+			_column => column === _column
+		)
+	);
+
+	const columnIndex = section.columns.indexOf(column);
+	const fragmentIndex = column.fragmentEntryLinkIds.indexOf(
+		fragmentEntryLinkId
+	);
+	const sectionIndex = structure.indexOf(section);
+
+	return updateIn(
+		layoutData,
+		[
+			'structure',
+			sectionIndex,
+			'columns',
+			columnIndex,
+			'fragmentEntryLinkIds'
+		],
+		fragmentEntryLinkIds => remove(
+			fragmentEntryLinkIds,
+			fragmentIndex
+		)
 	);
 }
 

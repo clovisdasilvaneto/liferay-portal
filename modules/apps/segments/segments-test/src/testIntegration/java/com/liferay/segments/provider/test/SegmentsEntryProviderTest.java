@@ -80,12 +80,12 @@ public class SegmentsEntryProviderTest {
 
 		Criteria criteria = new Criteria();
 
-		_entityModelSegmentsCriteriaContributor.contribute(
+		_userSegmentsCriteriaContributor.contribute(
 			criteria,
 			String.format("(firstName eq '%s')", _user1.getFirstName()),
 			Criteria.Conjunction.AND);
 
-		_organizationSegmentsCriteriaContributor.contribute(
+		_userOrganizationSegmentsCriteriaContributor.contribute(
 			criteria, String.format("(name eq '%s')", organization.getName()),
 			Criteria.Conjunction.AND);
 
@@ -143,7 +143,7 @@ public class SegmentsEntryProviderTest {
 
 		Criteria criteria = new Criteria();
 
-		_entityModelSegmentsCriteriaContributor.contribute(
+		_userSegmentsCriteriaContributor.contribute(
 			criteria,
 			String.format("(firstName eq '%s')", _user1.getFirstName()),
 			Criteria.Conjunction.AND);
@@ -181,12 +181,12 @@ public class SegmentsEntryProviderTest {
 
 		Criteria criteria1 = new Criteria();
 
-		_entityModelSegmentsCriteriaContributor.contribute(
+		_userSegmentsCriteriaContributor.contribute(
 			criteria1,
 			String.format("(firstName eq '%s')", _user1.getFirstName()),
 			Criteria.Conjunction.AND);
 
-		_organizationSegmentsCriteriaContributor.contribute(
+		_userOrganizationSegmentsCriteriaContributor.contribute(
 			criteria1, String.format("(name eq '%s')", organization.getName()),
 			Criteria.Conjunction.AND);
 
@@ -198,7 +198,7 @@ public class SegmentsEntryProviderTest {
 
 		Criteria criteria2 = new Criteria();
 
-		_entityModelSegmentsCriteriaContributor.contribute(
+		_userSegmentsCriteriaContributor.contribute(
 			criteria2,
 			String.format("(firstName eq '%s')", _user2.getFirstName()),
 			Criteria.Conjunction.AND);
@@ -227,7 +227,7 @@ public class SegmentsEntryProviderTest {
 
 		Criteria criteria1 = new Criteria();
 
-		_entityModelSegmentsCriteriaContributor.contribute(
+		_userSegmentsCriteriaContributor.contribute(
 			criteria1,
 			String.format("(firstName eq '%s')", _user1.getFirstName()),
 			Criteria.Conjunction.AND);
@@ -240,7 +240,7 @@ public class SegmentsEntryProviderTest {
 
 		Criteria criteria2 = new Criteria();
 
-		_entityModelSegmentsCriteriaContributor.contribute(
+		_userSegmentsCriteriaContributor.contribute(
 			criteria2,
 			String.format("(firstName eq '%s')", _user2.getFirstName()),
 			Criteria.Conjunction.AND);
@@ -262,24 +262,11 @@ public class SegmentsEntryProviderTest {
 			segmentsEntryIds, segmentsEntry2.getSegmentsEntryId());
 	}
 
-	@Inject(
-		filter = "segments.criteria.contributor.key=entity-model",
-		type = SegmentsCriteriaContributor.class
-	)
-	private SegmentsCriteriaContributor _entityModelSegmentsCriteriaContributor;
-
 	@DeleteAfterTestRun
 	private Group _group;
 
 	@DeleteAfterTestRun
 	private final List<Organization> _organizations = new ArrayList<>();
-
-	@Inject(
-		filter = "segments.criteria.contributor.key=organization",
-		type = SegmentsCriteriaContributor.class
-	)
-	private SegmentsCriteriaContributor
-		_organizationSegmentsCriteriaContributor;
 
 	@Inject
 	private Portal _portal;
@@ -298,5 +285,18 @@ public class SegmentsEntryProviderTest {
 
 	@DeleteAfterTestRun
 	private User _user2;
+
+	@Inject(
+		filter = "segments.criteria.contributor.key=user-organization",
+		type = SegmentsCriteriaContributor.class
+	)
+	private SegmentsCriteriaContributor
+		_userOrganizationSegmentsCriteriaContributor;
+
+	@Inject(
+		filter = "segments.criteria.contributor.key=user",
+		type = SegmentsCriteriaContributor.class
+	)
+	private SegmentsCriteriaContributor _userSegmentsCriteriaContributor;
 
 }

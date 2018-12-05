@@ -1,6 +1,7 @@
 import 'clay-button';
-import 'clay-sticker';
 import 'clay-select';
+import 'clay-sticker';
+import {ClayStripe} from 'clay-alert';
 import dom from 'metal-dom';
 import Soy from 'metal-soy';
 import {Config} from 'metal-state';
@@ -28,6 +29,19 @@ class ManageCollaborators extends PortletBase {
 	}
 
 	/**
+	 * Checks if the date is after today.
+	 * @param  {String} expirationDate
+	 * @protected
+	 *
+	 * @return {Bool} returns true if the expiration date
+	 * is after today, false in other case.
+	 */
+	_checkExpirationDate(expirationDate) {
+		let date = new Date(expirationDate);
+		return date >= new Date(this._tomorrowDate);
+	}
+
+	/**
 	 * Closes the dialog.
 	 * @protected
 	 */
@@ -37,6 +51,22 @@ class ManageCollaborators extends PortletBase {
 		if (collaboratorsDialog && collaboratorsDialog.hide) {
 			collaboratorsDialog.hide();
 		}
+	}
+
+	/**
+	 * Looks if there is a collaborator with an invalid
+	 * expiration date.
+	 *
+	 * @return {Boolean} If a collaborator has an invalid expiration date
+	 */
+	_findExpirationDateError() {
+		let collaborator = this.collaborators.find(
+			collaborator => collaborator.sharingEntryExpirationDateError === true
+		);
+
+		this.expirationDateError = collaborator != null;
+
+		return this.expirationDateError;
 	}
 
 	/**
@@ -81,11 +111,22 @@ class ManageCollaborators extends PortletBase {
 	 * @param {Event} event
 	 * @protected
 	 */
-	_handleChangeExpirationDate(event) {
+	_handleBlurExpirationDate(event) {
+		let collaboratorId = event.target.dataset.collaboratorId;
 		let sharingEntryExpirationDate = event.target.value;
-		let sharingEntryId = event.target.getAttribute('name');
+		let sharingEntryId = event.target.dataset.sharingentryId;
 
-		this._sharingEntryIdsAndExpirationDate.set(sharingEntryId, sharingEntryExpirationDate);
+		let dateError = !this._checkExpirationDate(sharingEntryExpirationDate);
+
+		if (!dateError) {
+			this._sharingEntryIdsAndExpirationDate.set(sharingEntryId, sharingEntryExpirationDate);
+		}
+
+		let collaborator = this._getCollaborator(collaboratorId);
+		collaborator.sharingEntryExpirationDateError = dateError;
+
+		this.collaborators = this.collaborators;
+		this._findExpirationDateError();
 	}
 
 	/**
@@ -120,11 +161,14 @@ class ManageCollaborators extends PortletBase {
 
 			collaborator.expanded = false;
 			collaborator.sharingEntryExpirationDate = sharingEntryExpirationDate;
+			collaborator.sharingEntryExpirationDateError = false;
 			collaborator.sharingEntryExpirationDateTooltip = null;
 
 			this._sharingEntryIdsAndExpirationDate.set(collaborator.sharingEntryId, sharingEntryExpirationDate);
 
 			this.collaborators = this.collaborators;
+
+			this._findExpirationDateError();
 		}
 	}
 
@@ -132,7 +176,7 @@ class ManageCollaborators extends PortletBase {
 	 * Toggles the class 'active'
 	 *
 	 * @param {Event} event
-	 * @protectec
+	 * @protected
 	 */
 	_handleHoverCollaborator(event) {
 		dom.toggleClasses(event.delegateTarget, 'active');
@@ -147,6 +191,10 @@ class ManageCollaborators extends PortletBase {
 	_handleSaveButtonClick() {
 		let expirationDates = Array.from(this._sharingEntryIdsAndExpirationDate, (id, date) => id + ',' + date);
 		let permissions = Array.from(this._sharingEntryIdsAndPermissions, (id, key) => id + ',' + key);
+
+		if (this._findExpirationDateError()) {
+			return;
+		}
 
 		this.fetch(
 			this.actionUrl,
@@ -225,6 +273,14 @@ class ManageCollaborators extends PortletBase {
 	 */
 	_getTooltipDate(expirationDate) {
 		return new Date(expirationDate).toLocaleDateString(Liferay.ThemeDisplay.getBCP47LanguageId());
+	}
+
+	/**
+	 * Cleans the error.
+	 * @protected
+	 */
+	_removeExpirationDateError() {
+		this.expirationDateError = false;
 	}
 
 	/**

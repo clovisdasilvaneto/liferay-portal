@@ -63,6 +63,8 @@
 			<var name="key_fragmentName" value="${fragmentName}" />
 			<var name="key_id" value="${id}" />
 		</execute>
+
+		<execute function="Pause" locator1="3000" />
 	</command>
 
 	<command name="expandContentPageFragmentSidebar">
@@ -102,29 +104,6 @@
 		<execute function="AssertClick" locator1="PageEditor#FRAGMENT_SIDEBAR_TAB" value1="${tabName}">
 			<var name="key_tabName" value="${tabName}" />
 		</execute>
-	</command>
-
-	<command name="moveFragment">
-		<execute function="MouseOver" locator1="Fragment#FRAGMENT_BODY">
-			<var name="key_fragmentName" value="${fragmentName}" />
-		</execute>
-
-		<if>
-			<equals arg1="${direction}" arg2="up" />
-			<then>
-				<execute function="Click#clickNoWaitForVisible" locator1="Fragment#FRAGMENT_HEADER_UP_ARROW_BUTTON">
-					<var name="key_fragmentName" value="${fragmentName}" />
-				</execute>
-			</then>
-			<elseif>
-				<equals arg1="${direction}" arg2="down" />
-				<then>
-					<execute function="Click#clickNoWaitForVisible" locator1="Fragment#FRAGMENT_HEADER_DOWN_ARROW_BUTTON">
-						<var name="key_fragmentName" value="${fragmentName}" />
-					</execute>
-				</then>
-			</elseif>
-		</if>
 	</command>
 
 	<command name="removeFragment">

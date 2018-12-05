@@ -33,6 +33,8 @@ public class PortalUpgradeProcessRegistryImpl
 
 		upgradeProcesses.put(
 			new Version("3.0.0"), new UpgradeSQLServerDatetime());
+
+		upgradeProcesses.put(new Version("3.0.1"), new UpgradeSchema());
 	}
 
 }

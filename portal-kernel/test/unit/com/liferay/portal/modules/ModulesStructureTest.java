@@ -658,8 +658,8 @@ public class ModulesStructureTest {
 		Set<String> buildExtGradleFileNames = new TreeSet<>(
 			String.CASE_INSENSITIVE_ORDER);
 
-		try (DirectoryStream<Path> directoryStream =
-				Files.newDirectoryStream(dirPath)) {
+		try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(
+				dirPath)) {
 
 			for (Path path : directoryStream) {
 				if (Files.isDirectory(path)) {
@@ -1506,7 +1506,7 @@ public class ModulesStructureTest {
 	private static final Set<String> _gitRepoGradlePropertiesKeys =
 		SetUtil.fromList(
 			Arrays.asList(
-				"jira.project.keys", "org.gradle.parallel",
+				"jira.project.keys", "org.gradle.daemon", "org.gradle.parallel",
 				"pom.scm.connection", "pom.scm.developerConnection",
 				"pom.scm.url"));
 	private static final List<String> _gradleConfigurations = Arrays.asList(

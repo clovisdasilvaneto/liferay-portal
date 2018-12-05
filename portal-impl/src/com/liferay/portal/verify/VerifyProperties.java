@@ -78,6 +78,12 @@ public class VerifyProperties extends VerifyProcess {
 		propertiesResourceNames.add(0, "portal.properties");
 
 		for (String propertyResourceName : propertiesResourceNames) {
+			if (propertyResourceName.contains("${") &&
+				propertyResourceName.contains("}")) {
+
+				continue;
+			}
+
 			try (InputStream inputStream = getPropertiesResourceAsStream(
 					propertyResourceName)) {
 
@@ -1713,6 +1719,10 @@ public class VerifyProperties extends VerifyProcess {
 		"ehcache.cache.manager.peer.provider.factory",
 		"ehcache.cache.manager.statistics.thread.pool.size",
 		"ehcache.multi.vm.config.location.peerProviderProperties",
+		"ehcache.rmi.peer.listener.factory.class",
+		"ehcache.rmi.peer.listener.factory.properties",
+		"ehcache.rmi.peer.provider.factory.class",
+		"ehcache.rmi.peer.provider.factory.properties",
 		"ehcache.statistics.enabled",
 		"hot.deploy.hook.custom.jsp.verification.enabled",
 		"hibernate.cache.region.factory_class",
@@ -1816,13 +1826,14 @@ public class VerifyProperties extends VerifyProcess {
 		"social.activity.sets.bundling.enabled", "social.activity.sets.enabled",
 		"social.bookmark.display.styles", "social.bookmark.types",
 		"spring.hibernate.data.source", "spring.hibernate.session.factory",
-		"struts.portlet.ignored.parameters.regexp",
+		"spring.portlet.configs", "struts.portlet.ignored.parameters.regexp",
 		"struts.portlet.request.processor",
 		"table.mapper.cache.mapping.table.names", "tck.url",
-		"user.groups.indexer.enabled", "users.form.add.identification",
-		"users.indexer.enabled", "users.form.add.main",
-		"users.form.add.miscellaneous", "users.form.my.account.identification",
-		"users.form.my.account.main", "users.form.my.account.miscellaneous",
+		"transaction.manager.impl", "user.groups.indexer.enabled",
+		"users.form.add.identification", "users.indexer.enabled",
+		"users.form.add.main", "users.form.add.miscellaneous",
+		"users.form.my.account.identification", "users.form.my.account.main",
+		"users.form.my.account.miscellaneous",
 		"users.form.update.identification", "users.form.update.main",
 		"users.form.update.miscellaneous", "users.image.check.token",
 		"users.image.default.use.initials", "users.image.max.height",

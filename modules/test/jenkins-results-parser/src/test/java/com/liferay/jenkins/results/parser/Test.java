@@ -309,6 +309,25 @@ public class Test {
 		return string.replace("${" + token + "}", value);
 	}
 
+	protected void testEquals(String expected, String actual) {
+		if (!((expected == null) ^ (actual == null))) {
+			if ((expected != null) && !expected.equals(actual)) {
+				errorCollector.addError(
+					new Throwable(
+						JenkinsResultsParserUtil.combine(
+							"String mismatch\nExpected:", expected, "\nActual:",
+							actual)));
+			}
+		}
+		else {
+			errorCollector.addError(
+				new Throwable(
+					JenkinsResultsParserUtil.combine(
+						"String mismatch\nExpected:", expected, "\nActual:",
+						actual)));
+		}
+	}
+
 	protected String toURLString(File file) throws Exception {
 		URI uri = file.toURI();
 

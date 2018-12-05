@@ -22,6 +22,8 @@ import com.liferay.changeset.model.impl.ChangesetEntryImpl;
 import com.liferay.changeset.model.impl.ChangesetEntryModelImpl;
 import com.liferay.changeset.service.persistence.ChangesetEntryPersistence;
 
+import com.liferay.petra.string.StringBundler;
+
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
 import com.liferay.portal.kernel.dao.orm.FinderPath;
@@ -38,7 +40,6 @@ import com.liferay.portal.kernel.service.persistence.CompanyProviderWrapper;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.ProxyUtil;
-import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.spring.extender.service.ServiceReference;
 
 import java.io.Serializable;
@@ -2976,6 +2977,9 @@ public class ChangesetEntryPersistenceImpl extends BasePersistenceImpl<Changeset
 
 	public ChangesetEntryPersistenceImpl() {
 		setModelClass(ChangesetEntry.class);
+
+		setModelImplClass(ChangesetEntryImpl.class);
+		setEntityCacheEnabled(ChangesetEntryModelImpl.ENTITY_CACHE_ENABLED);
 	}
 
 	/**
@@ -3474,54 +3478,6 @@ public class ChangesetEntryPersistenceImpl extends BasePersistenceImpl<Changeset
 	/**
 	 * Returns the changeset entry with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the changeset entry
-	 * @return the changeset entry, or <code>null</code> if a changeset entry with the primary key could not be found
-	 */
-	@Override
-	public ChangesetEntry fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(ChangesetEntryModelImpl.ENTITY_CACHE_ENABLED,
-				ChangesetEntryImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		ChangesetEntry changesetEntry = (ChangesetEntry)serializable;
-
-		if (changesetEntry == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				changesetEntry = (ChangesetEntry)session.get(ChangesetEntryImpl.class,
-						primaryKey);
-
-				if (changesetEntry != null) {
-					cacheResult(changesetEntry);
-				}
-				else {
-					entityCache.putResult(ChangesetEntryModelImpl.ENTITY_CACHE_ENABLED,
-						ChangesetEntryImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(ChangesetEntryModelImpl.ENTITY_CACHE_ENABLED,
-					ChangesetEntryImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return changesetEntry;
-	}
-
-	/**
-	 * Returns the changeset entry with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param changesetEntryId the primary key of the changeset entry
 	 * @return the changeset entry, or <code>null</code> if a changeset entry with the primary key could not be found
 	 */
@@ -3813,6 +3769,11 @@ public class ChangesetEntryPersistenceImpl extends BasePersistenceImpl<Changeset
 		}
 
 		return count.intValue();
+	}
+
+	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
 	}
 
 	@Override

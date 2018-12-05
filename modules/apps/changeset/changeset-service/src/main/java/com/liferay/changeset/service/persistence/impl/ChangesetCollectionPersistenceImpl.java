@@ -22,6 +22,8 @@ import com.liferay.changeset.model.impl.ChangesetCollectionImpl;
 import com.liferay.changeset.model.impl.ChangesetCollectionModelImpl;
 import com.liferay.changeset.service.persistence.ChangesetCollectionPersistence;
 
+import com.liferay.petra.string.StringBundler;
+
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
 import com.liferay.portal.kernel.dao.orm.FinderPath;
@@ -38,7 +40,6 @@ import com.liferay.portal.kernel.service.persistence.CompanyProviderWrapper;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.ProxyUtil;
-import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.spring.extender.service.ServiceReference;
 
 import java.io.Serializable;
@@ -2491,6 +2492,9 @@ public class ChangesetCollectionPersistenceImpl extends BasePersistenceImpl<Chan
 
 	public ChangesetCollectionPersistenceImpl() {
 		setModelClass(ChangesetCollection.class);
+
+		setModelImplClass(ChangesetCollectionImpl.class);
+		setEntityCacheEnabled(ChangesetCollectionModelImpl.ENTITY_CACHE_ENABLED);
 	}
 
 	/**
@@ -2964,54 +2968,6 @@ public class ChangesetCollectionPersistenceImpl extends BasePersistenceImpl<Chan
 	/**
 	 * Returns the changeset collection with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the changeset collection
-	 * @return the changeset collection, or <code>null</code> if a changeset collection with the primary key could not be found
-	 */
-	@Override
-	public ChangesetCollection fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(ChangesetCollectionModelImpl.ENTITY_CACHE_ENABLED,
-				ChangesetCollectionImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		ChangesetCollection changesetCollection = (ChangesetCollection)serializable;
-
-		if (changesetCollection == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				changesetCollection = (ChangesetCollection)session.get(ChangesetCollectionImpl.class,
-						primaryKey);
-
-				if (changesetCollection != null) {
-					cacheResult(changesetCollection);
-				}
-				else {
-					entityCache.putResult(ChangesetCollectionModelImpl.ENTITY_CACHE_ENABLED,
-						ChangesetCollectionImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(ChangesetCollectionModelImpl.ENTITY_CACHE_ENABLED,
-					ChangesetCollectionImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return changesetCollection;
-	}
-
-	/**
-	 * Returns the changeset collection with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param changesetCollectionId the primary key of the changeset collection
 	 * @return the changeset collection, or <code>null</code> if a changeset collection with the primary key could not be found
 	 */
@@ -3304,6 +3260,11 @@ public class ChangesetCollectionPersistenceImpl extends BasePersistenceImpl<Chan
 		}
 
 		return count.intValue();
+	}
+
+	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
 	}
 
 	@Override

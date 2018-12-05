@@ -14,7 +14,14 @@
 
 package com.liferay.portal.spring.aop;
 
+import com.liferay.petra.lang.HashUtil;
+
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import org.aopalliance.intercept.MethodInvocation;
 
@@ -25,31 +32,69 @@ import org.aopalliance.intercept.MethodInvocation;
 public abstract class AnnotationChainableMethodAdvice<T extends Annotation>
 	extends ChainableMethodAdvice {
 
-	public AnnotationChainableMethodAdvice() {
-		_nullAnnotation = getNullAnnotation();
-
-		_annotationClass = _nullAnnotation.annotationType();
+	public AnnotationChainableMethodAdvice(Class<T> annotationClass) {
+		_annotationClass = Objects.requireNonNull(annotationClass);
 	}
 
 	public Class<? extends Annotation> getAnnotationClass() {
 		return _annotationClass;
 	}
 
-	public abstract T getNullAnnotation();
-
-	protected T findAnnotation(MethodInvocation methodInvocation) {
+	@Override
+	public boolean isEnabled(Class<?> targetClass, Method method) {
 		T annotation = serviceBeanAopCacheManager.findAnnotation(
-			methodInvocation, _annotationClass, _nullAnnotation);
+			targetClass, method, _annotationClass);
 
-		if (annotation == _nullAnnotation) {
-			serviceBeanAopCacheManager.removeMethodInterceptor(
-				methodInvocation, this);
+		if (annotation == null) {
+			return false;
 		}
 
-		return annotation;
+		_annotations.put(new CacheKey(targetClass, method), annotation);
+
+		return true;
+	}
+
+	protected T findAnnotation(MethodInvocation methodInvocation) {
+		Object target = methodInvocation.getThis();
+
+		return _annotations.get(
+			new CacheKey(target.getClass(), methodInvocation.getMethod()));
 	}
 
 	private final Class<? extends Annotation> _annotationClass;
-	private final T _nullAnnotation;
+	private final ConcurrentMap<CacheKey, T> _annotations =
+		new ConcurrentHashMap<>();
+
+	private static class CacheKey {
+
+		@Override
+		public boolean equals(Object obj) {
+			CacheKey cacheKey = (CacheKey)obj;
+
+			if (Objects.equals(_targetClass, cacheKey._targetClass) &&
+				Objects.equals(_method, cacheKey._method)) {
+
+				return true;
+			}
+
+			return false;
+		}
+
+		@Override
+		public int hashCode() {
+			int hash = HashUtil.hash(0, _targetClass);
+
+			return HashUtil.hash(hash, _method);
+		}
+
+		private CacheKey(Class<?> targetClass, Method method) {
+			_targetClass = targetClass;
+			_method = method;
+		}
+
+		private final Method _method;
+		private final Class<?> _targetClass;
+
+	}
 
 }

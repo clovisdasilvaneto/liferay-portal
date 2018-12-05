@@ -150,6 +150,7 @@ public abstract class Baseline {
 
 			Set<String> ignoredPackageNames = new HashSet<>();
 			Set<String> mismatchPackageNames = new HashSet<>();
+			boolean warning = false;
 
 			for (Info info : infosArray) {
 				if (info.mismatch) {
@@ -244,24 +245,30 @@ public abstract class Baseline {
 				if (_reportDiff && (delta != Delta.REMOVED)) {
 					doPackageDiff(packageDiff);
 				}
+
+				warning = true;
 			}
 
-			if (!mismatchPackageNames.isEmpty() &&
-				ignoredPackageNames.containsAll(mismatchPackageNames)) {
+			if (!warning) {
+				if (!mismatchPackageNames.isEmpty() &&
+					ignoredPackageNames.containsAll(mismatchPackageNames)) {
 
-				return true;
+					return true;
+				}
+
+				if (mismatchPackageNames.isEmpty() && !bundleInfo.mismatch) {
+					return true;
+				}
 			}
 
-			if (!bundleInfo.mismatch) {
-				return true;
+			if (bundleInfo.mismatch) {
+				Version newVersion = bundleInfo.suggestedVersion;
+				Version oldVersion = bundleInfo.newerVersion;
+
+				updateBundleVersion(oldVersion, newVersion);
+
+				reportBundleVersion(bundleInfo);
 			}
-
-			Version newVersion = bundleInfo.suggestedVersion;
-			Version oldVersion = bundleInfo.newerVersion;
-
-			updateBundleVersion(oldVersion, newVersion);
-
-			reportBundleVersion(bundleInfo);
 
 			reportMode();
 

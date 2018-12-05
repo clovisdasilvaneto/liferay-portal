@@ -32,6 +32,18 @@ public interface StructureFieldConverter {
 	public String getFieldDataType(String dataType);
 
 	/**
+	 * Gets the field data type.
+	 *
+	 * @param  dataType the {@code DDMFormField#dataType}
+	 * @param  type the {@code DDMFormField#type}
+	 * @return the field data type
+	 * @review
+	 */
+	public default String getFieldDataType(String dataType, String type) {
+		return getFieldDataType(dataType);
+	}
+
+	/**
 	 * Gets the field input control.
 	 *
 	 * @param  type the {@code DDMFormField#type()}

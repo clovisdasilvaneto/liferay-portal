@@ -14,13 +14,17 @@
 
 package com.liferay.portal.spring.context;
 
-import com.liferay.petra.lang.ClassLoaderPool;
 import com.liferay.portal.bean.BeanLocatorImpl;
 import com.liferay.portal.kernel.bean.BeanLocator;
+import com.liferay.portal.kernel.bean.PortalBeanLocatorUtil;
 import com.liferay.portal.kernel.bean.PortletBeanLocatorUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.servlet.ServletContextClassLoaderPool;
+import com.liferay.portal.kernel.util.InfrastructureUtil;
 import com.liferay.portal.kernel.util.MethodKey;
+import com.liferay.portal.module.framework.ModuleFrameworkUtilAdapter;
+import com.liferay.portal.spring.configurator.ConfigurableApplicationContextConfigurator;
 
 import java.lang.reflect.Method;
 
@@ -28,6 +32,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
@@ -43,8 +48,14 @@ public class PortletContextLoaderListener extends ContextLoaderListener {
 	public void contextDestroyed(ServletContextEvent servletContextEvent) {
 		ServletContext servletContext = servletContextEvent.getServletContext();
 
-		ClassLoader classLoader = ClassLoaderPool.getClassLoader(
+		ClassLoader classLoader = ServletContextClassLoaderPool.getClassLoader(
 			servletContext.getServletContextName());
+
+		if (classLoader == null) {
+			throw new IllegalStateException(
+				"Unable to find the class loader for servlet context " +
+					servletContext.getServletContextName());
+		}
 
 		try {
 			Class<?> beanLocatorUtilClass = Class.forName(
@@ -81,15 +92,21 @@ public class PortletContextLoaderListener extends ContextLoaderListener {
 		servletContext.removeAttribute(
 			WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE);
 
-		ClassLoader classLoader = ClassLoaderPool.getClassLoader(
+		ClassLoader classLoader = ServletContextClassLoaderPool.getClassLoader(
 			servletContext.getServletContextName());
+
+		if (classLoader == null) {
+			throw new IllegalStateException(
+				"Unable to find the class loader for servlet context " +
+					servletContext.getServletContextName());
+		}
 
 		super.contextInitialized(servletContextEvent);
 
-		PortletBeanFactoryCleaner.readBeans();
-
 		ApplicationContext applicationContext =
 			WebApplicationContextUtils.getWebApplicationContext(servletContext);
+
+		ModuleFrameworkUtilAdapter.registerContext(applicationContext);
 
 		BeanLocatorImpl beanLocatorImpl = new BeanLocatorImpl(
 			classLoader, applicationContext);
@@ -133,8 +150,38 @@ public class PortletContextLoaderListener extends ContextLoaderListener {
 
 		configurableWebApplicationContext.setConfigLocation(configLocation);
 
+		configurableWebApplicationContext.addApplicationListener(
+			applicationEvent -> {
+				if (applicationEvent instanceof ContextClosedEvent) {
+					ContextClosedEvent contextClosedEvent =
+						(ContextClosedEvent)applicationEvent;
+
+					ModuleFrameworkUtilAdapter.unregisterContext(
+						contextClosedEvent.getApplicationContext());
+				}
+			});
+
 		configurableWebApplicationContext.addBeanFactoryPostProcessor(
-			new PortletBeanFactoryPostProcessor());
+			configurableListableBeanFactory -> {
+				if ((configurableListableBeanFactory.getBeanDefinitionCount() >
+						0) &&
+					!configurableListableBeanFactory.containsBean(
+						"liferayDataSource")) {
+
+					configurableListableBeanFactory.registerSingleton(
+						"liferayDataSource",
+						InfrastructureUtil.getDataSource());
+				}
+			});
+
+		ConfigurableApplicationContextConfigurator
+			configurableApplicationContextConfigurator =
+				(ConfigurableApplicationContextConfigurator)
+					PortalBeanLocatorUtil.locate(
+						"configurableApplicationContextConfigurator");
+
+		configurableApplicationContextConfigurator.configure(
+			configurableWebApplicationContext);
 	}
 
 	@Override

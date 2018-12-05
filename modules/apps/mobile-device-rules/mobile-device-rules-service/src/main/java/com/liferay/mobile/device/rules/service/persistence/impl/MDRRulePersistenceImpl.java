@@ -22,6 +22,8 @@ import com.liferay.mobile.device.rules.model.impl.MDRRuleImpl;
 import com.liferay.mobile.device.rules.model.impl.MDRRuleModelImpl;
 import com.liferay.mobile.device.rules.service.persistence.MDRRulePersistence;
 
+import com.liferay.petra.string.StringBundler;
+
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
 import com.liferay.portal.kernel.dao.orm.FinderPath;
@@ -39,7 +41,6 @@ import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.SetUtil;
-import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.uuid.PortalUUIDUtil;
 import com.liferay.portal.spring.extender.service.ServiceReference;
@@ -1969,6 +1970,9 @@ public class MDRRulePersistenceImpl extends BasePersistenceImpl<MDRRule>
 	public MDRRulePersistenceImpl() {
 		setModelClass(MDRRule.class);
 
+		setModelImplClass(MDRRuleImpl.class);
+		setEntityCacheEnabled(MDRRuleModelImpl.ENTITY_CACHE_ENABLED);
+
 		try {
 			Field field = BasePersistenceImpl.class.getDeclaredField(
 					"_dbColumnNames");
@@ -2414,53 +2418,6 @@ public class MDRRulePersistenceImpl extends BasePersistenceImpl<MDRRule>
 	/**
 	 * Returns the mdr rule with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the mdr rule
-	 * @return the mdr rule, or <code>null</code> if a mdr rule with the primary key could not be found
-	 */
-	@Override
-	public MDRRule fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(MDRRuleModelImpl.ENTITY_CACHE_ENABLED,
-				MDRRuleImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		MDRRule mdrRule = (MDRRule)serializable;
-
-		if (mdrRule == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				mdrRule = (MDRRule)session.get(MDRRuleImpl.class, primaryKey);
-
-				if (mdrRule != null) {
-					cacheResult(mdrRule);
-				}
-				else {
-					entityCache.putResult(MDRRuleModelImpl.ENTITY_CACHE_ENABLED,
-						MDRRuleImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(MDRRuleModelImpl.ENTITY_CACHE_ENABLED,
-					MDRRuleImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return mdrRule;
-	}
-
-	/**
-	 * Returns the mdr rule with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param ruleId the primary key of the mdr rule
 	 * @return the mdr rule, or <code>null</code> if a mdr rule with the primary key could not be found
 	 */
@@ -2756,6 +2713,11 @@ public class MDRRulePersistenceImpl extends BasePersistenceImpl<MDRRule>
 	@Override
 	public Set<String> getBadColumnNames() {
 		return _badColumnNames;
+	}
+
+	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
 	}
 
 	@Override

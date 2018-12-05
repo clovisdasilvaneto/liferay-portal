@@ -378,6 +378,37 @@ public class UserODataRetrieverTest {
 	}
 
 	@Test
+	public void testGetUsersFilterByFirstNameAndNotTeamIds() throws Exception {
+		String firstName = RandomTestUtil.randomString();
+
+		_user1 = UserTestUtil.addUser(
+			RandomTestUtil.randomString(), LocaleUtil.getDefault(), firstName,
+			RandomTestUtil.randomString(), new long[] {_group1.getGroupId()});
+		_user2 = UserTestUtil.addUser(
+			RandomTestUtil.randomString(), LocaleUtil.getDefault(), firstName,
+			RandomTestUtil.randomString(), new long[] {_group1.getGroupId()});
+
+		_team = _addTeam();
+
+		_userLocalService.addTeamUser(_team.getTeamId(), _user1);
+
+		String filterString = String.format(
+			"(firstName eq '%s') and (not (teamIds eq '%s'))", firstName,
+			_team.getTeamId());
+
+		int count = _oDataRetriever.getResultsCount(
+			_group1.getCompanyId(), filterString, LocaleUtil.getDefault());
+
+		Assert.assertEquals(1, count);
+
+		List<User> users = _oDataRetriever.getResults(
+			_group1.getCompanyId(), filterString, LocaleUtil.getDefault(), 0,
+			1);
+
+		Assert.assertEquals(_user2, users.get(0));
+	}
+
+	@Test
 	public void testGetUsersFilterByFirstNameOrLastName() throws Exception {
 		_user1 = UserTestUtil.addUser(_group1.getGroupId());
 		_user2 = UserTestUtil.addUser(_group1.getGroupId());
@@ -586,7 +617,9 @@ public class UserODataRetrieverTest {
 	public void testGetUsersFilterByJobTitleContains() throws Exception {
 		_user1 = UserTestUtil.addUser(_group1.getGroupId());
 
-		_user1.setJobTitle("Developer");
+		String jobTitlePrefix = RandomTestUtil.randomString();
+
+		_user1.setJobTitle(jobTitlePrefix + RandomTestUtil.randomString());
 
 		_userLocalService.updateUser(_user1);
 
@@ -594,7 +627,8 @@ public class UserODataRetrieverTest {
 			_group1.getGroupId(), LocaleUtil.getDefault());
 
 		List<User> users = _oDataRetriever.getResults(
-			_group1.getCompanyId(), "contains(jobTitle, 'Dev')",
+			_group1.getCompanyId(),
+			"contains(jobTitle, '" + jobTitlePrefix + "')",
 			LocaleUtil.getDefault(), 0, 2);
 
 		Assert.assertEquals(users.toString(), 1, users.size());

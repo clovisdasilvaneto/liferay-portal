@@ -452,6 +452,7 @@ public class JUnitBatchTestClassGroup extends BatchTestClassGroup {
 		return relevantTestClassNameRelativeGlobs;
 	}
 
+	@Override
 	protected void setAxisTestClassGroups() {
 		int axisCount = getAxisCount();
 
@@ -673,7 +674,8 @@ public class JUnitBatchTestClassGroup extends BatchTestClassGroup {
 
 		Collections.addAll(
 			testClassNamesIncludesRelativeGlobs,
-			testClassNamesIncludesPropertyValue.split(","));
+			JenkinsResultsParserUtil.getGlobsFromProperty(
+				testClassNamesIncludesPropertyValue));
 
 		if (testReleaseBundle) {
 			testClassNamesIncludesRelativeGlobs =
@@ -694,7 +696,8 @@ public class JUnitBatchTestClassGroup extends BatchTestClassGroup {
 
 			Collections.addAll(
 				testClassNamesIncludesRelativeGlobs,
-				testBatchClassNamesIncludesRequiredPropertyValue.split(","));
+				JenkinsResultsParserUtil.getGlobsFromProperty(
+					testBatchClassNamesIncludesRequiredPropertyValue));
 		}
 
 		File workingDirectory = portalGitWorkingDirectory.getWorkingDirectory();

@@ -16,6 +16,8 @@ package com.liferay.portal.security.wedeploy.auth.service.persistence.impl;
 
 import aQute.bnd.annotation.ProviderType;
 
+import com.liferay.petra.string.StringBundler;
+
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
 import com.liferay.portal.kernel.dao.orm.FinderPath;
@@ -32,7 +34,6 @@ import com.liferay.portal.kernel.service.persistence.CompanyProviderWrapper;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.ProxyUtil;
-import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.security.wedeploy.auth.exception.NoSuchAppException;
 import com.liferay.portal.security.wedeploy.auth.model.WeDeployAuthApp;
@@ -661,6 +662,9 @@ public class WeDeployAuthAppPersistenceImpl extends BasePersistenceImpl<WeDeploy
 
 	public WeDeployAuthAppPersistenceImpl() {
 		setModelClass(WeDeployAuthApp.class);
+
+		setModelImplClass(WeDeployAuthAppImpl.class);
+		setEntityCacheEnabled(WeDeployAuthAppModelImpl.ENTITY_CACHE_ENABLED);
 	}
 
 	/**
@@ -1054,54 +1058,6 @@ public class WeDeployAuthAppPersistenceImpl extends BasePersistenceImpl<WeDeploy
 	/**
 	 * Returns the we deploy auth app with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the we deploy auth app
-	 * @return the we deploy auth app, or <code>null</code> if a we deploy auth app with the primary key could not be found
-	 */
-	@Override
-	public WeDeployAuthApp fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(WeDeployAuthAppModelImpl.ENTITY_CACHE_ENABLED,
-				WeDeployAuthAppImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		WeDeployAuthApp weDeployAuthApp = (WeDeployAuthApp)serializable;
-
-		if (weDeployAuthApp == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				weDeployAuthApp = (WeDeployAuthApp)session.get(WeDeployAuthAppImpl.class,
-						primaryKey);
-
-				if (weDeployAuthApp != null) {
-					cacheResult(weDeployAuthApp);
-				}
-				else {
-					entityCache.putResult(WeDeployAuthAppModelImpl.ENTITY_CACHE_ENABLED,
-						WeDeployAuthAppImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(WeDeployAuthAppModelImpl.ENTITY_CACHE_ENABLED,
-					WeDeployAuthAppImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return weDeployAuthApp;
-	}
-
-	/**
-	 * Returns the we deploy auth app with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param weDeployAuthAppId the primary key of the we deploy auth app
 	 * @return the we deploy auth app, or <code>null</code> if a we deploy auth app with the primary key could not be found
 	 */
@@ -1393,6 +1349,11 @@ public class WeDeployAuthAppPersistenceImpl extends BasePersistenceImpl<WeDeploy
 		}
 
 		return count.intValue();
+	}
+
+	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
 	}
 
 	@Override

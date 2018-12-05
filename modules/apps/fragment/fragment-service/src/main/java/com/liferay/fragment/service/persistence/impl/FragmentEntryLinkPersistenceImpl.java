@@ -22,6 +22,8 @@ import com.liferay.fragment.model.impl.FragmentEntryLinkImpl;
 import com.liferay.fragment.model.impl.FragmentEntryLinkModelImpl;
 import com.liferay.fragment.service.persistence.FragmentEntryLinkPersistence;
 
+import com.liferay.petra.string.StringBundler;
+
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
 import com.liferay.portal.kernel.dao.orm.FinderPath;
@@ -39,7 +41,6 @@ import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.SetUtil;
-import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.uuid.PortalUUIDUtil;
 import com.liferay.portal.spring.extender.service.ServiceReference;
@@ -4363,6 +4364,9 @@ public class FragmentEntryLinkPersistenceImpl extends BasePersistenceImpl<Fragme
 	public FragmentEntryLinkPersistenceImpl() {
 		setModelClass(FragmentEntryLink.class);
 
+		setModelImplClass(FragmentEntryLinkImpl.class);
+		setEntityCacheEnabled(FragmentEntryLinkModelImpl.ENTITY_CACHE_ENABLED);
+
 		try {
 			Field field = BasePersistenceImpl.class.getDeclaredField(
 					"_dbColumnNames");
@@ -4960,54 +4964,6 @@ public class FragmentEntryLinkPersistenceImpl extends BasePersistenceImpl<Fragme
 	/**
 	 * Returns the fragment entry link with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the fragment entry link
-	 * @return the fragment entry link, or <code>null</code> if a fragment entry link with the primary key could not be found
-	 */
-	@Override
-	public FragmentEntryLink fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(FragmentEntryLinkModelImpl.ENTITY_CACHE_ENABLED,
-				FragmentEntryLinkImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		FragmentEntryLink fragmentEntryLink = (FragmentEntryLink)serializable;
-
-		if (fragmentEntryLink == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				fragmentEntryLink = (FragmentEntryLink)session.get(FragmentEntryLinkImpl.class,
-						primaryKey);
-
-				if (fragmentEntryLink != null) {
-					cacheResult(fragmentEntryLink);
-				}
-				else {
-					entityCache.putResult(FragmentEntryLinkModelImpl.ENTITY_CACHE_ENABLED,
-						FragmentEntryLinkImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(FragmentEntryLinkModelImpl.ENTITY_CACHE_ENABLED,
-					FragmentEntryLinkImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return fragmentEntryLink;
-	}
-
-	/**
-	 * Returns the fragment entry link with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param fragmentEntryLinkId the primary key of the fragment entry link
 	 * @return the fragment entry link, or <code>null</code> if a fragment entry link with the primary key could not be found
 	 */
@@ -5304,6 +5260,11 @@ public class FragmentEntryLinkPersistenceImpl extends BasePersistenceImpl<Fragme
 	@Override
 	public Set<String> getBadColumnNames() {
 		return _badColumnNames;
+	}
+
+	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
 	}
 
 	@Override

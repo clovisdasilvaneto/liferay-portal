@@ -52,6 +52,7 @@ public class TextDDMFormFieldTypeSettingsTest
 	extends BaseDDMFormFieldTypeSettingsTestCase {
 
 	@Before
+	@Override
 	public void setUp() {
 		setUpLanguageUtil();
 		setUpPortalUtil();
@@ -158,7 +159,7 @@ public class TextDDMFormFieldTypeSettingsTest
 
 		actions = ddmFormRule1.getActions();
 
-		Assert.assertEquals(actions.toString(), 6, actions.size());
+		Assert.assertEquals(actions.toString(), 7, actions.size());
 		Assert.assertTrue(
 			actions.toString(),
 			actions.contains(
@@ -192,6 +193,7 @@ public class TextDDMFormFieldTypeSettingsTest
 					"\"manual\") and getValue('autocomplete'))"));
 	}
 
+	@Override
 	protected void setUpLanguageUtil() {
 		LanguageUtil languageUtil = new LanguageUtil();
 
@@ -216,6 +218,7 @@ public class TextDDMFormFieldTypeSettingsTest
 		portalUtil.setPortal(portal);
 	}
 
+	@Override
 	protected void setUpResourceBundleUtil() {
 		PowerMockito.mockStatic(ResourceBundleUtil.class);
 

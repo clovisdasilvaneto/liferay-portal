@@ -57,6 +57,7 @@ import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
+import com.liferay.portal.util.RepositoryUtil;
 import com.liferay.staging.StagingGroupHelper;
 import com.liferay.staging.StagingGroupHelperUtil;
 
@@ -102,11 +103,7 @@ public class DLAdminManagementToolbarDisplayContext {
 	}
 
 	public List<DropdownItem> getActionDropdownItems() {
-		User user = _themeDisplay.getUser();
-
-		if (!_dlPortletInstanceSettingsHelper.isShowActions() ||
-			user.isDefaultUser()) {
-
+		if (!_dlPortletInstanceSettingsHelper.isShowActions()) {
 			return null;
 		}
 
@@ -135,6 +132,11 @@ public class DLAdminManagementToolbarDisplayContext {
 									LanguageUtil.get(_request, "download"));
 								dropdownItem.setQuickAction(true);
 							}));
+				}
+
+				User user = _themeDisplay.getUser();
+
+				if (stagedActions && !user.isDefaultUser()) {
 					add(
 						SafeConsumer.ignore(
 							dropdownItem -> {
@@ -155,30 +157,32 @@ public class DLAdminManagementToolbarDisplayContext {
 							}));
 				}
 
-				add(
-					SafeConsumer.ignore(
-						dropdownItem -> {
-							dropdownItem.putData("action", "deleteEntries");
+				if (!user.isDefaultUser()) {
+					add(
+						SafeConsumer.ignore(
+							dropdownItem -> {
+								dropdownItem.putData("action", "deleteEntries");
 
-							if (_dlTrashUtil.isTrashEnabled(
-									scopeGroup.getGroupId(),
-									_getRepositoryId())) {
+								if (_dlTrashUtil.isTrashEnabled(
+										scopeGroup.getGroupId(),
+										_getRepositoryId())) {
 
-								dropdownItem.setIcon("trash");
-								dropdownItem.setLabel(
-									LanguageUtil.get(
-										_request, "move-to-recycle-bin"));
-							}
-							else {
-								dropdownItem.setIcon("times");
-								dropdownItem.setLabel(
-									LanguageUtil.get(_request, "delete"));
-							}
+									dropdownItem.setIcon("trash");
+									dropdownItem.setLabel(
+										LanguageUtil.get(
+											_request, "move-to-recycle-bin"));
+								}
+								else {
+									dropdownItem.setIcon("times");
+									dropdownItem.setLabel(
+										LanguageUtil.get(_request, "delete"));
+								}
 
-							dropdownItem.setQuickAction(true);
-						}));
+								dropdownItem.setQuickAction(true);
+							}));
+				}
 
-				if (stagedActions) {
+				if (stagedActions && !user.isDefaultUser()) {
 					add(
 						SafeConsumer.ignore(
 							dropdownItem -> {
@@ -264,7 +268,8 @@ public class DLAdminManagementToolbarDisplayContext {
 		}
 
 		if (DLFolderPermission.contains(
-				permissionChecker, folder, ActionKeys.VIEW)) {
+				permissionChecker, folder, ActionKeys.VIEW) &&
+			!RepositoryUtil.isExternalRepository(folder.getRepositoryId())) {
 
 			availableActionDropdownItems.add("download");
 		}

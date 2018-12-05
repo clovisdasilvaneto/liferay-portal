@@ -5055,6 +5055,74 @@ version 2.2.7.
 - [LPS-86806]: Update the [Liferay Gradle Plugins] dependency to version
 3.13.19.
 
+## 5.5.119 - 2018-11-22
+
+### Changed
+- [LPS-87776]: Update the [Liferay Gradle Plugins] dependency to version
+3.13.20.
+- [LPS-87776]: Update the [Liferay Gradle Plugins Baseline] dependency to
+version 2.0.3.
+
+## 5.5.120 - 2018-11-26
+
+*No changes.*
+
+## 5.5.121 - 2018-11-26
+
+### Changed
+- [LPS-87776]: Update the [Liferay Gradle Plugins] dependency to version
+3.13.21.
+- [LPS-87776]: Update the [Liferay Gradle Plugins Baseline] dependency to
+version 2.0.4.
+
+## 5.5.122 - 2018-11-27
+
+### Changed
+- [LPS-86406]: Update the [Liferay Gradle Plugins] dependency to version
+3.13.22.
+
+## 5.5.123 - 2018-11-27
+
+### Changed
+- [LPS-87839]: Update the [Liferay Gradle Plugins] dependency to version
+3.13.23.
+- [LPS-87839]: Update the [Liferay Gradle Plugins Baseline] dependency to
+version 2.0.5.
+
+## 5.5.124 - 2018-11-28
+
+### Added
+- [LPS-87890]: Override the `artifactAppendix` extension object by setting the
+project property `artifactAppendix`.
+
+### Changed
+- [LPS-86806]: Update the [Liferay Gradle Plugins] dependency to version
+3.13.24.
+
+## 5.5.125 - 2018-11-28
+
+### Added
+- [LPS-87890]: Override the `artifactVersion` extension object by setting the
+project property `artifactVersion`.
+
+## 5.5.126 - 2018-11-28
+
+### Changed
+- [LPS-87890]: Update the [Liferay Gradle Plugins Poshi Runner] dependency to
+version 2.2.8.
+
+## 5.5.127 - 2018-11-29
+
+### Changed
+- [LPS-87936]: Update the [Liferay Gradle Plugins] dependency to version
+3.13.25.
+
+## 5.5.128 - 2018-11-30
+
+### Changed
+- [LPS-87978]: Update the [Liferay Gradle Plugins] dependency to version
+3.13.26.
+
 [Find Security Bugs]: https://github.com/liferay/liferay-portal/tree/master/modules/third-party/com-h3xstream-findsecbugs
 [Gradle Dependency Management]: https://github.com/spring-gradle-plugins/dependency-management-plugin
 [Gradle License Report]: https://github.com/jk1/Gradle-License-Report
@@ -5545,6 +5613,7 @@ version 2.2.7.
 [LPS-86308]: https://issues.liferay.com/browse/LPS-86308
 [LPS-86362]: https://issues.liferay.com/browse/LPS-86362
 [LPS-86371]: https://issues.liferay.com/browse/LPS-86371
+[LPS-86406]: https://issues.liferay.com/browse/LPS-86406
 [LPS-86408]: https://issues.liferay.com/browse/LPS-86408
 [LPS-86413]: https://issues.liferay.com/browse/LPS-86413
 [LPS-86447]: https://issues.liferay.com/browse/LPS-86447
@@ -5568,6 +5637,11 @@ version 2.2.7.
 [LPS-87466]: https://issues.liferay.com/browse/LPS-87466
 [LPS-87477]: https://issues.liferay.com/browse/LPS-87477
 [LPS-87503]: https://issues.liferay.com/browse/LPS-87503
+[LPS-87776]: https://issues.liferay.com/browse/LPS-87776
+[LPS-87839]: https://issues.liferay.com/browse/LPS-87839
+[LPS-87890]: https://issues.liferay.com/browse/LPS-87890
+[LPS-87936]: https://issues.liferay.com/browse/LPS-87936
+[LPS-87978]: https://issues.liferay.com/browse/LPS-87978
 [LRDOCS-2594]: https://issues.liferay.com/browse/LRDOCS-2594
 [LRDOCS-2841]: https://issues.liferay.com/browse/LRDOCS-2841
 [LRDOCS-2981]: https://issues.liferay.com/browse/LRDOCS-2981

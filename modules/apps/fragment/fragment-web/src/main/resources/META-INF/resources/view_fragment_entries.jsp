@@ -76,6 +76,16 @@ FragmentManagementToolbarDisplayContext fragmentManagementToolbarDisplayContext 
 									<liferay-ui:message key="<%= WorkflowConstants.getStatusLabel(fragmentEntry.getStatus()) %>" />
 								</span>
 							</liferay-frontend:vertical-card-footer>
+
+							<liferay-frontend:vertical-card-sticker-bottom>
+								<div class="sticker sticker-bottom-left sticker-primary <%= (fragmentEntry.getType() == FragmentEntryTypeConstants.TYPE_ELEMENT) ? "file-icon-color-4" : "file-icon-color-2" %>">
+									<liferay-ui:icon
+										cssClass="inline-item"
+										icon="cards"
+										markupView="lexicon"
+									/>
+								</div>
+							</liferay-frontend:vertical-card-sticker-bottom>
 						</liferay-frontend:vertical-card>
 					</c:when>
 					<c:otherwise>
@@ -83,7 +93,7 @@ FragmentManagementToolbarDisplayContext fragmentManagementToolbarDisplayContext 
 							actionJsp="/fragment_entry_action.jsp"
 							actionJspServletContext="<%= application %>"
 							cssClass="entry-display-style"
-							icon="page"
+							icon="code"
 							resultRow="<%= row %>"
 							rowChecker="<%= searchContainer.getRowChecker() %>"
 							title="<%= fragmentEntry.getName() %>"
@@ -103,6 +113,16 @@ FragmentManagementToolbarDisplayContext fragmentManagementToolbarDisplayContext 
 									<liferay-ui:message key="<%= WorkflowConstants.getStatusLabel(fragmentEntry.getStatus()) %>" />
 								</span>
 							</liferay-frontend:vertical-card-footer>
+
+							<liferay-frontend:vertical-card-sticker-bottom>
+								<div class="sticker sticker-bottom-left sticker-primary <%= (fragmentEntry.getType() == FragmentEntryTypeConstants.TYPE_ELEMENT) ? "file-icon-color-4" : "file-icon-color-2" %>">
+									<liferay-ui:icon
+										cssClass="inline-item"
+										icon="cards"
+										markupView="lexicon"
+									/>
+								</div>
+							</liferay-frontend:vertical-card-sticker-bottom>
 						</liferay-frontend:icon-vertical-card>
 					</c:otherwise>
 				</c:choose>
@@ -112,6 +132,7 @@ FragmentManagementToolbarDisplayContext fragmentManagementToolbarDisplayContext 
 		<liferay-ui:search-iterator
 			displayStyle="icon"
 			markupView="lexicon"
+			resultRowSplitter="<%= fragmentDisplayContext.isSearch() ? null : new FragmentEntryResultRowSplitter() %>"
 		/>
 	</liferay-ui:search-container>
 </aui:form>
@@ -136,13 +157,15 @@ FragmentManagementToolbarDisplayContext fragmentManagementToolbarDisplayContext 
 
 <c:if test="<%= FragmentPermission.contains(permissionChecker, scopeGroupId, FragmentActionKeys.MANAGE_FRAGMENT_ENTRIES) %>">
 	<aui:script require="metal-dom/src/all/dom as dom,frontend-js-web/liferay/modal/commands/OpenSimpleInputModal.es as modalCommands">
-		function handleAddFragmentEntryMenuItemClick(event) {
+		function addFragmentEntry(event) {
 			event.preventDefault();
+
+			var itemData = event.data.item.data;
 
 			modalCommands.openSimpleInputModal(
 				{
-					dialogTitle: '<liferay-ui:message key="add-fragment" />',
-					formSubmitURL: '<portlet:actionURL name="/fragment/add_fragment_entry"><portlet:param name="mvcRenderCommandName" value="/fragment/edit_fragment_entry" /><portlet:param name="fragmentCollectionId" value="<%= String.valueOf(fragmentDisplayContext.getFragmentCollectionId()) %>" /></portlet:actionURL>',
+					dialogTitle: itemData.title,
+					formSubmitURL: itemData.addFragmentEntryURL,
 					mainFieldLabel: '<liferay-ui:message key="name" />',
 					mainFieldName: 'name',
 					mainFieldPlaceholder: '<liferay-ui:message key="name" />',
@@ -242,9 +265,22 @@ FragmentManagementToolbarDisplayContext fragmentManagementToolbarDisplayContext 
 			Liferay.detach('destroyPortlet', handleDestroyPortlet);
 		}
 
+		var ACTIONS = {
+			'addFragmentEntry': addFragmentEntry
+		};
+
 		Liferay.componentReady('fragmentEntriesManagementToolbar').then(
 			function(managementToolbar) {
-				managementToolbar.on('creationButtonClicked', handleAddFragmentEntryMenuItemClick);
+				managementToolbar.on(
+					['actionItemClicked', 'creationMenuItemClicked'],
+						function(event) {
+							var itemData = event.data.item.data;
+
+							if (itemData && itemData.action && ACTIONS[itemData.action]) {
+								ACTIONS[itemData.action](event);
+							}
+						}
+					);
 			}
 		);
 

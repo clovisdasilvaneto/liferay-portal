@@ -19,7 +19,7 @@ import com.liferay.portal.kernel.util.StringBundler;
 /**
  * @author Hugo Huijser
  */
-public class JavaWhileStatement extends BaseJavaTerm {
+public class JavaWhileStatement extends JavaLoopStatement {
 
 	public void setConditionJavaExpression(
 		JavaExpression conditionJavaExpression) {
@@ -31,13 +31,9 @@ public class JavaWhileStatement extends BaseJavaTerm {
 	public String toString(
 		String indent, String prefix, String suffix, int maxLineLength) {
 
-		StringBundler sb = new StringBundler();
+		StringBundler sb = appendLabelName(indent);
 
-		sb.append(indent);
-
-		indent = "\t" + indent;
-
-		append(
+		appendNewLine(
 			sb, _conditionJavaExpression, indent, "while (", ")" + suffix,
 			maxLineLength);
 

@@ -18,9 +18,10 @@ import com.liferay.exportimport.kernel.staging.StagingUtil;
 import com.liferay.petra.string.CharPool;
 import com.liferay.portal.kernel.exception.NoSuchWorkflowDefinitionLinkException;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.model.GroupConstants;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.model.WorkflowDefinitionLink;
-import com.liferay.portal.kernel.spring.aop.Skip;
+import com.liferay.portal.kernel.transaction.Transactional;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ObjectValuePair;
 import com.liferay.portal.kernel.util.StringBundler;
@@ -257,7 +258,7 @@ public class WorkflowDefinitionLinkLocalServiceImpl
 	}
 
 	@Override
-	@Skip
+	@Transactional(enabled = false)
 	public boolean hasWorkflowDefinitionLink(
 		long companyId, long groupId, String className) {
 
@@ -268,6 +269,14 @@ public class WorkflowDefinitionLinkLocalServiceImpl
 		int count =
 			workflowDefinitionLinkLocalService.getWorkflowDefinitionLinksCount(
 				companyId, groupId, className);
+
+		if (count > 0) {
+			return true;
+		}
+
+		count =
+			workflowDefinitionLinkLocalService.getWorkflowDefinitionLinksCount(
+				companyId, GroupConstants.DEFAULT_LIVE_GROUP_ID, className);
 
 		if (count > 0) {
 			return true;
@@ -286,6 +295,14 @@ public class WorkflowDefinitionLinkLocalServiceImpl
 
 		int count = workflowDefinitionLinkPersistence.countByG_C_C_C(
 			StagingUtil.getLiveGroupId(groupId), companyId,
+			classNameLocalService.getClassNameId(className), classPK);
+
+		if (count > 0) {
+			return true;
+		}
+
+		count = workflowDefinitionLinkPersistence.countByG_C_C_C(
+			GroupConstants.DEFAULT_LIVE_GROUP_ID, companyId,
 			classNameLocalService.getClassNameId(className), classPK);
 
 		if (count > 0) {

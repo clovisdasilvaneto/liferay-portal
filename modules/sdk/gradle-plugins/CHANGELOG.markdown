@@ -6091,6 +6091,50 @@ to version 2.3.286.
 - [LPS-86806]: Update the [Liferay Source Formatter] dependency to version
 1.0.758.
 
+## 3.13.20 - 2018-11-22
+
+### Changed
+- [LPS-87776]: Update the [Liferay Ant BND] dependency to version 3.0.1.
+
+## 3.13.21 - 2018-11-26
+
+### Changed
+- [LPS-87776]: Update the [Liferay Ant BND] dependency to version 3.0.2.
+
+## 3.13.22 - 2018-11-27
+
+### Changed
+- [LPS-86406]: Update the [Liferay Gradle Plugins Service Builder] dependency to
+version 2.2.0.
+- [LPS-86406]: Update the [Liferay Portal Tools Service Builder] dependency to
+version 1.0.248.
+
+## 3.13.23 - 2018-11-27
+
+### Changed
+- [LPS-87839]: Update the [Liferay Ant BND] dependency to version 3.0.3.
+
+## 3.13.24 - 2018-11-28
+
+### Changed
+- [LPS-86806]: Update the [Liferay Gradle Plugins Source Formatter] dependency
+to version 2.3.287.
+- [LPS-86806]: Update the [Liferay Source Formatter] dependency to version
+1.0.759.
+
+## 3.13.25 - 2018-11-29
+
+### Changed
+- [LPS-87936]: Update the [Liferay Gradle Plugins Javadoc Formatter] dependency
+to version 1.0.25.
+- [LPS-87936]: Update the [Liferay Javadoc Formatter] dependency to version
+1.0.30.
+
+## 3.13.26 - 2018-11-30
+
+### Fixed
+- [LPS-87978]: Quote URL arguments in Gogo shell commands.
+
 [Gradle Bundle Plugin]: https://github.com/TomDmitriev/gradle-bundle-plugin
 [Liferay Alloy Taglib]: https://github.com/liferay/alloy-taglibs
 [Liferay Ant BND]: https://github.com/liferay/liferay-portal/tree/master/modules/sdk/ant-bnd
@@ -6545,6 +6589,7 @@ to version 2.3.286.
 [LPS-86308]: https://issues.liferay.com/browse/LPS-86308
 [LPS-86362]: https://issues.liferay.com/browse/LPS-86362
 [LPS-86371]: https://issues.liferay.com/browse/LPS-86371
+[LPS-86406]: https://issues.liferay.com/browse/LPS-86406
 [LPS-86408]: https://issues.liferay.com/browse/LPS-86408
 [LPS-86413]: https://issues.liferay.com/browse/LPS-86413
 [LPS-86447]: https://issues.liferay.com/browse/LPS-86447
@@ -6561,4 +6606,8 @@ to version 2.3.286.
 [LPS-87465]: https://issues.liferay.com/browse/LPS-87465
 [LPS-87466]: https://issues.liferay.com/browse/LPS-87466
 [LPS-87503]: https://issues.liferay.com/browse/LPS-87503
+[LPS-87776]: https://issues.liferay.com/browse/LPS-87776
+[LPS-87839]: https://issues.liferay.com/browse/LPS-87839
+[LPS-87936]: https://issues.liferay.com/browse/LPS-87936
+[LPS-87978]: https://issues.liferay.com/browse/LPS-87978
 [LRDOCS-3023]: https://issues.liferay.com/browse/LRDOCS-3023

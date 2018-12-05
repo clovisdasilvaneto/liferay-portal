@@ -38,6 +38,66 @@ class FragmentEntryLinkList extends Component {
 	}
 
 	/**
+	 * Returns whether a drop is valid or not
+	 * @param {Object} eventData
+	 * @private
+	 * @return {boolean}
+	 * @static
+	 */
+	static _dropValid(eventData) {
+		const sourceData = eventData.source.dataset;
+		const targetData = eventData.target ? eventData.target.dataset : null;
+
+		const {
+			hoveredElementType
+		} = FragmentEntryLinkList._getHoveredElementData(eventData);
+
+		const targetIsSameFragment = (
+			(hoveredElementType === DROP_TARGET_TYPES.fragment) &&
+			(sourceData.fragmentEntryLinkId === targetData.fragmentEntryLinkId)
+		);
+
+		return (hoveredElementType && !targetIsSameFragment);
+	}
+
+	/**
+	 * Get hovered element data
+	 * @param {!Object} eventData
+	 * @private
+	 * @return {Object}
+	 * @static
+	 */
+	static _getHoveredElementData(eventData) {
+		let hoveredElementId = null;
+		let hoveredElementType = null;
+
+		const targetData = eventData.target ? eventData.target.dataset : null;
+
+		if (targetData) {
+			if ('columnId' in targetData) {
+				hoveredElementId = targetData.columnId;
+				hoveredElementType = DROP_TARGET_TYPES.column;
+			}
+			else if ('fragmentEntryLinkId' in targetData) {
+				hoveredElementId = targetData.fragmentEntryLinkId;
+				hoveredElementType = DROP_TARGET_TYPES.fragment;
+			}
+			else if ('layoutSectionId' in targetData) {
+				hoveredElementId = targetData.layoutSectionId;
+				hoveredElementType = DROP_TARGET_TYPES.section;
+			}
+			else if ('fragmentEmptyList' in targetData) {
+				hoveredElementType = DROP_TARGET_TYPES.fragmentList;
+			}
+		}
+
+		return {
+			hoveredElementId,
+			hoveredElementType
+		};
+	}
+
+	/**
 	 * Checks wether a section is empty or not, sets empty parameter
 	 * and returns a new state
 	 * @param {Object} _state
@@ -115,21 +175,25 @@ class FragmentEntryLinkList extends Component {
 
 	/**
 	 * Callback that is executed when an item is being dragged.
-	 * @param {object} data
-	 * @param {MouseEvent} data.originalEvent
+	 * @param {object} eventData
+	 * @param {MouseEvent} eventData.originalEvent
 	 * @private
 	 * @review
 	 */
-	_handleDrag(data) {
-		const targetItem = data.target;
+	_handleDrag(eventData) {
+		if (FragmentEntryLinkList._dropValid(eventData)) {
+			const mouseY = eventData.originalEvent.clientY;
+			const targetItemRegion = position.getRegion(eventData.target);
 
-		if (targetItem && 'fragmentEntryLinkId' in targetItem.dataset) {
-			const mouseY = data.originalEvent.clientY;
-			const targetItemRegion = position.getRegion(targetItem);
+			const {
+				hoveredElementId,
+				hoveredElementType
+			} = FragmentEntryLinkList._getHoveredElementData(eventData);
 
 			this._targetBorder = DRAG_POSITIONS.bottom;
 
-			if (Math.abs(mouseY - targetItemRegion.top) <= Math.abs(mouseY - targetItemRegion.bottom)) {
+			if (Math.abs(mouseY - targetItemRegion.top) <=
+				Math.abs(mouseY - targetItemRegion.bottom)) {
 				this._targetBorder = DRAG_POSITIONS.top;
 			}
 
@@ -137,8 +201,8 @@ class FragmentEntryLinkList extends Component {
 				UPDATE_DRAG_TARGET,
 				{
 					hoveredElementBorder: this._targetBorder,
-					hoveredElementId: targetItem.dataset.fragmentEntryLinkId,
-					hoveredElementType: DROP_TARGET_TYPES.fragment
+					hoveredElementId,
+					hoveredElementType
 				}
 			);
 		}
@@ -165,12 +229,7 @@ class FragmentEntryLinkList extends Component {
 	_handleDrop(data, event) {
 		event.preventDefault();
 
-		const placeholderId = data.source.dataset.fragmentEntryLinkId;
-		const targetId = data.target ?
-			data.target.dataset.fragmentEntryLinkId :
-			'';
-
-		if (targetId && targetId !== placeholderId) {
+		if (FragmentEntryLinkList._dropValid(data)) {
 			requestAnimationFrame(
 				() => {
 					this._initializeDragAndDrop();
@@ -187,9 +246,8 @@ class FragmentEntryLinkList extends Component {
 				.dispatchAction(
 					MOVE_FRAGMENT_ENTRY_LINK,
 					{
-						originFragmentEntryLinkId: placeholderId,
-						targetFragmentEntryLinkBorder: this._targetBorder,
-						targetFragmentEntryLinkId: targetId
+						fragmentEntryLinkId:
+							data.source.dataset.fragmentEntryLinkId
 					}
 				)
 				.dispatchAction(

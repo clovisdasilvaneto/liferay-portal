@@ -16,7 +16,10 @@ package com.liferay.portal.service.persistence.impl;
 
 import aQute.bnd.annotation.ProviderType;
 
+import com.liferay.petra.string.StringBundler;
+
 import com.liferay.portal.kernel.bean.BeanReference;
+import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderPath;
@@ -36,7 +39,6 @@ import com.liferay.portal.kernel.service.persistence.ContactPersistence;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.ProxyUtil;
-import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.model.impl.ContactImpl;
 import com.liferay.portal.model.impl.ContactModelImpl;
 
@@ -1636,6 +1638,9 @@ public class ContactPersistenceImpl extends BasePersistenceImpl<Contact>
 
 	public ContactPersistenceImpl() {
 		setModelClass(Contact.class);
+
+		setModelImplClass(ContactImpl.class);
+		setEntityCacheEnabled(ContactModelImpl.ENTITY_CACHE_ENABLED);
 	}
 
 	/**
@@ -1674,7 +1679,7 @@ public class ContactPersistenceImpl extends BasePersistenceImpl<Contact>
 	 * Clears the cache for all contacts.
 	 *
 	 * <p>
-	 * The {@link com.liferay.portal.kernel.dao.orm.EntityCache} and {@link com.liferay.portal.kernel.dao.orm.FinderCache} are both cleared by this method.
+	 * The {@link EntityCache} and {@link com.liferay.portal.kernel.dao.orm.FinderCache} are both cleared by this method.
 	 * </p>
 	 */
 	@Override
@@ -1690,7 +1695,7 @@ public class ContactPersistenceImpl extends BasePersistenceImpl<Contact>
 	 * Clears the cache for the contact.
 	 *
 	 * <p>
-	 * The {@link com.liferay.portal.kernel.dao.orm.EntityCache} and {@link com.liferay.portal.kernel.dao.orm.FinderCache} are both cleared by this method.
+	 * The {@link EntityCache} and {@link com.liferay.portal.kernel.dao.orm.FinderCache} are both cleared by this method.
 	 * </p>
 	 */
 	@Override
@@ -2020,53 +2025,6 @@ public class ContactPersistenceImpl extends BasePersistenceImpl<Contact>
 	/**
 	 * Returns the contact with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the contact
-	 * @return the contact, or <code>null</code> if a contact with the primary key could not be found
-	 */
-	@Override
-	public Contact fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = EntityCacheUtil.getResult(ContactModelImpl.ENTITY_CACHE_ENABLED,
-				ContactImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		Contact contact = (Contact)serializable;
-
-		if (contact == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				contact = (Contact)session.get(ContactImpl.class, primaryKey);
-
-				if (contact != null) {
-					cacheResult(contact);
-				}
-				else {
-					EntityCacheUtil.putResult(ContactModelImpl.ENTITY_CACHE_ENABLED,
-						ContactImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				EntityCacheUtil.removeResult(ContactModelImpl.ENTITY_CACHE_ENABLED,
-					ContactImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return contact;
-	}
-
-	/**
-	 * Returns the contact with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param contactId the primary key of the contact
 	 * @return the contact, or <code>null</code> if a contact with the primary key could not be found
 	 */
@@ -2357,6 +2315,11 @@ public class ContactPersistenceImpl extends BasePersistenceImpl<Contact>
 		}
 
 		return count.intValue();
+	}
+
+	@Override
+	protected EntityCache getEntityCache() {
+		return EntityCacheUtil.getEntityCache();
 	}
 
 	@Override

@@ -22,6 +22,8 @@ import com.liferay.friendly.url.model.impl.FriendlyURLEntryLocalizationImpl;
 import com.liferay.friendly.url.model.impl.FriendlyURLEntryLocalizationModelImpl;
 import com.liferay.friendly.url.service.persistence.FriendlyURLEntryLocalizationPersistence;
 
+import com.liferay.petra.string.StringBundler;
+
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
 import com.liferay.portal.kernel.dao.orm.FinderPath;
@@ -36,7 +38,6 @@ import com.liferay.portal.kernel.service.persistence.CompanyProviderWrapper;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.ProxyUtil;
-import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.spring.extender.service.ServiceReference;
 
 import java.io.Serializable;
@@ -1160,6 +1161,9 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 
 	public FriendlyURLEntryLocalizationPersistenceImpl() {
 		setModelClass(FriendlyURLEntryLocalization.class);
+
+		setModelImplClass(FriendlyURLEntryLocalizationImpl.class);
+		setEntityCacheEnabled(FriendlyURLEntryLocalizationModelImpl.ENTITY_CACHE_ENABLED);
 	}
 
 	/**
@@ -1589,56 +1593,6 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 	/**
 	 * Returns the friendly url entry localization with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the friendly url entry localization
-	 * @return the friendly url entry localization, or <code>null</code> if a friendly url entry localization with the primary key could not be found
-	 */
-	@Override
-	public FriendlyURLEntryLocalization fetchByPrimaryKey(
-		Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(FriendlyURLEntryLocalizationModelImpl.ENTITY_CACHE_ENABLED,
-				FriendlyURLEntryLocalizationImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		FriendlyURLEntryLocalization friendlyURLEntryLocalization = (FriendlyURLEntryLocalization)serializable;
-
-		if (friendlyURLEntryLocalization == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				friendlyURLEntryLocalization = (FriendlyURLEntryLocalization)session.get(FriendlyURLEntryLocalizationImpl.class,
-						primaryKey);
-
-				if (friendlyURLEntryLocalization != null) {
-					cacheResult(friendlyURLEntryLocalization);
-				}
-				else {
-					entityCache.putResult(FriendlyURLEntryLocalizationModelImpl.ENTITY_CACHE_ENABLED,
-						FriendlyURLEntryLocalizationImpl.class, primaryKey,
-						nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(FriendlyURLEntryLocalizationModelImpl.ENTITY_CACHE_ENABLED,
-					FriendlyURLEntryLocalizationImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return friendlyURLEntryLocalization;
-	}
-
-	/**
-	 * Returns the friendly url entry localization with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param friendlyURLEntryLocalizationId the primary key of the friendly url entry localization
 	 * @return the friendly url entry localization, or <code>null</code> if a friendly url entry localization with the primary key could not be found
 	 */
@@ -1934,6 +1888,11 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 		}
 
 		return count.intValue();
+	}
+
+	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
 	}
 
 	@Override

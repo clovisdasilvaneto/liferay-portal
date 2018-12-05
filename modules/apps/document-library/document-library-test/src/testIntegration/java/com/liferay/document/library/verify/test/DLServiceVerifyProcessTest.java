@@ -123,25 +123,32 @@ public class DLServiceVerifyProcessTest extends BaseVerifyProcessTestCase {
 
 		modelDDMStructure.setCompanyId(12345);
 
-		DDMStructureLocalServiceUtil.updateDDMStructure(modelDDMStructure);
+		try {
+			DDMStructureLocalServiceUtil.updateDDMStructure(modelDDMStructure);
 
-		DLFileVersion dlFileVersion = dlFileEntry.getFileVersion();
+			DLFileVersion dlFileVersion = dlFileEntry.getFileVersion();
 
-		DLFileEntryMetadata dlFileEntryMetadata =
-			DLFileEntryMetadataLocalServiceUtil.fetchFileEntryMetadata(
-				modelDDMStructure.getStructureId(),
-				dlFileVersion.getFileVersionId());
+			DLFileEntryMetadata dlFileEntryMetadata =
+				DLFileEntryMetadataLocalServiceUtil.fetchFileEntryMetadata(
+					modelDDMStructure.getStructureId(),
+					dlFileVersion.getFileVersionId());
 
-		Assert.assertNotNull(dlFileEntryMetadata);
+			Assert.assertNotNull(dlFileEntryMetadata);
 
-		doVerify();
+			doVerify();
 
-		dlFileEntryMetadata =
-			DLFileEntryMetadataLocalServiceUtil.fetchFileEntryMetadata(
-				modelDDMStructure.getStructureId(),
-				dlFileVersion.getFileVersionId());
+			dlFileEntryMetadata =
+				DLFileEntryMetadataLocalServiceUtil.fetchFileEntryMetadata(
+					modelDDMStructure.getStructureId(),
+					dlFileVersion.getFileVersionId());
 
-		Assert.assertNull(dlFileEntryMetadata);
+			Assert.assertNull(dlFileEntryMetadata);
+		}
+		finally {
+			modelDDMStructure.setCompanyId(dlFileEntryType.getCompanyId());
+
+			DDMStructureLocalServiceUtil.updateDDMStructure(modelDDMStructure);
+		}
 	}
 
 	@Test

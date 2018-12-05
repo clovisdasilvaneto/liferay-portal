@@ -25,6 +25,8 @@ import com.liferay.fragment.model.FragmentEntry;
 import com.liferay.fragment.model.FragmentEntryModel;
 import com.liferay.fragment.model.FragmentEntrySoap;
 
+import com.liferay.petra.string.StringBundler;
+
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSON;
@@ -37,7 +39,6 @@ import com.liferay.portal.kernel.service.UserLocalServiceUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.ProxyUtil;
-import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 
 import java.io.Serializable;
@@ -144,7 +145,8 @@ public class FragmentEntryModelImpl extends BaseModelImpl<FragmentEntry>
 	public static final long GROUPID_COLUMN_BITMASK = 8L;
 	public static final long NAME_COLUMN_BITMASK = 16L;
 	public static final long STATUS_COLUMN_BITMASK = 32L;
-	public static final long UUID_COLUMN_BITMASK = 64L;
+	public static final long TYPE_COLUMN_BITMASK = 64L;
+	public static final long UUID_COLUMN_BITMASK = 128L;
 
 	/**
 	 * Converts the soap model instance into a normal model instance.
@@ -695,7 +697,19 @@ public class FragmentEntryModelImpl extends BaseModelImpl<FragmentEntry>
 
 	@Override
 	public void setType(int type) {
+		_columnBitmask |= TYPE_COLUMN_BITMASK;
+
+		if (!_setOriginalType) {
+			_setOriginalType = true;
+
+			_originalType = _type;
+		}
+
 		_type = type;
+	}
+
+	public int getOriginalType() {
+		return _originalType;
 	}
 
 	@JSON
@@ -1003,6 +1017,10 @@ public class FragmentEntryModelImpl extends BaseModelImpl<FragmentEntry>
 		fragmentEntryModelImpl._originalFragmentEntryKey = fragmentEntryModelImpl._fragmentEntryKey;
 
 		fragmentEntryModelImpl._originalName = fragmentEntryModelImpl._name;
+
+		fragmentEntryModelImpl._originalType = fragmentEntryModelImpl._type;
+
+		fragmentEntryModelImpl._setOriginalType = false;
 
 		fragmentEntryModelImpl._originalStatus = fragmentEntryModelImpl._status;
 
@@ -1315,6 +1333,8 @@ public class FragmentEntryModelImpl extends BaseModelImpl<FragmentEntry>
 	private String _js;
 	private long _previewFileEntryId;
 	private int _type;
+	private int _originalType;
+	private boolean _setOriginalType;
 	private Date _lastPublishDate;
 	private int _status;
 	private int _originalStatus;

@@ -14,10 +14,12 @@
 
 package com.liferay.portal.tools.java.parser;
 
+import com.liferay.portal.kernel.util.StringBundler;
+
 /**
  * @author Hugo Huijser
  */
-public class JavaEnhancedForStatement extends BaseJavaTerm {
+public class JavaEnhancedForStatement extends JavaLoopStatement {
 
 	public void setCollectionJavaExpression(
 		JavaExpression collectionJavaExpression) {
@@ -35,7 +37,25 @@ public class JavaEnhancedForStatement extends BaseJavaTerm {
 	public String toString(
 		String indent, String prefix, String suffix, int maxLineLength) {
 
-		return "TODO";
+		StringBundler sb = appendLabelName(indent);
+
+		if (sb.index() > 0) {
+			sb.append("\n");
+		}
+
+		sb.append(indent);
+
+		indent = "\t" + indent;
+
+		indent = append(
+			sb, _javaVariableDefinition, indent, prefix + "for (", " : ",
+			maxLineLength);
+
+		append(
+			sb, _collectionJavaExpression, indent, "", ")" + suffix,
+			maxLineLength);
+
+		return sb.toString();
 	}
 
 	private JavaExpression _collectionJavaExpression;

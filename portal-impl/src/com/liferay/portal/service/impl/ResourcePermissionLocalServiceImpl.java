@@ -103,7 +103,7 @@ public class ResourcePermissionLocalServiceImpl
 		ModelPermissions modelPermissions =
 			serviceContext.getModelPermissions();
 
-		if (modelPermissions != null) {
+		if (_matches(modelPermissions, auditedModel.getModelClassName())) {
 			addModelResourcePermissions(
 				auditedModel.getCompanyId(), getGroupId(auditedModel),
 				auditedModel.getUserId(), auditedModel.getModelClassName(),
@@ -178,7 +178,7 @@ public class ResourcePermissionLocalServiceImpl
 				companyId, name, ResourceConstants.SCOPE_INDIVIDUAL, primKey,
 				ownerRole.getRoleId(), userId, ownerPermissions);
 
-			if (modelPermissions != null) {
+			if (_matches(modelPermissions, name)) {
 				for (String roleName : modelPermissions.getRoleNames()) {
 					Role role = getRole(companyId, groupId, roleName);
 
@@ -223,7 +223,7 @@ public class ResourcePermissionLocalServiceImpl
 		throws PortalException {
 
 		ModelPermissions modelPermissions = ModelPermissionsFactory.create(
-			groupPermissions, guestPermissions);
+			groupPermissions, guestPermissions, name);
 
 		addModelResourcePermissions(
 			companyId, groupId, userId, name, primKey, modelPermissions);
@@ -1667,6 +1667,10 @@ public class ResourcePermissionLocalServiceImpl
 			ModelPermissions modelPermissions)
 		throws PortalException {
 
+		if (!_matches(modelPermissions, name)) {
+			return;
+		}
+
 		for (String roleName : modelPermissions.getRoleNames()) {
 			Role role = getRole(companyId, groupId, roleName);
 
@@ -1687,7 +1691,7 @@ public class ResourcePermissionLocalServiceImpl
 		throws PortalException {
 
 		ModelPermissions modelPermissions = ModelPermissionsFactory.create(
-			groupPermissions, guestPermissions);
+			groupPermissions, guestPermissions, name);
 
 		updateResourcePermissions(
 			companyId, groupId, name, primKey, modelPermissions);
@@ -2030,6 +2034,32 @@ public class ResourcePermissionLocalServiceImpl
 		}
 	}
 
+	private boolean _matches(
+		ModelPermissions modelPermissions, String resourcePermissionName) {
+
+		if (modelPermissions == null) {
+			return false;
+		}
+
+		String resourceName = modelPermissions.getResourceName();
+
+		if (resourceName.equals(_RESOURCE_NAME_ALL_RESOURCES) ||
+			resourceName.equals(resourcePermissionName)) {
+
+			return true;
+		}
+
+		if (_log.isDebugEnabled()) {
+			_log.debug(
+				StringBundler.concat(
+					"Model permissions resource name ", resourceName,
+					" does not match resource permission name ",
+					resourcePermissionName));
+		}
+
+		return false;
+	}
+
 	private boolean _updateResourcePermission(
 			long companyId, String name, int scope, String primKey,
 			long ownerId, long roleId, String[] actionIds, int operator,
@@ -2141,6 +2171,9 @@ public class ResourcePermissionLocalServiceImpl
 	private static final String _FIND_MISSING_RESOURCE_PERMISSIONS =
 		ResourcePermissionLocalServiceImpl.class.getName() +
 			".findMissingResourcePermissions";
+
+	private static final String _RESOURCE_NAME_ALL_RESOURCES =
+		ModelPermissions.class.getName() + "#ALL_RESOURCES";
 
 	private static final String _UPDATE_ACTION_IDS =
 		ResourcePermissionLocalServiceImpl.class.getName() + ".updateActionIds";

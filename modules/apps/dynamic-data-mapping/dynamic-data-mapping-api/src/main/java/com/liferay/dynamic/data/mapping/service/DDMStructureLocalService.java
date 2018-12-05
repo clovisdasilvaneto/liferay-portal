@@ -37,7 +37,6 @@ import com.liferay.portal.kernel.service.BaseLocalService;
 import com.liferay.portal.kernel.service.PersistedModelLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.permission.ModelPermissions;
-import com.liferay.portal.kernel.spring.aop.Skip;
 import com.liferay.portal.kernel.systemevent.SystemEvent;
 import com.liferay.portal.kernel.transaction.Isolation;
 import com.liferay.portal.kernel.transaction.Propagation;
@@ -82,6 +81,7 @@ public interface DDMStructureLocalService extends BaseLocalService,
 	@Indexable(type = IndexableType.REINDEX)
 	public DDMStructure addDDMStructure(DDMStructure ddmStructure);
 
+	@Indexable(type = IndexableType.REINDEX)
 	public DDMStructure addStructure(long userId, long groupId,
 		long parentStructureId, long classNameId, String structureKey,
 		Map<Locale, String> nameMap, Map<Locale, String> descriptionMap,
@@ -285,8 +285,9 @@ public interface DDMStructureLocalService extends BaseLocalService,
 	*
 	* @param structure the structure to be deleted
 	*/
+	@Indexable(type = IndexableType.DELETE)
 	@SystemEvent(type = SystemEventConstants.TYPE_DELETE)
-	public void deleteStructure(DDMStructure structure)
+	public DDMStructure deleteStructure(DDMStructure structure)
 		throws PortalException;
 
 	/**
@@ -676,8 +677,7 @@ public interface DDMStructureLocalService extends BaseLocalService,
 	public List<DDMStructure> getStructure(long groupId, String name,
 		String description);
 
-	@Skip
-	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	@Transactional(enabled = false)
 	public DDMForm getStructureDDMForm(DDMStructure structure)
 		throws PortalException;
 
@@ -1027,16 +1027,19 @@ public interface DDMStructureLocalService extends BaseLocalService,
 	@Indexable(type = IndexableType.REINDEX)
 	public DDMStructure updateDDMStructure(DDMStructure ddmStructure);
 
+	@Indexable(type = IndexableType.REINDEX)
 	public DDMStructure updateStructure(long userId, long structureId,
 		DDMForm ddmForm, DDMFormLayout ddmFormLayout,
 		ServiceContext serviceContext) throws PortalException;
 
+	@Indexable(type = IndexableType.REINDEX)
 	public DDMStructure updateStructure(long userId, long groupId,
 		long parentStructureId, long classNameId, String structureKey,
 		Map<Locale, String> nameMap, Map<Locale, String> descriptionMap,
 		DDMForm ddmForm, DDMFormLayout ddmFormLayout,
 		ServiceContext serviceContext) throws PortalException;
 
+	@Indexable(type = IndexableType.REINDEX)
 	public DDMStructure updateStructure(long userId, long structureId,
 		long parentStructureId, Map<Locale, String> nameMap,
 		Map<Locale, String> descriptionMap, DDMForm ddmForm,

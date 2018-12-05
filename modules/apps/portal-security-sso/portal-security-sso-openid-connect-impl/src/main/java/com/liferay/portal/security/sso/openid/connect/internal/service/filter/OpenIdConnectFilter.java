@@ -108,6 +108,13 @@ public class OpenIdConnectFilter extends BaseFilter {
 			else {
 				_openIdConnectServiceHandler.processAuthenticationResponse(
 					httpServletRequest, httpServletResponse);
+
+				String actionURL = (String)httpSession.getAttribute(
+					OpenIdConnectWebKeys.OPEN_ID_CONNECT_ACTION_URL);
+
+				if (actionURL != null) {
+					httpServletResponse.sendRedirect(actionURL);
+				}
 			}
 		}
 		catch (StrangersNotAllowedException |
@@ -155,15 +162,16 @@ public class OpenIdConnectFilter extends BaseFilter {
 			return;
 		}
 
-		String renderURL = (String)session.getAttribute(
-			OpenIdConnectWebKeys.OPEN_ID_CONNECT_RENDER_URL);
+		String actionURL = (String)session.getAttribute(
+			OpenIdConnectWebKeys.OPEN_ID_CONNECT_ACTION_URL);
 
-		String portletId = _http.getParameter(renderURL, "p_p_id", false);
+		if (actionURL == null) {
+			return;
+		}
 
-		renderURL = _http.addParameter(
-			renderURL, _portal.getPortletNamespace(portletId) + "error", error);
+		actionURL = _http.addParameter(actionURL, "error", error);
 
-		response.sendRedirect(renderURL);
+		response.sendRedirect(actionURL);
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(

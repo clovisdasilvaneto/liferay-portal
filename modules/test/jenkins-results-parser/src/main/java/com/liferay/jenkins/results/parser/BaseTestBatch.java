@@ -18,7 +18,8 @@ package com.liferay.jenkins.results.parser;
  * @author Michael Hashimoto
  */
 public abstract class BaseTestBatch
-	<T extends BatchBuildData, S extends Workspace> implements TestBatch<T, S> {
+	<T extends BatchBuildData, S extends Workspace>
+		implements TestBatch<T, S> {
 
 	public JDK getJDK() {
 		return _jdk;
@@ -26,9 +27,15 @@ public abstract class BaseTestBatch
 
 	@Override
 	public void run() {
-		executeBatch();
-
-		publishResults();
+		try {
+			executeBatch();
+		}
+		catch (AntException ae) {
+			throw new RuntimeException(ae);
+		}
+		finally {
+			publishResults();
+		}
 	}
 
 	protected BaseTestBatch(T batchBuildData, S workspace) {
@@ -37,7 +44,7 @@ public abstract class BaseTestBatch
 		_workspace = workspace;
 	}
 
-	protected abstract void executeBatch();
+	protected abstract void executeBatch() throws AntException;
 
 	protected String getAntOpts(String batchName) {
 		return _jdk.getAntOpts();

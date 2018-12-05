@@ -16,6 +16,8 @@ package com.liferay.portal.workflow.kaleo.service.persistence.impl;
 
 import aQute.bnd.annotation.ProviderType;
 
+import com.liferay.petra.string.StringBundler;
+
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
 import com.liferay.portal.kernel.dao.orm.FinderPath;
@@ -32,7 +34,6 @@ import com.liferay.portal.kernel.service.persistence.CompanyProviderWrapper;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.ProxyUtil;
-import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.spring.extender.service.ServiceReference;
 import com.liferay.portal.workflow.kaleo.exception.NoSuchTaskFormException;
@@ -2408,6 +2409,9 @@ public class KaleoTaskFormPersistenceImpl extends BasePersistenceImpl<KaleoTaskF
 
 	public KaleoTaskFormPersistenceImpl() {
 		setModelClass(KaleoTaskForm.class);
+
+		setModelImplClass(KaleoTaskFormImpl.class);
+		setEntityCacheEnabled(KaleoTaskFormModelImpl.ENTITY_CACHE_ENABLED);
 	}
 
 	/**
@@ -2864,54 +2868,6 @@ public class KaleoTaskFormPersistenceImpl extends BasePersistenceImpl<KaleoTaskF
 	/**
 	 * Returns the kaleo task form with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the kaleo task form
-	 * @return the kaleo task form, or <code>null</code> if a kaleo task form with the primary key could not be found
-	 */
-	@Override
-	public KaleoTaskForm fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(KaleoTaskFormModelImpl.ENTITY_CACHE_ENABLED,
-				KaleoTaskFormImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		KaleoTaskForm kaleoTaskForm = (KaleoTaskForm)serializable;
-
-		if (kaleoTaskForm == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				kaleoTaskForm = (KaleoTaskForm)session.get(KaleoTaskFormImpl.class,
-						primaryKey);
-
-				if (kaleoTaskForm != null) {
-					cacheResult(kaleoTaskForm);
-				}
-				else {
-					entityCache.putResult(KaleoTaskFormModelImpl.ENTITY_CACHE_ENABLED,
-						KaleoTaskFormImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(KaleoTaskFormModelImpl.ENTITY_CACHE_ENABLED,
-					KaleoTaskFormImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return kaleoTaskForm;
-	}
-
-	/**
-	 * Returns the kaleo task form with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param kaleoTaskFormId the primary key of the kaleo task form
 	 * @return the kaleo task form, or <code>null</code> if a kaleo task form with the primary key could not be found
 	 */
@@ -3203,6 +3159,11 @@ public class KaleoTaskFormPersistenceImpl extends BasePersistenceImpl<KaleoTaskF
 		}
 
 		return count.intValue();
+	}
+
+	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
 	}
 
 	@Override

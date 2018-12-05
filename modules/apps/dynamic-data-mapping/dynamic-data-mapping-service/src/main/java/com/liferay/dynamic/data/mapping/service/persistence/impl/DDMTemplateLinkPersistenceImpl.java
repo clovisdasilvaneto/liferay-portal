@@ -22,6 +22,8 @@ import com.liferay.dynamic.data.mapping.model.impl.DDMTemplateLinkImpl;
 import com.liferay.dynamic.data.mapping.model.impl.DDMTemplateLinkModelImpl;
 import com.liferay.dynamic.data.mapping.service.persistence.DDMTemplateLinkPersistence;
 
+import com.liferay.petra.string.StringBundler;
+
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
 import com.liferay.portal.kernel.dao.orm.FinderPath;
@@ -36,7 +38,6 @@ import com.liferay.portal.kernel.service.persistence.CompanyProviderWrapper;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.ProxyUtil;
-import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.spring.extender.service.ServiceReference;
 
 import java.io.Serializable;
@@ -1325,6 +1326,9 @@ public class DDMTemplateLinkPersistenceImpl extends BasePersistenceImpl<DDMTempl
 
 	public DDMTemplateLinkPersistenceImpl() {
 		setModelClass(DDMTemplateLink.class);
+
+		setModelImplClass(DDMTemplateLinkImpl.class);
+		setEntityCacheEnabled(DDMTemplateLinkModelImpl.ENTITY_CACHE_ENABLED);
 	}
 
 	/**
@@ -1709,54 +1713,6 @@ public class DDMTemplateLinkPersistenceImpl extends BasePersistenceImpl<DDMTempl
 	/**
 	 * Returns the ddm template link with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the ddm template link
-	 * @return the ddm template link, or <code>null</code> if a ddm template link with the primary key could not be found
-	 */
-	@Override
-	public DDMTemplateLink fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(DDMTemplateLinkModelImpl.ENTITY_CACHE_ENABLED,
-				DDMTemplateLinkImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		DDMTemplateLink ddmTemplateLink = (DDMTemplateLink)serializable;
-
-		if (ddmTemplateLink == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				ddmTemplateLink = (DDMTemplateLink)session.get(DDMTemplateLinkImpl.class,
-						primaryKey);
-
-				if (ddmTemplateLink != null) {
-					cacheResult(ddmTemplateLink);
-				}
-				else {
-					entityCache.putResult(DDMTemplateLinkModelImpl.ENTITY_CACHE_ENABLED,
-						DDMTemplateLinkImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(DDMTemplateLinkModelImpl.ENTITY_CACHE_ENABLED,
-					DDMTemplateLinkImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return ddmTemplateLink;
-	}
-
-	/**
-	 * Returns the ddm template link with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param templateLinkId the primary key of the ddm template link
 	 * @return the ddm template link, or <code>null</code> if a ddm template link with the primary key could not be found
 	 */
@@ -2048,6 +2004,11 @@ public class DDMTemplateLinkPersistenceImpl extends BasePersistenceImpl<DDMTempl
 		}
 
 		return count.intValue();
+	}
+
+	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
 	}
 
 	@Override

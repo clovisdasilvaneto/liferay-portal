@@ -22,6 +22,8 @@ import com.liferay.dynamic.data.mapping.model.impl.DDMFormInstanceImpl;
 import com.liferay.dynamic.data.mapping.model.impl.DDMFormInstanceModelImpl;
 import com.liferay.dynamic.data.mapping.service.persistence.DDMFormInstancePersistence;
 
+import com.liferay.petra.string.StringBundler;
+
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
 import com.liferay.portal.kernel.dao.orm.FinderPath;
@@ -42,7 +44,6 @@ import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.SetUtil;
-import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.uuid.PortalUUIDUtil;
@@ -2809,6 +2810,9 @@ public class DDMFormInstancePersistenceImpl extends BasePersistenceImpl<DDMFormI
 	public DDMFormInstancePersistenceImpl() {
 		setModelClass(DDMFormInstance.class);
 
+		setModelImplClass(DDMFormInstanceImpl.class);
+		setEntityCacheEnabled(DDMFormInstanceModelImpl.ENTITY_CACHE_ENABLED);
+
 		try {
 			Field field = BasePersistenceImpl.class.getDeclaredField(
 					"_dbColumnNames");
@@ -3271,54 +3275,6 @@ public class DDMFormInstancePersistenceImpl extends BasePersistenceImpl<DDMFormI
 	/**
 	 * Returns the ddm form instance with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the ddm form instance
-	 * @return the ddm form instance, or <code>null</code> if a ddm form instance with the primary key could not be found
-	 */
-	@Override
-	public DDMFormInstance fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(DDMFormInstanceModelImpl.ENTITY_CACHE_ENABLED,
-				DDMFormInstanceImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		DDMFormInstance ddmFormInstance = (DDMFormInstance)serializable;
-
-		if (ddmFormInstance == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				ddmFormInstance = (DDMFormInstance)session.get(DDMFormInstanceImpl.class,
-						primaryKey);
-
-				if (ddmFormInstance != null) {
-					cacheResult(ddmFormInstance);
-				}
-				else {
-					entityCache.putResult(DDMFormInstanceModelImpl.ENTITY_CACHE_ENABLED,
-						DDMFormInstanceImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(DDMFormInstanceModelImpl.ENTITY_CACHE_ENABLED,
-					DDMFormInstanceImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return ddmFormInstance;
-	}
-
-	/**
-	 * Returns the ddm form instance with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param formInstanceId the primary key of the ddm form instance
 	 * @return the ddm form instance, or <code>null</code> if a ddm form instance with the primary key could not be found
 	 */
@@ -3615,6 +3571,11 @@ public class DDMFormInstancePersistenceImpl extends BasePersistenceImpl<DDMFormI
 	@Override
 	public Set<String> getBadColumnNames() {
 		return _badColumnNames;
+	}
+
+	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
 	}
 
 	@Override

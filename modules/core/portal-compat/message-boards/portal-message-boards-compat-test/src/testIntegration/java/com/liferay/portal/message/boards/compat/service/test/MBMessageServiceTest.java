@@ -49,7 +49,6 @@ import com.liferay.portal.kernel.util.ObjectValuePair;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.security.permission.DoAsUserThread;
 import com.liferay.portal.service.test.ServiceTestUtil;
-import com.liferay.portal.spring.transaction.DefaultTransactionExecutor;
 import com.liferay.portal.test.log.CaptureAppender;
 import com.liferay.portal.test.log.Log4JLoggerTestUtil;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
@@ -151,7 +150,9 @@ public class MBMessageServiceTest {
 					BasePersistenceImpl.class.getName(), Level.ERROR);
 			CaptureAppender captureAppender2 =
 				Log4JLoggerTestUtil.configureLog4JLogger(
-					DefaultTransactionExecutor.class.getName(), Level.ERROR);
+					"com.liferay.portal.spring.transaction." +
+						"DefaultTransactionExecutor",
+					Level.ERROR);
 			CaptureAppender captureAppender3 =
 				Log4JLoggerTestUtil.configureLog4JLogger(
 					DoAsUserThread.class.getName(), Level.ERROR);
@@ -160,7 +161,7 @@ public class MBMessageServiceTest {
 					JDBCExceptionReporter.class.getName(), Level.ERROR);
 			CaptureAppender captureAppender5 =
 				Log4JLoggerTestUtil.configureLog4JLogger(
-					SynchronousDestination.class.getName(), Level.ERROR);) {
+					SynchronousDestination.class.getName(), Level.ERROR)) {
 
 			for (DoAsUserThread doAsUserThread : doAsUserThreads) {
 				doAsUserThread.start();
@@ -260,8 +261,8 @@ public class MBMessageServiceTest {
 		PermissionChecker permissionChecker =
 			PermissionCheckerFactoryUtil.create(user);
 
-		try (ContextUserReplace contextUserReplace =
-				new ContextUserReplace(user, permissionChecker)) {
+		try (ContextUserReplace contextUserReplace = new ContextUserReplace(
+				user, permissionChecker)) {
 
 			MBMessageServiceUtil.addMessage(
 				_group.getGroupId(), _category.getCategoryId(),
@@ -285,8 +286,8 @@ public class MBMessageServiceTest {
 		PermissionChecker permissionChecker =
 			PermissionCheckerFactoryUtil.create(user);
 
-		try (ContextUserReplace contextUserReplace =
-				new ContextUserReplace(user, permissionChecker)) {
+		try (ContextUserReplace contextUserReplace = new ContextUserReplace(
+				user, permissionChecker)) {
 
 			MBMessageServiceUtil.addMessage(
 				_group.getGroupId(),

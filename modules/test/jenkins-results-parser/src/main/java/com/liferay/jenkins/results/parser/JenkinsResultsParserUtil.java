@@ -102,6 +102,11 @@ public class JenkinsResultsParserUtil {
 			"/liferay-portal/test.properties"
 	};
 
+	public static final String[] DEFAULT_JENKINS_PROPERTIES_URLS = {
+		"http://mirrors-no-cache.lax.liferay.com/github.com/liferay" +
+			"/liferay-jenkins-ee/jenkins.properties"
+	};
+
 	public static boolean debug;
 
 	public static void clearCache() {
@@ -159,11 +164,11 @@ public class JenkinsResultsParserUtil {
 				parentFile.mkdirs();
 			}
 
-			try (FileInputStream fileInputStream =
-					new FileInputStream(source)) {
+			try (FileInputStream fileInputStream = new FileInputStream(
+					source)) {
 
-				try (FileOutputStream fileOutputStream =
-						new FileOutputStream(target)) {
+				try (FileOutputStream fileOutputStream = new FileOutputStream(
+						target)) {
 
 					Files.copy(Paths.get(source.toURI()), fileOutputStream);
 
@@ -816,6 +821,43 @@ public class JenkinsResultsParserUtil {
 			"/", path.replaceFirst("^/*", ""));
 	}
 
+	public static String[] getGlobsFromProperty(String globProperty) {
+		List<String> curlyBraceExpansionList = new ArrayList<>();
+
+		Matcher curlyBraceMatcher = _curlyBraceExpansionPattern.matcher(
+			globProperty);
+
+		while (curlyBraceMatcher.find()) {
+			int index = curlyBraceExpansionList.size();
+
+			String value = curlyBraceMatcher.group();
+
+			curlyBraceExpansionList.add(value);
+
+			globProperty = globProperty.replace(
+				value, combine("${", String.valueOf(index), "}"));
+		}
+
+		List<String> globs = new ArrayList<>();
+
+		for (String tempGlob : globProperty.split(",")) {
+			Matcher matcher = _nestedPropertyPattern.matcher(tempGlob);
+
+			String glob = tempGlob;
+
+			while (matcher.find()) {
+				Integer index = Integer.parseInt(matcher.group(1));
+
+				glob = glob.replace(
+					matcher.group(), curlyBraceExpansionList.get(index));
+			}
+
+			globs.add(glob);
+		}
+
+		return globs.toArray(new String[globs.size()]);
+	}
+
 	public static String getHostName(String defaultHostName) {
 		try {
 			InetAddress inetAddress = InetAddress.getLocalHost();
@@ -927,6 +969,36 @@ public class JenkinsResultsParserUtil {
 		}
 
 		return jenkinsMasters;
+	}
+
+	public static Properties getJenkinsProperties() throws IOException {
+		Properties properties = new Properties();
+
+		if ((_jenkinsProperties != null) && !_jenkinsProperties.isEmpty()) {
+			properties.putAll(_jenkinsProperties);
+
+			return properties;
+		}
+
+		for (String url : DEFAULT_JENKINS_PROPERTIES_URLS) {
+			properties.load(
+				new StringReader(toString(getLocalURL(url), false)));
+		}
+
+		LocalGitRepository localGitRepository =
+			GitRepositoryFactory.getLocalGitRepository(
+				"liferay-jenkins-ee", "master");
+
+		File jenkinsPropertiesFile = new File(
+			localGitRepository.getDirectory(), "jenkins.properties");
+
+		if (jenkinsPropertiesFile.exists()) {
+			properties.putAll(getProperties(jenkinsPropertiesFile));
+		}
+
+		_jenkinsProperties = properties;
+
+		return properties;
 	}
 
 	public static String getJobVariant(JSONObject jsonObject) {
@@ -1453,6 +1525,48 @@ public class JenkinsResultsParserUtil {
 		return false;
 	}
 
+	public static boolean isJSONArrayEqual(
+		JSONArray expectedJSONArray, JSONArray actualJSONArray) {
+
+		if (expectedJSONArray.length() != actualJSONArray.length()) {
+			return false;
+		}
+
+		for (int i = 0; i < expectedJSONArray.length(); i++) {
+			Object actual = actualJSONArray.get(i);
+			Object expected = expectedJSONArray.get(i);
+
+			if (!_isJSONExpectedAndActualEqual(expected, actual)) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	public static boolean isJSONObjectEqual(
+		JSONObject expectedJSONObject, JSONObject actualJSONObject) {
+
+		JSONArray namesJSONArray = expectedJSONObject.names();
+
+		for (int i = 0; i < namesJSONArray.length(); i++) {
+			String name = namesJSONArray.getString(i);
+
+			if (!actualJSONObject.has(name)) {
+				return false;
+			}
+
+			Object expected = expectedJSONObject.get(name);
+			Object actual = actualJSONObject.get(name);
+
+			if (!_isJSONExpectedAndActualEqual(expected, actual)) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 	public static boolean isReachable(String hostname) {
 		try {
 			InetAddress inetAddress = InetAddress.getByName(hostname);
@@ -1861,7 +1975,7 @@ public class JenkinsResultsParserUtil {
 	}
 
 	public static List<PathMatcher> toPathMatchers(
-		String prefix, String... globPatterns) {
+		String prefix, String... globs) {
 
 		if (prefix == null) {
 			prefix = "";
@@ -1869,12 +1983,11 @@ public class JenkinsResultsParserUtil {
 
 		FileSystem fileSystem = FileSystems.getDefault();
 
-		List<PathMatcher> pathMatchers = new ArrayList<>(globPatterns.length);
+		List<PathMatcher> pathMatchers = new ArrayList<>(globs.length);
 
-		for (String globPattern : globPatterns) {
+		for (String glob : globs) {
 			pathMatchers.add(
-				fileSystem.getPathMatcher(
-					combine("glob:", prefix, globPattern)));
+				fileSystem.getPathMatcher(combine("glob:", prefix, glob)));
 		}
 
 		return pathMatchers;
@@ -2472,6 +2585,32 @@ public class JenkinsResultsParserUtil {
 		return "github.message.redact.token[" + index + "]";
 	}
 
+	private static boolean _isJSONExpectedAndActualEqual(
+		Object expected, Object actual) {
+
+		if (actual instanceof JSONObject) {
+			if (!(expected instanceof JSONObject) ||
+				!isJSONObjectEqual((JSONObject)expected, (JSONObject)actual)) {
+
+				return false;
+			}
+		}
+		else if (actual instanceof JSONArray) {
+			if (!(expected instanceof JSONArray) ||
+				!isJSONArrayEqual((JSONArray)expected, (JSONArray)actual)) {
+
+				return false;
+			}
+		}
+		else {
+			if (!actual.equals(expected)) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 	private static final long _BASH_COMMAND_TIMEOUT_DEFAULT = 1000 * 60 * 60;
 
 	private static final String _LOAD_BALANCER_SERVICE_URL_TEMPLATE = combine(
@@ -2497,8 +2636,11 @@ public class JenkinsResultsParserUtil {
 
 	private static Hashtable<?, ?> _buildProperties;
 	private static String[] _buildPropertiesURLs;
+	private static final Pattern _curlyBraceExpansionPattern = Pattern.compile(
+		"\\{.*?\\}");
 	private static final Pattern _javaVersionPattern = Pattern.compile(
 		"(\\d+\\.\\d+)");
+	private static Hashtable<?, ?> _jenkinsProperties;
 	private static final Pattern _nestedPropertyPattern = Pattern.compile(
 		"\\$\\{([^\\}]+)\\}");
 	private static Set<String> _redactTokens;

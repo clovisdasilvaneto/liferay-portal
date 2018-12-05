@@ -26,6 +26,7 @@ import com.liferay.portal.tools.java.parser.JavaArrayElement;
 import com.liferay.portal.tools.java.parser.JavaBreakStatement;
 import com.liferay.portal.tools.java.parser.JavaCatchStatement;
 import com.liferay.portal.tools.java.parser.JavaClassCall;
+import com.liferay.portal.tools.java.parser.JavaClassDefinition;
 import com.liferay.portal.tools.java.parser.JavaConstructorCall;
 import com.liferay.portal.tools.java.parser.JavaConstructorDefinition;
 import com.liferay.portal.tools.java.parser.JavaContinueStatement;
@@ -35,9 +36,9 @@ import com.liferay.portal.tools.java.parser.JavaExpression;
 import com.liferay.portal.tools.java.parser.JavaForStatement;
 import com.liferay.portal.tools.java.parser.JavaIfStatement;
 import com.liferay.portal.tools.java.parser.JavaInstanceofStatement;
-import com.liferay.portal.tools.java.parser.JavaLabeledStatement;
 import com.liferay.portal.tools.java.parser.JavaLambdaExpression;
 import com.liferay.portal.tools.java.parser.JavaLambdaParameter;
+import com.liferay.portal.tools.java.parser.JavaLoopStatement;
 import com.liferay.portal.tools.java.parser.JavaMethodCall;
 import com.liferay.portal.tools.java.parser.JavaMethodDefinition;
 import com.liferay.portal.tools.java.parser.JavaMethodReference;
@@ -54,6 +55,7 @@ import com.liferay.portal.tools.java.parser.JavaSynchronizedStatement;
 import com.liferay.portal.tools.java.parser.JavaTerm;
 import com.liferay.portal.tools.java.parser.JavaTernaryOperator;
 import com.liferay.portal.tools.java.parser.JavaThrowStatement;
+import com.liferay.portal.tools.java.parser.JavaTryStatement;
 import com.liferay.portal.tools.java.parser.JavaType;
 import com.liferay.portal.tools.java.parser.JavaTypeCast;
 import com.liferay.portal.tools.java.parser.JavaVariableDefinition;
@@ -136,6 +138,98 @@ public class JavaParserUtil {
 		javaCatchStatement.setParameterTypeNames(parameterTypeNames);
 
 		return javaCatchStatement;
+	}
+
+	public static JavaClassDefinition parseJavaClassDefinition(
+		DetailAST classDefinitionDetailAST) {
+
+		JavaClassDefinition javaClassDefinition = new JavaClassDefinition();
+
+		DetailAST modifiersDetailAST = classDefinitionDetailAST.findFirstToken(
+			TokenTypes.MODIFIERS);
+
+		javaClassDefinition.setJavaAnnotations(
+			_parseJavaAnnotations(modifiersDetailAST));
+		javaClassDefinition.setModifiers(_parseModifiers(modifiersDetailAST));
+
+		JavaType classJavaType = new JavaType(
+			_getName(classDefinitionDetailAST), 0);
+
+		DetailAST typeParametersDetailAST =
+			classDefinitionDetailAST.findFirstToken(TokenTypes.TYPE_PARAMETERS);
+
+		if (typeParametersDetailAST != null) {
+			classJavaType.setGenericJavaTypes(
+				_parseGenericJavaTypes(
+					typeParametersDetailAST, TokenTypes.TYPE_PARAMETER));
+		}
+
+		javaClassDefinition.setClassJavaType(classJavaType);
+
+		DetailAST extendsClauseDetailAST =
+			classDefinitionDetailAST.findFirstToken(TokenTypes.EXTENDS_CLAUSE);
+
+		if (extendsClauseDetailAST != null) {
+			javaClassDefinition.setExtendedClassJavaType(
+				_parseJavaType(extendsClauseDetailAST));
+		}
+
+		DetailAST implementsClauseDetailAST =
+			classDefinitionDetailAST.findFirstToken(
+				TokenTypes.IMPLEMENTS_CLAUSE);
+
+		if (implementsClauseDetailAST == null) {
+			return javaClassDefinition;
+		}
+
+		List<JavaType> implementedClassJavaTypes = new ArrayList<>();
+
+		DetailAST childDetailAST = implementsClauseDetailAST.getFirstChild();
+
+		while (true) {
+			if (childDetailAST == null) {
+				javaClassDefinition.setImplementedClassJavaTypes(
+					implementedClassJavaTypes);
+
+				return javaClassDefinition;
+			}
+
+			if (childDetailAST.getType() == TokenTypes.IDENT) {
+				JavaType javaType = new JavaType(childDetailAST.getText(), 0);
+
+				DetailAST nextSiblingDetailAST =
+					childDetailAST.getNextSibling();
+
+				if ((nextSiblingDetailAST != null) &&
+					(nextSiblingDetailAST.getType() ==
+						TokenTypes.TYPE_ARGUMENTS)) {
+
+					javaType.setGenericJavaTypes(
+						_parseGenericJavaTypes(
+							nextSiblingDetailAST, TokenTypes.TYPE_ARGUMENT));
+				}
+
+				implementedClassJavaTypes.add(javaType);
+			}
+			else if (childDetailAST.getType() == TokenTypes.DOT) {
+				FullIdent fullIdent = FullIdent.createFullIdent(childDetailAST);
+
+				JavaType javaType = new JavaType(fullIdent.getText(), 0);
+
+				DetailAST typeArgumentsDetailAST =
+					childDetailAST.findFirstToken(TokenTypes.TYPE_ARGUMENTS);
+
+				if (typeArgumentsDetailAST != null) {
+					javaType.setGenericJavaTypes(
+						_parseGenericJavaTypes(
+							typeArgumentsDetailAST, TokenTypes.TYPE_ARGUMENT));
+				}
+
+				implementedClassJavaTypes.add(javaType);
+			}
+
+			childDetailAST = childDetailAST.getNextSibling();
+		}
 	}
 
 	public static JavaConstructorCall parseJavaConstructorCall(
@@ -320,7 +414,7 @@ public class JavaParserUtil {
 		return javaExpression;
 	}
 
-	public static JavaTerm parseJavaForStatement(
+	public static JavaLoopStatement parseJavaForStatement(
 		DetailAST literalForDetailAST) {
 
 		DetailAST firstChildDetailAST = literalForDetailAST.getFirstChild();
@@ -347,27 +441,28 @@ public class JavaParserUtil {
 		return javaIfStatement;
 	}
 
-	public static JavaLabeledStatement parseJavaLabeledStatement(
+	public static JavaLoopStatement parseJavaLabeledStatement(
 		DetailAST labeledStatementDetailAST) {
+
+		JavaLoopStatement javaLoopStatement = null;
 
 		DetailAST firstChildDetailAST =
 			labeledStatementDetailAST.getFirstChild();
 
-		JavaLabeledStatement javaLabeledStatement = new JavaLabeledStatement(
-			firstChildDetailAST.getText());
-
 		DetailAST nextSiblingDetailAST = firstChildDetailAST.getNextSibling();
 
 		if (nextSiblingDetailAST.getType() == TokenTypes.LITERAL_FOR) {
-			javaLabeledStatement.setLoopJavaTerm(
-				parseJavaForStatement(nextSiblingDetailAST));
+			javaLoopStatement = parseJavaForStatement(nextSiblingDetailAST);
 		}
 		else if (nextSiblingDetailAST.getType() == TokenTypes.LITERAL_WHILE) {
-			javaLabeledStatement.setLoopJavaTerm(
-				parseJavaWhileStatement(nextSiblingDetailAST));
+			javaLoopStatement = parseJavaWhileStatement(nextSiblingDetailAST);
 		}
 
-		return javaLabeledStatement;
+		if (javaLoopStatement != null) {
+			javaLoopStatement.setLabelName(firstChildDetailAST.getText());
+		}
+
+		return javaLoopStatement;
 	}
 
 	public static JavaMethodDefinition parseJavaMethodDefinition(
@@ -422,14 +517,47 @@ public class JavaParserUtil {
 			parseJavaExpression(literalThrowDetailAST.getFirstChild()));
 	}
 
+	public static JavaTryStatement parseJavaTryStatement(
+		DetailAST literalTryDetailAST) {
+
+		JavaTryStatement javaTryStatement = new JavaTryStatement();
+
+		DetailAST firstChildDetailAST = literalTryDetailAST.getFirstChild();
+
+		if (firstChildDetailAST.getType() !=
+				TokenTypes.RESOURCE_SPECIFICATION) {
+
+			return javaTryStatement;
+		}
+
+		List<JavaVariableDefinition> resourceJavaVariableDefinitions =
+			new ArrayList<>();
+
+		DetailAST resourcesDetailAST = firstChildDetailAST.findFirstToken(
+			TokenTypes.RESOURCES);
+
+		List<DetailAST> resourceDetailASTList = DetailASTUtil.getAllChildTokens(
+			resourcesDetailAST, false, TokenTypes.RESOURCE);
+
+		for (DetailAST resourceDetailAST : resourceDetailASTList) {
+			resourceJavaVariableDefinitions.add(
+				parseJavaVariableDefinition(resourceDetailAST));
+		}
+
+		javaTryStatement.setResourceJavaVariableDefinitions(
+			resourceJavaVariableDefinitions);
+
+		return javaTryStatement;
+	}
+
 	public static JavaVariableDefinition parseJavaVariableDefinition(
-		DetailAST variableDefinitionDetailAST) {
+		DetailAST detailAST) {
 
 		JavaVariableDefinition javaVariableDefinition =
-			new JavaVariableDefinition(_getName(variableDefinitionDetailAST));
+			new JavaVariableDefinition(_getName(detailAST));
 
-		DetailAST modifiersDetailAST =
-			variableDefinitionDetailAST.findFirstToken(TokenTypes.MODIFIERS);
+		DetailAST modifiersDetailAST = detailAST.findFirstToken(
+			TokenTypes.MODIFIERS);
 
 		javaVariableDefinition.setJavaAnnotations(
 			_parseJavaAnnotations(modifiersDetailAST));
@@ -437,11 +565,9 @@ public class JavaParserUtil {
 			_parseModifiers(modifiersDetailAST));
 
 		javaVariableDefinition.setJavaType(
-			_parseJavaType(
-				variableDefinitionDetailAST.findFirstToken(TokenTypes.TYPE)));
+			_parseJavaType(detailAST.findFirstToken(TokenTypes.TYPE)));
 
-		DetailAST assignDetailAST = variableDefinitionDetailAST.findFirstToken(
-			TokenTypes.ASSIGN);
+		DetailAST assignDetailAST = detailAST.findFirstToken(TokenTypes.ASSIGN);
 
 		if (assignDetailAST != null) {
 			javaVariableDefinition.setAssignValueJavaExpression(

@@ -20,6 +20,7 @@ import com.liferay.apio.architect.resource.ItemResource;
 import com.liferay.apio.architect.routes.ItemRoutes;
 import com.liferay.blogs.model.BlogsEntry;
 import com.liferay.message.boards.model.MBDiscussion;
+import com.liferay.portal.apio.exception.ValidationException;
 import com.liferay.portal.apio.user.CurrentUser;
 import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.model.User;
@@ -32,9 +33,11 @@ import com.liferay.workflow.apio.architect.identifier.WorkflowTaskIdentifier;
 import com.liferay.workflow.apio.internal.architect.form.AssignToMeForm;
 import com.liferay.workflow.apio.internal.architect.form.AssignToUserForm;
 import com.liferay.workflow.apio.internal.architect.form.ChangeTransitionForm;
+import com.liferay.workflow.apio.internal.architect.form.UpdateDueDateForm;
 import com.liferay.workflow.apio.internal.architect.route.AssignToMePostRoute;
 import com.liferay.workflow.apio.internal.architect.route.AssignToUserPostRoute;
 import com.liferay.workflow.apio.internal.architect.route.ChangeTransitionPostRoute;
+import com.liferay.workflow.apio.internal.architect.route.UpdateDueDatePostRoute;
 
 import java.io.Serializable;
 
@@ -79,6 +82,10 @@ public class WorkflowTaskItemResource
 			new ChangeTransitionPostRoute(), this::_changeTransition,
 			CurrentUser.class, WorkflowTaskIdentifier.class,
 			(credentials, id) -> true, ChangeTransitionForm::buildForm
+		).addCustomRoute(
+			new UpdateDueDatePostRoute(), this::_updateDueDate,
+			CurrentUser.class, WorkflowTaskIdentifier.class,
+			(credentials, id) -> true, UpdateDueDateForm::buildForm
 		).build();
 	}
 
@@ -97,7 +104,7 @@ public class WorkflowTaskItemResource
 		).addDate(
 			"dateCreated", WorkflowTask::getCreateDate
 		).addDate(
-			"expires", WorkflowTask::getDueDate
+			"dueDate", WorkflowTask::getDueDate
 		).addNested(
 			"object", WorkflowTask::getOptionalAttributes,
 			nestedBuilder -> nestedBuilder.types(
@@ -121,46 +128,47 @@ public class WorkflowTaskItemResource
 	}
 
 	private WorkflowTask _assignToMe(
-		Long workflowTaskId, AssignToMeForm assignToMeForm,
-		CurrentUser currentUser) {
+			Long workflowTaskId, AssignToMeForm assignToMeForm,
+			CurrentUser currentUser)
+		throws WorkflowException {
 
-		return Try.fromFallible(
-			() -> _workflowTaskManager.assignWorkflowTaskToUser(
-				currentUser.getCompanyId(), currentUser.getUserId(),
-				workflowTaskId, currentUser.getUserId(), "", null, null)
-		).orElse(
-			null
-		);
+		return _workflowTaskManager.assignWorkflowTaskToUser(
+			currentUser.getCompanyId(), currentUser.getUserId(), workflowTaskId,
+			currentUser.getUserId(), "", null, null);
 	}
 
 	private WorkflowTask _assignToUser(
-		Long workflowTaskId, AssignToUserForm assignToMeForm, Company company,
-		CurrentUser currentUser) {
+			Long workflowTaskId, AssignToUserForm assignToMeForm,
+			Company company, CurrentUser currentUser)
+		throws WorkflowException {
 
 		long assigneeId = assignToMeForm.getAssigneeId();
 
-		return Try.fromFallible(
-			() -> _workflowTaskManager.assignWorkflowTaskToUser(
-				company.getCompanyId(), currentUser.getUserId(), workflowTaskId,
-				assigneeId, "", null, null)
-		).orElse(
-			null
-		);
+		return _workflowTaskManager.assignWorkflowTaskToUser(
+			company.getCompanyId(), currentUser.getUserId(), workflowTaskId,
+			assigneeId, "", null, null);
 	}
 
 	private WorkflowTask _changeTransition(
-		Long workflowTaskId, ChangeTransitionForm changeTransitionForm,
-		CurrentUser currentUser) {
+			Long workflowTaskId, ChangeTransitionForm changeTransitionForm,
+			CurrentUser currentUser)
+		throws WorkflowException {
 
-		String transitionName = changeTransitionForm.getTransition();
+		String transition = changeTransitionForm.getTransition();
 
-		return Try.fromFallible(
-			() -> _workflowTaskManager.completeWorkflowTask(
-				currentUser.getCompanyId(), currentUser.getUserId(),
-				workflowTaskId, transitionName, "", null)
-		).orElse(
-			null
+		Try.fromFallible(
+			() -> _getTaskTransitionsNames(
+				_workflowTaskManager.getWorkflowTask(
+					currentUser.getCompanyId(), workflowTaskId))
+		).filter(
+			transitionName -> transitionName.contains(transition)
+		).orElseThrow(
+			() -> new ValidationException("Invalid transition: " + transition)
 		);
+
+		return _workflowTaskManager.completeWorkflowTask(
+			currentUser.getCompanyId(), currentUser.getUserId(), workflowTaskId,
+			transition, "", null);
 	}
 
 	private String _getResourceType(
@@ -235,6 +243,16 @@ public class WorkflowTaskItemResource
 
 		return _workflowTaskManager.getWorkflowTask(
 			company.getCompanyId(), workflowTaskId);
+	}
+
+	private WorkflowTask _updateDueDate(
+			Long workflowTaskId, UpdateDueDateForm updateDueDateForm,
+			CurrentUser currentUser)
+		throws WorkflowException {
+
+		return _workflowTaskManager.updateDueDate(
+			currentUser.getCompanyId(), currentUser.getUserId(), workflowTaskId,
+			updateDueDateForm.getComment(), updateDueDateForm.getDueDate());
 	}
 
 	@Reference

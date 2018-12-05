@@ -301,8 +301,11 @@ public class FragmentEntryLinkRichTextEditorConfigContributor
 		jsonArray.put("paragraphRight");
 		jsonArray.put("paragraphJustify");
 
+		jsonArray.put("spacing");
+
 		jsonArray.put("color");
-		jsonArray.put("backgroundColor");
+
+		jsonArray.put("removeFormat");
 
 		jsonObject.put("buttons", jsonArray);
 

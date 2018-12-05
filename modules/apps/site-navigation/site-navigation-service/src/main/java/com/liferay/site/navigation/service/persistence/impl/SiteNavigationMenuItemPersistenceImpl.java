@@ -16,6 +16,8 @@ package com.liferay.site.navigation.service.persistence.impl;
 
 import aQute.bnd.annotation.ProviderType;
 
+import com.liferay.petra.string.StringBundler;
+
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
 import com.liferay.portal.kernel.dao.orm.FinderPath;
@@ -33,7 +35,6 @@ import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.SetUtil;
-import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.uuid.PortalUUIDUtil;
@@ -3702,6 +3703,9 @@ public class SiteNavigationMenuItemPersistenceImpl extends BasePersistenceImpl<S
 	public SiteNavigationMenuItemPersistenceImpl() {
 		setModelClass(SiteNavigationMenuItem.class);
 
+		setModelImplClass(SiteNavigationMenuItemImpl.class);
+		setEntityCacheEnabled(SiteNavigationMenuItemModelImpl.ENTITY_CACHE_ENABLED);
+
 		try {
 			Field field = BasePersistenceImpl.class.getDeclaredField(
 					"_dbColumnNames");
@@ -4245,54 +4249,6 @@ public class SiteNavigationMenuItemPersistenceImpl extends BasePersistenceImpl<S
 	/**
 	 * Returns the site navigation menu item with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the site navigation menu item
-	 * @return the site navigation menu item, or <code>null</code> if a site navigation menu item with the primary key could not be found
-	 */
-	@Override
-	public SiteNavigationMenuItem fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(SiteNavigationMenuItemModelImpl.ENTITY_CACHE_ENABLED,
-				SiteNavigationMenuItemImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		SiteNavigationMenuItem siteNavigationMenuItem = (SiteNavigationMenuItem)serializable;
-
-		if (siteNavigationMenuItem == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				siteNavigationMenuItem = (SiteNavigationMenuItem)session.get(SiteNavigationMenuItemImpl.class,
-						primaryKey);
-
-				if (siteNavigationMenuItem != null) {
-					cacheResult(siteNavigationMenuItem);
-				}
-				else {
-					entityCache.putResult(SiteNavigationMenuItemModelImpl.ENTITY_CACHE_ENABLED,
-						SiteNavigationMenuItemImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(SiteNavigationMenuItemModelImpl.ENTITY_CACHE_ENABLED,
-					SiteNavigationMenuItemImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return siteNavigationMenuItem;
-	}
-
-	/**
-	 * Returns the site navigation menu item with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param siteNavigationMenuItemId the primary key of the site navigation menu item
 	 * @return the site navigation menu item, or <code>null</code> if a site navigation menu item with the primary key could not be found
 	 */
@@ -4591,6 +4547,11 @@ public class SiteNavigationMenuItemPersistenceImpl extends BasePersistenceImpl<S
 	@Override
 	public Set<String> getBadColumnNames() {
 		return _badColumnNames;
+	}
+
+	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
 	}
 
 	@Override
