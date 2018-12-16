@@ -877,7 +877,7 @@ class RuleEditor extends Component {
 
 	_getFieldTypeByFieldName(fieldName) {
 		let dataType = '';
-		let fieldRepeatable = false;
+		let repeatable = false;
 		let type = '';
 
 		if (fieldName === 'user') {
@@ -890,12 +890,12 @@ class RuleEditor extends Component {
 
 			if (selectedField) {
 				dataType = selectedField.dataType;
-				fieldRepeatable = selectedField.repeatable;
+				repeatable = selectedField.repeatable;
 				type = selectedField.type;
 			}
 		}
 
-		return {dataType, fieldRepeatable, type};
+		return {dataType, repeatable, type};
 	}
 
 	_getOperatorsByFieldType(fieldType) {
@@ -952,8 +952,8 @@ class RuleEditor extends Component {
 				if (fieldName !== previousAction) {
 					newActions[index].action = fieldName;
 					newActions[index].calculatorFields = [];
-					newActions[index].target = '';
 					newActions[index].label = '';
+					newActions[index].target = '';
 				}
 			}
 			else {
@@ -1001,9 +1001,9 @@ class RuleEditor extends Component {
 
 	_handleDataProviderInputEdited(event) {
 		const {fieldInstance, value} = event;
+		const {actions} = this;
 		const actionIndex = this._getIndex(fieldInstance, '.action');
 		const inputIndex = this._getIndex(fieldInstance, '.container-input-field');
-		const {actions} = this;
 
 		const name = actions[actionIndex].inputs[inputIndex].name;
 
@@ -1102,11 +1102,11 @@ class RuleEditor extends Component {
 
 		if (value && value.length > 0 && value[0]) {
 			const fieldName = value[0];
-			const {dataType, fieldRepeatable} = this._getFieldTypeByFieldName(fieldName);
+			const {dataType, repeatable} = this._getFieldTypeByFieldName(fieldName);
 
 			const firstOperand = {
 				label: this._getFieldLabel(fieldName),
-				repeatable: fieldRepeatable,
+				repeatable,
 				type: dataType == 'user' ? 'user' : 'field',
 				value: fieldName
 			};
@@ -1239,9 +1239,7 @@ class RuleEditor extends Component {
 
 	_handleSecondOperandFieldEdited(event) {
 		const {conditions, roles} = this;
-		const {fieldInstance, originalEvent, value} = event;
-
-		const {delegateTarget} = originalEvent;
+		const {fieldInstance, value} = event;
 		let fieldValue = '';
 
 		if (value && typeof (value) == 'object' && value[0]) {
@@ -1253,18 +1251,20 @@ class RuleEditor extends Component {
 
 		let index;
 
-		if (delegateTarget.closest('.condition-type-value')) {
+		if (fieldInstance.element.closest('.condition-type-value')) {
 			index = this._getIndex(fieldInstance, '.condition-type-value');
 		}
 
 		let secondOperand = conditions[index].operands[1];
 
 		if (!secondOperand) {
-			secondOperand = {type: fieldValue};
+			secondOperand = {
+				dataType: fieldInstance.dataType,
+				type: fieldInstance.type
+			};
 		}
 
 		let roleLabel = '';
-
 		let userType = '';
 
 		if (conditions[index].operands[0].type === 'user') {
@@ -1274,8 +1274,9 @@ class RuleEditor extends Component {
 
 		conditions[index].operands[1] = {
 			...secondOperand,
+			dataType: fieldInstance.dataType,
 			label: roleLabel ? roleLabel.label : '',
-			type: userType ? userType : secondOperand.type,
+			type: userType ? userType : fieldInstance.type,
 			value: fieldValue
 		};
 
@@ -1306,15 +1307,13 @@ class RuleEditor extends Component {
 		}
 
 		if (value && value.length > 0 && value[0]) {
-			let secondOperandDataType = 'field';
 			let secondOperandType = '';
 			const selectedValue = value[0];
 
 			if (selectedValue === 'value') {
-				const {dataType, type} = this._getFieldTypeByFieldName(conditions[index].operands[0].value);
+				const {type} = this._getFieldTypeByFieldName(conditions[index].operands[0].value);
 
 				secondOperandType = type;
-				secondOperandDataType = dataType;
 			}
 			else {
 				secondOperandType = 'field';
@@ -1322,16 +1321,17 @@ class RuleEditor extends Component {
 
 			if (secondOperand) {
 				secondOperand.type = secondOperandType;
-				secondOperand.dataType = secondOperandDataType;
 			}
 			else {
 				conditions[index].operands.push(
 					{
-						dataType: secondOperandDataType,
 						type: secondOperandType
 					}
 				);
 			}
+
+			console.log(secondOperandType);
+			console.log(conditions[index].operands);
 		}
 
 		this.setState(
@@ -1374,12 +1374,14 @@ class RuleEditor extends Component {
 										return data.id == id;
 									}
 								).uuid;
+
 								actions[index].hasRequiredInputs = (actions[index].inputs)
 									.some(
 										input => {
 											return input.required;
 										}
 									);
+
 								this.setState(actions);
 							}
 						}
@@ -1488,18 +1490,23 @@ class RuleEditor extends Component {
 
 		conditions.forEach(
 			condition => {
-
 				if (condition.operands[0].type == 'user') {
 					condition.operands[0].label = condition.operands[0].value;
 					condition.operands[1].type = 'list';
 				}
+
 				if (condition.operands[1]) {
-					condition.operands[1].type = condition.operands[1].dataType;
+
+					// condition.operands[1].type = condition.operands[1].dataType;
+
 					condition.operands[1].label = condition.operands[1].value;
-					delete condition.operands[1].dataType;
+
+					// delete condition.operands[1].dataType;
+
 				}
 			}
 		);
+
 		return conditions;
 	}
 
