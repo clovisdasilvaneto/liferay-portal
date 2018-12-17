@@ -47,6 +47,8 @@ class StateSyncronizer extends Component {
 			successPageSettings: layoutProvider.state.successPageSettings
 		};
 
+		console.log(state);
+
 		return state;
 	}
 
