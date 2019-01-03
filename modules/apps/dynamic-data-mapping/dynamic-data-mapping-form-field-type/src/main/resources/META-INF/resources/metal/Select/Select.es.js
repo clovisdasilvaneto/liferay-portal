@@ -124,7 +124,7 @@ class Select extends Component {
 		 * @type {?string}
 		 */
 
-		predefinedValue: Config.array(),
+		predefinedValue: Config.oneOfType([Config.array(), Config.string()]),
 
 		/**
 		 * @default false
@@ -201,22 +201,26 @@ class Select extends Component {
 
 	prepareStateForRender(state) {
 		const {predefinedValue, value} = state;
-		let newValue = value;
-
-		if (typeof (newValue) === 'string') {
-			newValue = [value];
-		}
-
-		const selectedValue = newValue && newValue.length ? newValue[0] : '';
-
-		const selectedLabel = this._getSelectedLabel(selectedValue);
+		const predefinedValueArray = this._getArrayValue(predefinedValue);
+		const valueArray = this._getArrayValue(value);
+		const selectedValue = valueArray[0] || '';
 
 		return {
 			...state,
-			predefinedValue: predefinedValue && predefinedValue.length ? predefinedValue[0] : '',
-			selectedLabel,
+			predefinedValue: predefinedValueArray[0] || '',
+			selectedLabel: this._getSelectedLabel(selectedValue),
 			value: selectedValue
 		};
+	}
+
+	_getArrayValue(value) {
+		let newValue = value;
+
+		if (!Array.isArray(value)) {
+			newValue = [value];
+		}
+
+		return newValue;
 	}
 
 	_getSelectedLabel(selectedValue) {
