@@ -1,4 +1,5 @@
 import 'clay-button';
+import {ClayActionsDropdown} from 'clay-dropdown';
 import {Config} from 'metal-state';
 import {EventHandler} from 'metal-events';
 import Component from 'metal-component';

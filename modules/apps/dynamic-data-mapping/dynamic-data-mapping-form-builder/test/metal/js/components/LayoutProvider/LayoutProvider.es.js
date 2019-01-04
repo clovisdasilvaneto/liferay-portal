@@ -18,6 +18,7 @@ class Parent extends JSXComponent {
 		return (
 			<LayoutProvider
 				initialPages={[...pages]}
+				rules={[]}
 				ref="provider"
 				spritemap={spritemap}
 			>
@@ -53,7 +54,8 @@ describe.only(
 			() => {
 				component = new LayoutProvider(
 					{
-						initialPages: pages
+						initialPages: pages,
+						rules: []
 					}
 				);
 

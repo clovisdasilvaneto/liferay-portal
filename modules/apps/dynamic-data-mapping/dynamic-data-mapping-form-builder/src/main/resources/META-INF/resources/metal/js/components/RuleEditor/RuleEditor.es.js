@@ -3,6 +3,7 @@ import 'clay-modal';
 import {Config} from 'metal-state';
 import {PagesVisitor} from '../../util/visitors.es';
 import '../Calculator/Calculator.es';
+import '../Page/PageRenderer.es';
 import Component from 'metal-component';
 import Soy from 'metal-soy';
 import templates from './RuleEditor.soy.js';
@@ -705,12 +706,8 @@ class RuleEditor extends Component {
 					actions[index].inputs = [newInput];
 					actions[index].outputs = [newOutput];
 				}
-
-				this.setState(
-					{
-						actions
-					}
-				);
+				
+				return actions;
 			}
 		).catch(
 			error => {
@@ -914,7 +911,7 @@ class RuleEditor extends Component {
 		else {
 			this._clearAction(index);
 		}
-console.log(newActions)
+
 		this.setState(
 			{
 				actions: newActions
@@ -1337,11 +1334,9 @@ console.log(newActions)
 	}
 
 	getDataProviderOptions(id, index) {
-		const {actions} = this;
-
 		this._fetchDataProviderParameters(id, index)
 		.then(
-			() => {
+			actions => {
 				if (!this.isDisposed()) {
 					actions[index] = {
 						...actions[index],
@@ -1362,7 +1357,11 @@ console.log(newActions)
 							}
 						);
 
-					this.setState(actions);
+					this.setState(
+						{
+							actions
+						}
+					);
 				}
 			}
 		);

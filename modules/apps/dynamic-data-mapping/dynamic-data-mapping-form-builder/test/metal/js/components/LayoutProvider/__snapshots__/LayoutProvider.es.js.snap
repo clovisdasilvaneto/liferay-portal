@@ -470,34 +470,7 @@ Array [
       Object {
         "columns": Array [
           Object {
-            "fields": Array [
-              Object {
-                "fieldName": "text1",
-                "label": "Text Field 1",
-                "localizedValue": Object {},
-                "readOnly": true,
-                "required": true,
-                "settingsContext": Object {
-                  "pages": Array [],
-                },
-                "type": "text",
-                "value": undefined,
-                "visible": true,
-              },
-              Object {
-                "fieldName": "text2",
-                "label": "Text Field 2",
-                "localizedValue": Object {},
-                "readOnly": true,
-                "required": true,
-                "settingsContext": Object {
-                  "pages": Array [],
-                },
-                "type": "text",
-                "value": undefined,
-                "visible": true,
-              },
-            ],
+            "fields": Array [],
             "size": 4,
           },
           Object {

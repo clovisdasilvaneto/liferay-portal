@@ -49,14 +49,16 @@ class LayoutProvider extends Component {
 			}
 		),
 
+		rules: Config.arrayOf(rule),
+
 		/**
 		 * @default undefined
 		 * @instance
 		 * @memberof LayoutProvider
 		 * @type {?(array|undefined)}
 		 */
+		spritemap: Config.string(),
 
-		spritemap: Config.string()
 	};
 
 	static STATE = {
