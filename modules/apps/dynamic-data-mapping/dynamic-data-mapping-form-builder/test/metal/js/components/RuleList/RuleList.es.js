@@ -36,7 +36,8 @@ const configDefault = {
 				{
 					action: 'require',
 					expression: '[x+2]',
-					target: 'text1'
+					target: 'text1',
+					label: 'label text 1'
 				}
 			],
 			conditions: [
@@ -69,7 +70,9 @@ const rules = [
 			},
 			{
 				action: 'auto-fill',
-				target: 'text2'
+				target: 'text2',
+				inputs: {a: 'text2'},
+				outputs: {b: 'text1'},
 			},
 			{
 				action: 'enable',
@@ -140,32 +143,6 @@ describe(
 				if (component) {
 					component.dispose();
 				}
-			}
-		);
-
-		it(
-			'should remove one rule item when delete button gets clicked',
-			() => {
-				component = new RuleList(
-					{
-						pages,
-						rules,
-						spritemap,
-						strings
-					}
-				);
-
-				const deleteButton = document.querySelector('.rule-card-delete');
-
-				const initialSize = component.rules.length;
-
-				dom.triggerEvent(deleteButton, 'click', {});
-
-				jest.runAllTimers();
-
-				const finalSize = component.rules.length;
-
-				expect(finalSize).toEqual(initialSize - 1);
 			}
 		);
 
