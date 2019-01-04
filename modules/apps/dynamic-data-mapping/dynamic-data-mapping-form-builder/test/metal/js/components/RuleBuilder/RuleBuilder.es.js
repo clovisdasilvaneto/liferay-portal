@@ -101,19 +101,6 @@ describe(
 		);
 
 		it(
-			'should render rule screen editor when click edit button',
-			() => {
-				const ruleCardEdit = document.querySelector('.rule-card-edit');
-
-				dom.triggerEvent(ruleCardEdit, 'click', {});
-
-				jest.runAllTimers();
-
-				expect(component).toMatchSnapshot();
-			}
-		);
-
-		it(
 			'should render rule screen creator when click add button',
 			() => {
 				const addbutton = document.querySelector('#addFieldButton');

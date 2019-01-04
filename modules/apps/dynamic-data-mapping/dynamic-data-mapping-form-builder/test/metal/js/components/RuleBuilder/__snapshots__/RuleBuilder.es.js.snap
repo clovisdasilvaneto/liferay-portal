@@ -14,10 +14,15 @@ exports[`RuleBuilder should render rule screen creator when click add button 1`]
             <div class="list-group-item-field">
               <div class="card-col-field">
                 <div class="dropdown dropdown-action">
-                  <ul class="dropdown-menu dropdown-menu-right">
-                    <li class="rule-card-edit" data-card-id="0"><a href="javascript:;">edit</a></li>
-                    <li class="rule-card-delete" data-card-id="0"><a href="javascript:;">delete</a></li>
-                  </ul><a class="component-action dropdown-toggle" data-toggle="dropdown" href="#1"></a>
+                  <div class="ddm-rule-list-settings" data-card-id="0">
+                    <div class="dropdown dropdown-action"><button aria-expanded="false" aria-haspopup="true" aria-label="toggle" class="dropdown-toggle btn btn-unstyled" ref="triggerButton" title="actions" type="button"><svg aria-hidden="true" class="lexicon-icon lexicon-icon-ellipsis-v" focusable="false">
+                          <title>ellipsis-v</title>
+                          <use xlink:href="icons.svg#ellipsis-v"></use>
+                        </svg></button></div><button class="component-action dropdown-toggle cursor-pointer" data-rule-index="0"><svg aria-hidden="true" class="lexicon-icon lexicon-icon-ellipsis-v" focusable="false">
+                        <title>ellipsis-v</title>
+                        <use xlink:href="icons.svg#ellipsis-v"></use>
+                      </svg></button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -26,6 +31,12 @@ exports[`RuleBuilder should render rule screen creator when click add button 1`]
       </div>
     </div>
   </div>
+</div>
+<div class="dropdown-menu" ref="menu">
+  <ul class="list-unstyled">
+    <li><button class="btn dropdown-item btn-sm btn-link" aria-label="edit" type="button">edit</button></li>
+    <li><button class="btn dropdown-item btn-sm btn-link" aria-label="delete" type="button">delete</button></li>
+  </ul>
 </div>
 `;
 
@@ -72,10 +83,15 @@ exports[`RuleBuilder should render the list of rules when mode is set to view 1`
             <div class="list-group-item-field">
               <div class="card-col-field">
                 <div class="dropdown dropdown-action">
-                  <ul class="dropdown-menu dropdown-menu-right">
-                    <li class="rule-card-edit" data-card-id="0"><a href="javascript:;">edit</a></li>
-                    <li class="rule-card-delete" data-card-id="0"><a href="javascript:;">delete</a></li>
-                  </ul><a class="component-action dropdown-toggle" data-toggle="dropdown" href="#1"></a>
+                  <div class="ddm-rule-list-settings" data-card-id="0">
+                    <div class="dropdown dropdown-action"><button aria-expanded="false" aria-haspopup="true" aria-label="toggle" class="dropdown-toggle btn btn-unstyled" ref="triggerButton" title="actions" type="button"><svg aria-hidden="true" class="lexicon-icon lexicon-icon-ellipsis-v" focusable="false">
+                          <title>ellipsis-v</title>
+                          <use xlink:href="icons.svg#ellipsis-v"></use>
+                        </svg></button></div><button class="component-action dropdown-toggle cursor-pointer" data-rule-index="0"><svg aria-hidden="true" class="lexicon-icon lexicon-icon-ellipsis-v" focusable="false">
+                        <title>ellipsis-v</title>
+                        <use xlink:href="icons.svg#ellipsis-v"></use>
+                      </svg></button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -84,5 +100,11 @@ exports[`RuleBuilder should render the list of rules when mode is set to view 1`
       </div>
     </div>
   </div>
+</div>
+<div class="dropdown-menu" ref="menu">
+  <ul class="list-unstyled">
+    <li><button class="btn dropdown-item btn-sm btn-link" aria-label="edit" type="button">edit</button></li>
+    <li><button class="btn dropdown-item btn-sm btn-link" aria-label="delete" type="button">delete</button></li>
+  </ul>
 </div>
 `;
