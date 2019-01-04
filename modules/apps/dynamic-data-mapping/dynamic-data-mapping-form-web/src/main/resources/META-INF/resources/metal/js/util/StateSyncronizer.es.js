@@ -36,7 +36,7 @@ class StateSyncronizer extends Component {
 	getState() {
 		const {layoutProvider, localizedDescription, translationManager} = this.props;
 
-		return {
+		const state = {
 			availableLanguageIds: translationManager.get('availableLocales'),
 			defaultLanguageId: translationManager.get('defaultLocale'),
 			description: localizedDescription,
@@ -46,6 +46,10 @@ class StateSyncronizer extends Component {
 			rules: layoutProvider.state.rules,
 			successPageSettings: layoutProvider.state.successPageSettings
 		};
+
+		console.log(state);
+
+		return state;
 	}
 
 	isEmpty() {

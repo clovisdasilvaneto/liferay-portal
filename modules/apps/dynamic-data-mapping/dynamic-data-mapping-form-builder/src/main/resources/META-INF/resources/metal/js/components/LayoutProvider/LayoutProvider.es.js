@@ -7,6 +7,7 @@ import {sub} from '../../util/strings.es';
 import Component from 'metal-jsx';
 import autobind from 'autobind-decorator';
 import {generateInstanceId} from '../../util/fieldSupport.es';
+import RulesSupport from '../RuleBuilder/RulesSupport.es';
 
 /**
  * LayoutProvider listens to your children's events to
@@ -199,6 +200,54 @@ class LayoutProvider extends Component {
 		);
 	}
 
+	syncRules(pages) {
+		const visitor = new PagesVisitor(pages);
+		const rules = this.state.rules.map(rule => {
+			const {conditions, actions} = rule;
+
+			conditions.forEach(
+				(condition, index) => {
+					let firstOperandFieldExists = false;
+					let secondOperandFieldExists = false;
+
+					const secondOperand = condition.operands[1];
+
+					visitor.mapFields(
+						({fieldName}) => {
+							if (condition.operands[0].value === fieldName) {
+								firstOperandFieldExists = true;
+							}
+
+							if (secondOperand && secondOperand.value === fieldName) {
+								secondOperandFieldExists = true;
+							}
+						}
+					);
+
+					if (condition.operands[0].value === 'user') {
+						firstOperandFieldExists = true;
+					}
+
+					if (!firstOperandFieldExists) {
+						RulesSupport.clearAllConditionFieldValues(condition);
+					}
+
+					if (!secondOperandFieldExists && secondOperand && secondOperand.type == 'field') {
+						RulesSupport.clearSecondOperandValue(condition);
+					}
+				}
+			);
+
+			return {
+				...rule,
+				actions: RulesSupport.syncActions(pages, actions),
+				conditions,
+			}
+		});
+
+		return rules;
+	}
+
 	/**
 	 * @param {!Object} event
 	 * @private
@@ -225,7 +274,8 @@ class LayoutProvider extends Component {
 		this.setState(
 			{
 				focusedField: {},
-				pages: newContext
+				pages: newContext,
+				rules: this.syncRules(newContext)
 			}
 		);
 	}
@@ -464,7 +514,6 @@ class LayoutProvider extends Component {
 	}
 
 	_handleRuleSaveEdition(event) {
-
 		const {actions, conditions, ruleEditedIndex} = event;
 
 		const logicalOperator = event['logical-operator'];
@@ -560,7 +609,9 @@ class LayoutProvider extends Component {
 				return {
 					...field,
 					localizedValue: {},
-					value: undefined
+					readOnly: true,
+					value: undefined,
+					visible: true
 				};
 			}
 		);

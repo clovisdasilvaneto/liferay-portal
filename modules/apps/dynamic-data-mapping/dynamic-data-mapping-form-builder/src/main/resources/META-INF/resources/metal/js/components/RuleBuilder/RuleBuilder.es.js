@@ -4,6 +4,7 @@ import {EventHandler} from 'metal-events';
 import Component from 'metal-jsx';
 import RuleList from '../../components/RuleList/index.es';
 import RuleEditor from '../../components/RuleEditor/index.es';
+import {makeFetch} from '../../util/fetch.es';
 
 /**
  * Builder.
@@ -57,6 +58,8 @@ class RuleBuilder extends Component {
 
 		rolesURL: Config.string().required(),
 
+		originalRule: Config.object(),
+
 		rules: Config.arrayOf(
 			Config.shapeOf(
 				{
@@ -103,6 +106,15 @@ class RuleBuilder extends Component {
 	}
 
 	static STATE = {
+		dataProvider: Config.arrayOf(
+			Config.shapeOf(
+				{
+					id: Config.string(),
+					name: Config.string(),
+					uuid: Config.string()
+				}
+			)
+		).internal(),
 
 		/**
 		 * @default
@@ -158,6 +170,41 @@ class RuleBuilder extends Component {
 
 	created() {
 		this._eventHandler = new EventHandler();
+
+		this._fetchDataProvider();
+	}
+
+	_fetchDataProvider() {
+		const {dataProviderInstancesURL} = this.props;
+
+		makeFetch(
+			{
+				method: 'GET',
+				url: dataProviderInstancesURL
+			}
+		).then(
+			responseData => {
+				if (!this.isDisposed()) {
+					this.setState(
+						{
+							dataProvider: responseData.map(
+								data => {
+									return {
+										...data,
+										label: data.name,
+										value: data.id
+									};
+								}
+							)
+						}
+					);
+				}
+			}
+		).catch(
+			error => {
+				throw new Error(error);
+			}
+		);
 	}
 
 	/**
@@ -192,16 +239,6 @@ class RuleBuilder extends Component {
 	}
 
 	/**
-	 * Show the rule screen to edit an existing rule. For now, this method does not receive the rule data for edition.
-	 * @param {!Event} event
-	 * @private
-	 */
-
-	_handleEditRuleClicked() {
-		this._showRuleEdition();
-	}
-
-	/**
 	 * Show the rule screen to create a new rule
 	 * @param {!Event} event
 	 * @private
@@ -224,8 +261,18 @@ class RuleBuilder extends Component {
 		this._showRuleList();
 	}
 
-	_handleRuleCancel(event) {
-		this._showRuleList();
+	_handleRuleCanceled(event) {
+		const rules = this.props.rules.map((
+			rule, 
+			ruleIndex
+		) => this.index === ruleIndex ? this.originalRule : rule);
+
+		this.setState(
+			{
+				mode: 'view',
+				rules
+			}
+		);
 	}
 
 	_handleRuleDeleted({ruleId}) {
@@ -238,7 +285,14 @@ class RuleBuilder extends Component {
 	}
 
 	_handleRuleEdited({ruleId}) {
-		this.setState({index: parseInt(ruleId, 10)});
+		const {rules} = this.props;
+
+		ruleId = parseInt(ruleId, 10);
+		
+		this.setState({
+			index: ruleId,
+			originalRule: rules[ruleId]
+		});
 
 		this._showRuleEdition();
 	}
@@ -270,8 +324,7 @@ class RuleBuilder extends Component {
 
 		if (visible) {
 			this._eventHandler.add(
-				dom.on('#addFieldButton', 'click', this._handleAddRuleClick.bind(this)),
-				dom.on('.rule-card-edit', 'click', this._handleEditRuleClicked.bind(this))
+				dom.on('#addFieldButton', 'click', this._handleAddRuleClick.bind(this))
 			);
 		}
 		else {
@@ -316,14 +369,14 @@ class RuleBuilder extends Component {
 	render() {
 		const RuleBuilderEvents = {
 			ruleAdded: this._handleRuleAdded.bind(this),
-			ruleCancel: this._handleRuleCancel.bind(this),
+			ruleCancel: this._handleRuleCanceled.bind(this),
 			ruleDeleted: this._handleRuleDeleted.bind(this),
 			ruleEdited: this._handleRuleEdited.bind(this)
 		};
 
 		const RuleEditionEvents = {
 			ruleAdded: this._handleRuleSaveEdition.bind(this),
-			ruleCancel: this._handleRuleCancel.bind(this)
+			ruleCancel: this._handleRuleCanceled.bind(this)
 		};
 
 		const {
@@ -337,12 +390,17 @@ class RuleBuilder extends Component {
 			spritemap
 		} = this.props;
 
+		const {
+			dataProvider
+		} = this.state;
+console.log(dataProvider)
 		return (
 			<div class="container">
 				{this.state.mode === 'create' && (
 					<RuleEditor
 						actions={[]}
 						conditions={[]}
+						dataProvider={dataProvider}
 						dataProviderInstanceParameterSettingsURL={dataProviderInstanceParameterSettingsURL}
 						dataProviderInstancesURL={dataProviderInstancesURL}
 						events={RuleBuilderEvents}
@@ -356,6 +414,7 @@ class RuleBuilder extends Component {
 				)}
 				{this.state.mode === 'edit' && (
 					<RuleEditor
+						dataProvider={dataProvider} 
 						dataProviderInstanceParameterSettingsURL={dataProviderInstanceParameterSettingsURL}
 						dataProviderInstancesURL={dataProviderInstancesURL}
 						events={RuleEditionEvents}
@@ -370,7 +429,13 @@ class RuleBuilder extends Component {
 					/>
 				)}
 				{this.state.mode === 'view' && (
-					<RuleList dataProviderInstancesURL={dataProviderInstancesURL} events={RuleBuilderEvents} pages={pages} rules={rules} spritemap={spritemap} />
+					<RuleList 
+						dataProvider={dataProvider}
+						events={RuleBuilderEvents}
+						pages={pages}
+						rules={rules}
+						spritemap={spritemap}
+					/>
 				)}
 			</div>
 		);

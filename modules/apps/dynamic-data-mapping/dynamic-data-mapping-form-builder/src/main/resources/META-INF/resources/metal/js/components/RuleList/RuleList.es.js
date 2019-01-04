@@ -3,8 +3,10 @@ import {Config} from 'metal-state';
 import {EventHandler} from 'metal-events';
 import Component from 'metal-component';
 import Soy from 'metal-soy';
+import dom from 'metal-dom';
+
 import templates from './RuleList.soy.js';
-import {makeFetch} from '../../util/fetch.es';
+import {PagesVisitor} from '../../util/visitors.es';
 
 /**
  * LayoutRenderer.
@@ -22,11 +24,9 @@ class RuleList extends Component {
 					uuid: Config.string()
 				}
 			)
-		).internal(),
+		),
 
-		dataProviderInstancesURL: Config.string().required(),
-
-		dropdownExpanded: Config.bool().internal(),
+		dropdownExpandedIndex: Config.number().internal(),
 
 		pages: Config.array().required(),
 
@@ -124,66 +124,64 @@ class RuleList extends Component {
 		)
 	}
 
-	_fetchDataProvider() {
-		const {dataProviderInstancesURL} = this;
+	created() {
+		this._eventHandler = new EventHandler();
 
-		makeFetch(
-			{
-				method: 'GET',
-				url: dataProviderInstancesURL
-			}
-		).then(
-			responseData => {
-				if (!this.isDisposed()) {
-					this.setState(
-						{
-							dataProvider: responseData.map(
-								data => {
-									return {
-										...data,
-										label: data.name,
-										value: data.id
-									};
-								}
-							)
-						}
-					);
-				}
-			}
-		).catch(
-			error => {
-				throw new Error(error);
-			}
+		const newRules = this.rules;
+
+		this._setRules(newRules);
+
+		this.setState({rules: newRules});
+	}
+
+	attached() {
+		this._eventHandler.add(
+			dom.on(document, 'mousedown', this._handleDocumentMouseDown.bind(this), true)
 		);
 	}
 
+	/**
+	 * @inheritDoc
+	 */
+
+	disposeInternal() {
+		super.disposeInternal();
+
+		this._eventHandler.removeAllListeners();
+	}
+
+
+	_handleDocumentMouseDown({target}) {
+		const {dropdownExpandedIndex} = this;
+		const dropdownNode = dom.closest(target, '.dropdown-menu');
+		const dropdownSettings = dom.closest(target, '.ddm-rule-list-settings');
+
+		if (dropdownNode || dropdownSettings) {
+			return;
+		}
+
+		this.setState({
+			dropdownExpandedIndex: -1
+		});
+	}
+
+	/**
+	 * Find a field label based on fieldName
+	 * @param {string} fieldName 
+	 * @return {string} the field label
+	 */
 	_getFieldLabel(fieldName) {
 		const pages = this.pages;
 
-		let fieldLabel;
-
-		if (pages) {
-			for (let page = 0; page < pages.length; page++) {
-				const rows = pages[page].rows;
-
-				for (let row = 0; row < rows.length; row++) {
-					const cols = rows[row].columns;
-
-					for (let col = 0; col < cols.length; col++) {
-						const fields = cols[col].fields;
-
-						for (let field = 0; field < fields.length; field++) {
-							if (pages[page].rows[row].columns[col].fields[field].fieldName === fieldName) {
-								fieldLabel = pages[page].rows[row].columns[col].fields[field].label;
-								break;
-							}
-						}
-					}
-				}
-			}
+		if (!pages || !fieldName) {
+			return;
 		}
 
-		return fieldLabel;
+		const visitor = new PagesVisitor(pages);
+
+		const {label} = visitor.findField(field => field.fieldName == fieldName);
+
+		return label;
 	}
 
 	_handleRuleCardClicked({data, target}) {
@@ -207,8 +205,23 @@ class RuleList extends Component {
 		}
 	}
 
-	_handleDropdownExpanded(event) {
-		this.setState({dropdownExpanded: event.newVal});
+	_handleDropdownClicked(event) {
+		event.preventDefault();
+
+		const {dropdownExpandedIndex} = this;
+		const ruleNode = dom.closest(event.delegateTarget, '.component-action');
+
+		let ruleIndex = parseInt(ruleNode.dataset.ruleIndex);
+
+		if(ruleIndex === dropdownExpandedIndex) {
+			ruleIndex = -1;
+		}
+
+		this.setState(
+			{
+				dropdownExpandedIndex: ruleIndex
+			}
+		);
 	}
 
 	_formatActions(actions) {
@@ -268,9 +281,9 @@ class RuleList extends Component {
 		return newRules;
 	}
 
-	_setDataProviderNames() {
-		const newRules = this.rules;
-
+	_setDataProviderNames(states) {
+		const newRules = states.rules;
+console.log('DATA PROVIDER', states.dataProvider)
 		if (this.dataProvider) {
 			for (let rule = 0; rule < newRules.length; rule++) {
 				const actions = newRules[rule].actions;
@@ -285,8 +298,9 @@ class RuleList extends Component {
 					}
 				);
 			}
-			this.setState({rules: newRules});
 		}
+		
+		return newRules;
 	}
 
 	_getRulesCardOptions() {
@@ -305,11 +319,11 @@ class RuleList extends Component {
 	}
 
 	prepareStateForRender(states) {
-		this._setDataProviderNames();
+		const rules = this._setDataProviderNames(states);
 
 		return {
 			...states,
-			rules: states.rules.map(
+			rules: rules.map(
 				rule => {
 					return {
 						...rule,
@@ -347,7 +361,7 @@ class RuleList extends Component {
 	_setOperandValue(operand) {
 		let field = '';
 
-		if (operand.type === 'field' || operand.type != 'user') {
+		if (operand.type === 'field') {
 			field = this._getFieldLabel(operand.value);
 		}
 		else {
@@ -359,18 +373,6 @@ class RuleList extends Component {
 		}
 
 		return field;
-	}
-
-	created() {
-		this._eventHandler = new EventHandler();
-
-		this._fetchDataProvider();
-
-		const newRules = this.rules;
-
-		this._setRules(newRules);
-
-		this.setState({rules: newRules});
 	}
 }
 
