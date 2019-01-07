@@ -284,7 +284,7 @@ class RuleList extends Component {
 
 	_setDataProviderNames(states) {
 		const newRules = states.rules;
-console.log('DATA PROVIDER', states.dataProvider)
+
 		if (this.dataProvider) {
 			for (let rule = 0; rule < newRules.length; rule++) {
 				const actions = newRules[rule].actions;

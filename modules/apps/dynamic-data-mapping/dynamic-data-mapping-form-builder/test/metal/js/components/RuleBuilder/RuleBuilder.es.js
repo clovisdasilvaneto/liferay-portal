@@ -71,11 +71,11 @@ describe(
 	() => {
 		beforeEach(
 			() => {
+				jest.useFakeTimers();
+
 				dom.enterDocument('<button id="addFieldButton" class="hide"></button>');
 
 				component = new RuleBuilder(baseConfig);
-
-				jest.useFakeTimers();
 			}
 		);
 		afterEach(
@@ -110,6 +110,51 @@ describe(
 				jest.runAllTimers();
 
 				expect(component).toMatchSnapshot();
+			}
+		);
+
+		it(
+			'should receive ruleAdded event to save a rule',
+			() => {
+				jest.runAllTimers();
+
+				const spy = jest.spyOn(component, 'emit');
+
+				component.setState({mode: 'create'});
+
+				jest.runAllTimers();
+
+				jest.useFakeTimers();
+
+				component.refs.RuleEditor.emit('ruleAdded', {});
+
+				jest.runAllTimers();
+
+
+				expect(spy).toHaveBeenCalledWith('ruleAdded', {});
+			}
+		);
+
+		it(
+			'should receive ruleCancel event to discard a rule creation',
+			() => {
+				jest.runAllTimers();
+
+				const totalRules = component.props.rules.length;
+
+				component.setState({mode: 'create'});
+
+				jest.runAllTimers();
+
+				jest.useFakeTimers();
+
+				component.refs.RuleEditor.emit('ruleCancel', {});
+
+				jest.runAllTimers();
+
+				expect(component.state.rules).toEqual(component.props.rules);
+
+				expect(component.state.rules.length).toEqual(totalRules);
 			}
 		);
 	}

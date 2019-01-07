@@ -1,4 +1,5 @@
 import './__fixtures__/RuleEditorMockField.es';
+import dom from 'metal-dom';
 import mockPages from 'mock/mockPages.es';
 import RuleEditor from 'source/components/RuleEditor/RuleEditor.es';
 import {PagesVisitor} from 'source/util/visitors.es';
@@ -100,7 +101,6 @@ describe(
 						fetch.resetMocks();
 
 						component.dispose();
-						component = null;
 					}
 				);
 
@@ -1173,6 +1173,119 @@ describe(
 								expect(component.refs.cancel.disabled).toBe(false);
 							}
 						);
+
+						it(
+							'should be possible to save a rule',
+							() => {
+								jest.useFakeTimers();
+
+								component = new RuleEditor(
+									{
+										...getBaseConfig()
+									}
+								);
+
+								const spy = jest.spyOn(component, 'emit');
+
+								component.refs.firstOperand0.emitFieldEdited(['radio']);
+
+								jest.runAllTimers();
+
+								component.refs.conditionOperator0.emitFieldEdited(['not-contains']);
+
+								jest.runAllTimers();
+
+								component.refs.secondOperandTypeSelector0.emitFieldEdited('value');
+
+								jest.runAllTimers();
+
+								component.refs.secondOperand0.emitFieldEdited('123');
+
+								component.refs.action0.emitFieldEdited(['show']);
+
+								jest.runAllTimers();
+
+								component.refs.actionTarget0.emitFieldEdited(['date']);
+
+								jest.runAllTimers();
+
+								dom.triggerEvent(component.refs.save.element, 'click', {});
+
+								jest.runAllTimers();
+
+								expect(spy).toHaveBeenCalledWith('ruleAdded', {
+										actions:
+											[
+												{
+													action : "show",
+													label : "date",
+													target : "date"
+												}
+											],
+										conditions: [
+											{
+												operands: [
+													{
+														label : "Radio Field",
+														repeatable : undefined,
+														type : "field",
+														value : "radio",
+													},
+													{
+														label : "123",
+														type : "field",
+														value : "123",
+													}
+												],
+												operator: "not-contains"
+											}
+										],
+										['logical-operator']: 'or',
+										ruleEditedIndex: undefined
+								});
+							}
+						);
+
+						// it(
+						// 	'should be possible to cancel a rule',
+						// 	() => {
+						// 		component = new RuleEditor(
+						// 			{
+						// 				...getBaseConfig()
+						// 			}
+						// 		);
+
+						// 		const spy = jest.spyOn(component, 'emit');
+
+						// 		component.refs.firstOperand0.emitFieldEdited(['radio']);
+
+						// 		jest.runAllTimers();
+
+						// 		component.refs.conditionOperator0.emitFieldEdited(['not-contains']);
+
+						// 		jest.runAllTimers();
+
+						// 		component.refs.secondOperandTypeSelector0.emitFieldEdited(['value']);
+
+						// 		jest.runAllTimers();
+
+						// 		component.refs.secondOperand0.emitFieldEdited(['123']);
+
+						// 		component.refs.action0.emitFieldEdited(['show']);
+
+						// 		jest.runAllTimers();
+
+						// 		component.refs.actionTarget0.emitFieldEdited(['date']);
+
+						// 		jest.runAllTimers();
+
+						// 		dom.triggerEvent(component.refs.cancel.element, 'click', {});
+
+						// 		jest.runAllTimers();
+
+						// 		expect(spy).toHaveBeenCalled('ruleCancel');
+						// 	}
+						// );
 					}
 				);
 

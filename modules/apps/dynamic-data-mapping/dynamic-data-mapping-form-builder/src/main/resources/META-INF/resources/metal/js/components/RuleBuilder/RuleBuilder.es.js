@@ -288,7 +288,7 @@ class RuleBuilder extends Component {
 		const {rules} = this.props;
 
 		ruleId = parseInt(ruleId, 10);
-		
+
 		this.setState({
 			index: ruleId,
 			originalRule: rules[ruleId]
@@ -393,7 +393,7 @@ class RuleBuilder extends Component {
 		const {
 			dataProvider
 		} = this.state;
-console.log(dataProvider)
+
 		return (
 			<div class="container">
 				{this.state.mode === 'create' && (
@@ -407,6 +407,7 @@ console.log(dataProvider)
 						functionsMetadata={functionsMetadata}
 						functionsURL={functionsURL}
 						key={'create'}
+						ref="RuleEditor"
 						pages={pages}
 						rolesURL={rolesURL}
 						spritemap={spritemap}
@@ -424,6 +425,7 @@ console.log(dataProvider)
 						pages={pages}
 						rolesURL={rolesURL}
 						rule={rules[this.state.index]}
+						ref="RuleEditor"
 						ruleEditedIndex={this.state.index}
 						spritemap={spritemap}
 					/>

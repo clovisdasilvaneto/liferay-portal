@@ -1337,6 +1337,7 @@ class RuleEditor extends Component {
 		this._fetchDataProviderParameters(id, index)
 		.then(
 			actions => {
+				console.log('disposed', this.isDisposed())
 				if (!this.isDisposed()) {
 					actions[index] = {
 						...actions[index],
@@ -1479,6 +1480,22 @@ class RuleEditor extends Component {
 	_removeActionInternalProperties() {
 		const {actions} = this;
 
+		// return actions.map(
+		// 	action => {
+		// 		const {action: actionType, targe} = action;
+		// 		const newAction = {};
+
+		// 		if(actionType == 'auto-fill') {
+		// 			newAction.inputs = this._prepareAutofillInputs(action);
+		// 			newAction.outputs = this._prepareAutofillOutputs(action);
+		// 		}
+
+		// 		return newAction;
+		// 	}
+		// )
+
+		console.log(actions)
+
 		actions.forEach(
 			action => {
 				if (action.action == 'auto-fill') {
@@ -1499,7 +1516,7 @@ class RuleEditor extends Component {
 					delete action.expression;
 				}
 
-				delete action.calculatorFields;
+				action.calculatorFields = [];
 				delete action.hasRequiredInputs;
 
 			}
