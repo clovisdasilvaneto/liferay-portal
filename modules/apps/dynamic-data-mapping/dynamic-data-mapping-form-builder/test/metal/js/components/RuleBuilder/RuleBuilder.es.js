@@ -130,7 +130,6 @@ describe(
 
 				jest.runAllTimers();
 
-
 				expect(spy).toHaveBeenCalledWith('ruleAdded', {});
 			}
 		);

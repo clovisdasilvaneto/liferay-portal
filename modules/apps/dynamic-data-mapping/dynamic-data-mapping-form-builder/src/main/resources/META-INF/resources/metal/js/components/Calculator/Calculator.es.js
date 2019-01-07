@@ -98,14 +98,14 @@ class Calculator extends Component {
 	 * @private
 	 */
 	_expressionArrayValueFn() {
-		const regex = /\(|\)|numeric[0-9]*|[0-9]+|sum\((numeric[0-9]*|[0-9])\)|[+-/*]/g;
 		let expressionArray = [];
+		const regex = /\(|\)|numeric[0-9]*|[0-9]+|sum\((numeric[0-9]*|[0-9])\)|[+-/*]/g;
 
-		if(this.expression.trim()) {
-			expressionArray = this.expression.match(regex)
+		if (this.expression.trim()) {
+			expressionArray = this.expression.match(regex);
 		}
 
-		return expressionArray
+		return expressionArray;
 	}
 
 	_addItemIntoExpression(calculatorOperationFieldSelected, calculatorSymbol, dropdownItemWasSelected, dropdownItemName) {

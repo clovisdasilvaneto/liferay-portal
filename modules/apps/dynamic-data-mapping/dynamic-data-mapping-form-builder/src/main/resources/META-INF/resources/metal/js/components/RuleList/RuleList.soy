@@ -31,7 +31,7 @@
 	{@param spritemap: string}
 	{@param _handleDropdownClicked: any}
 	{@param _handleRuleCardClicked: any}
-	
+
 	<div class="form-builder-rule-builder-container">
 		<h1 class="form-builder-section-title text-default">{$strings.rules}</h1>
 
@@ -151,7 +151,7 @@
 										{param spritemap: $spritemap /}
 									{/call}
 
-									<button class="component-action dropdown-toggle cursor-pointer" data-rule-index="{$ruleIndex}" data-onclick={$_handleDropdownClicked}>
+									<button class="component-action cursor-pointer dropdown-toggle" data-rule-index="{$ruleIndex}" data-onclick={$_handleDropdownClicked}>
 										{call ClayIcon.render}
 											{param spritemap: $spritemap /}
 											{param symbol: 'ellipsis-v' /}

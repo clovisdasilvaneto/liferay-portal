@@ -1,5 +1,4 @@
 import RuleList from 'source/components/RuleList/RuleList.es';
-import {dom as dom} from 'metal-dom';
 
 let component;
 
@@ -36,8 +35,8 @@ const configDefault = {
 				{
 					action: 'require',
 					expression: '[x+2]',
-					target: 'text1',
-					label: 'label text 1'
+					label: 'label text 1',
+					target: 'text1'
 				}
 			],
 			conditions: [
@@ -59,75 +58,6 @@ const configDefault = {
 		}
 	],
 	spritemap
-};
-
-const rules = [
-	{
-		actions: [
-			{
-				action: 'require',
-				target: 'text1'
-			},
-			{
-				action: 'auto-fill',
-				target: 'text2',
-				inputs: {a: 'text2'},
-				outputs: {b: 'text1'},
-			},
-			{
-				action: 'enable',
-				target: 'text1'
-			},
-			{
-				action: 'show',
-				target: 'text2'
-			},
-			{
-				action: 'calculate',
-				target: 'text2'
-			},
-			{
-				action: 'jump-to-page',
-				target: 'text2'
-			}
-		],
-		conditions: [
-			{
-				operands: [
-					{
-						type: 'field',
-						value: 'text1'
-					},
-					{
-						type: 'string',
-						value: 'value 2'
-					}
-				],
-				operator: 'equals-to'
-			},
-			{
-				operands: [
-					{
-						type: 'field',
-						value: 'text1'
-					},
-					{
-						type: 'field',
-						value: 'text1'
-					}
-				],
-				operator: 'not-equals-to'
-			}
-		],
-		['logical-operator']: 'OR'
-	}
-];
-
-const strings = {
-	value:
-		{
-			emptyListText: 'there-are-no-rules-yet-click-on-plus-icon-below-to-add-the-first'
-		}
 };
 
 describe(

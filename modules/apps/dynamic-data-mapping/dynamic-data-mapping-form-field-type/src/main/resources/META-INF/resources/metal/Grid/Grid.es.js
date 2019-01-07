@@ -133,7 +133,7 @@ class Grid extends Component {
 		 * @type {?(string|undefined)}
 		 */
 
-		type: Config.string().value('grid'),
+		type: Config.string().value('grid')
 	};
 }
 

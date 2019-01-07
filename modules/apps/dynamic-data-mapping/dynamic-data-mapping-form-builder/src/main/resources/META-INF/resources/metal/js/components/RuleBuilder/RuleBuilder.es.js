@@ -262,10 +262,11 @@ class RuleBuilder extends Component {
 	}
 
 	_handleRuleCanceled(event) {
-		const rules = this.props.rules.map((
-			rule, 
-			ruleIndex
-		) => this.index === ruleIndex ? this.originalRule : rule);
+		const rules = this.props.rules.map(
+			(rule, ruleIndex) => {
+				return this.index === ruleIndex ? this.originalRule : rule;
+			}
+		);
 
 		this.setState(
 			{
@@ -289,10 +290,12 @@ class RuleBuilder extends Component {
 
 		ruleId = parseInt(ruleId, 10);
 
-		this.setState({
-			index: ruleId,
-			originalRule: rules[ruleId]
-		});
+		this.setState(
+			{
+				index: ruleId,
+				originalRule: rules[ruleId]
+			}
+		);
 
 		this._showRuleEdition();
 	}
@@ -407,15 +410,15 @@ class RuleBuilder extends Component {
 						functionsMetadata={functionsMetadata}
 						functionsURL={functionsURL}
 						key={'create'}
-						ref="RuleEditor"
 						pages={pages}
+						ref="RuleEditor"
 						rolesURL={rolesURL}
 						spritemap={spritemap}
 					/>
 				)}
 				{this.state.mode === 'edit' && (
 					<RuleEditor
-						dataProvider={dataProvider} 
+
 						dataProviderInstanceParameterSettingsURL={dataProviderInstanceParameterSettingsURL}
 						dataProviderInstancesURL={dataProviderInstancesURL}
 						events={RuleEditionEvents}
@@ -423,15 +426,15 @@ class RuleBuilder extends Component {
 						functionsURL={functionsURL}
 						key={'edit'}
 						pages={pages}
+						ref="RuleEditor"
 						rolesURL={rolesURL}
 						rule={rules[this.state.index]}
-						ref="RuleEditor"
 						ruleEditedIndex={this.state.index}
 						spritemap={spritemap}
 					/>
 				)}
 				{this.state.mode === 'view' && (
-					<RuleList 
+					<RuleList
 						dataProvider={dataProvider}
 						events={RuleBuilderEvents}
 						pages={pages}

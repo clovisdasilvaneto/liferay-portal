@@ -1,5 +1,4 @@
 import 'clay-button';
-import {ClayActionsDropdown} from 'clay-dropdown';
 import {Config} from 'metal-state';
 import {EventHandler} from 'metal-events';
 import Component from 'metal-component';
@@ -151,9 +150,7 @@ class RuleList extends Component {
 		this._eventHandler.removeAllListeners();
 	}
 
-
 	_handleDocumentMouseDown({target}) {
-		const {dropdownExpandedIndex} = this;
 		const dropdownNode = dom.closest(target, '.dropdown-menu');
 		const dropdownSettings = dom.closest(target, '.ddm-rule-list-settings');
 
@@ -161,28 +158,32 @@ class RuleList extends Component {
 			return;
 		}
 
-		this.setState({
-			dropdownExpandedIndex: -1
-		});
+		this.setState(
+			{
+				dropdownExpandedIndex: -1
+			}
+		);
 	}
 
 	/**
 	 * Find a field label based on fieldName
-	 * @param {string} fieldName 
+	 * @param {string} fieldName
 	 * @return {string} the field label
 	 */
 	_getFieldLabel(fieldName) {
 		const pages = this.pages;
 
-		if (!pages || !fieldName) {
-			return;
+		let labelField = null;
+
+		if (pages && fieldName) {
+			const visitor = new PagesVisitor(pages);
+
+			const {label} = visitor.findField(field => field.fieldName == fieldName);
+
+			labelField = label;
 		}
 
-		const visitor = new PagesVisitor(pages);
-
-		const {label} = visitor.findField(field => field.fieldName == fieldName);
-
-		return label;
+		return labelField;
 	}
 
 	_handleRuleCardClicked({data, target}) {
@@ -212,9 +213,9 @@ class RuleList extends Component {
 		const {dropdownExpandedIndex} = this;
 		const ruleNode = dom.closest(event.delegateTarget, '.component-action');
 
-		let ruleIndex = parseInt(ruleNode.dataset.ruleIndex);
+		let ruleIndex = parseInt(ruleNode.dataset.ruleIndex, 10);
 
-		if(ruleIndex === dropdownExpandedIndex) {
+		if (ruleIndex === dropdownExpandedIndex) {
 			ruleIndex = -1;
 		}
 
@@ -300,7 +301,7 @@ class RuleList extends Component {
 				);
 			}
 		}
-		
+
 		return newRules;
 	}
 

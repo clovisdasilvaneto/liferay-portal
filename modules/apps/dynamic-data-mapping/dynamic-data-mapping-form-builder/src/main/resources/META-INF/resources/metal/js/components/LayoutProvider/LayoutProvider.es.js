@@ -57,7 +57,7 @@ class LayoutProvider extends Component {
 		 * @memberof LayoutProvider
 		 * @type {?(array|undefined)}
 		 */
-		spritemap: Config.string(),
+		spritemap: Config.string()
 
 	};
 
@@ -202,50 +202,53 @@ class LayoutProvider extends Component {
 		);
 	}
 
-	syncRules(pages) {
+	formatRules(pages) {
 		const visitor = new PagesVisitor(pages);
-		const rules = this.state.rules.map(rule => {
-			const {conditions, actions} = rule;
 
-			conditions.forEach(
-				(condition, index) => {
-					let firstOperandFieldExists = false;
-					let secondOperandFieldExists = false;
+		const rules = this.state.rules.map(
+			rule => {
+				const {actions, conditions} = rule;
 
-					const secondOperand = condition.operands[1];
+				conditions.forEach(
+					(condition, index) => {
+						let firstOperandFieldExists = false;
+						let secondOperandFieldExists = false;
 
-					visitor.mapFields(
-						({fieldName}) => {
-							if (condition.operands[0].value === fieldName) {
-								firstOperandFieldExists = true;
+						const secondOperand = condition.operands[1];
+
+						visitor.mapFields(
+							({fieldName}) => {
+								if (condition.operands[0].value === fieldName) {
+									firstOperandFieldExists = true;
+								}
+
+								if (secondOperand && secondOperand.value === fieldName) {
+									secondOperandFieldExists = true;
+								}
 							}
+						);
 
-							if (secondOperand && secondOperand.value === fieldName) {
-								secondOperandFieldExists = true;
-							}
+						if (condition.operands[0].value === 'user') {
+							firstOperandFieldExists = true;
 						}
-					);
 
-					if (condition.operands[0].value === 'user') {
-						firstOperandFieldExists = true;
+						if (!firstOperandFieldExists) {
+							RulesSupport.clearAllConditionFieldValues(condition);
+						}
+
+						if (!secondOperandFieldExists && secondOperand && secondOperand.type == 'field') {
+							RulesSupport.clearSecondOperandValue(condition);
+						}
 					}
+				);
 
-					if (!firstOperandFieldExists) {
-						RulesSupport.clearAllConditionFieldValues(condition);
-					}
-
-					if (!secondOperandFieldExists && secondOperand && secondOperand.type == 'field') {
-						RulesSupport.clearSecondOperandValue(condition);
-					}
-				}
-			);
-
-			return {
-				...rule,
-				actions: RulesSupport.syncActions(pages, actions),
-				conditions,
+				return {
+					...rule,
+					actions: RulesSupport.syncActions(pages, actions),
+					conditions
+				};
 			}
-		});
+		);
 
 		return rules;
 	}
@@ -277,7 +280,7 @@ class LayoutProvider extends Component {
 			{
 				focusedField: {},
 				pages: newContext,
-				rules: this.syncRules(newContext)
+				rules: this.formatRules(newContext)
 			}
 		);
 	}
@@ -491,14 +494,12 @@ class LayoutProvider extends Component {
 	}
 
 	_handleRuleAdded(rule) {
-		const newRule = {...rule};
-		const {rules} = this.state;
-
-		rules.push(newRule);
-
 		this.setState(
 			{
-				rules
+				rules: [
+					...this.state.rules,
+					rule
+				]
 			}
 		);
 	}

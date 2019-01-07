@@ -119,7 +119,7 @@ class Options extends Component {
 		 * @type {?(string|undefined)}
 		 */
 
-		type: Config.string().value('options'),
+		type: Config.string().value('options')
 	};
 
 	_getFieldIndex(element) {

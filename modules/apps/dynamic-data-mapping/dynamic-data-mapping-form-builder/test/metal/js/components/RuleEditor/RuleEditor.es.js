@@ -2,7 +2,6 @@ import './__fixtures__/RuleEditorMockField.es';
 import dom from 'metal-dom';
 import mockPages from 'mock/mockPages.es';
 import RuleEditor from 'source/components/RuleEditor/RuleEditor.es';
-import {PagesVisitor} from 'source/util/visitors.es';
 
 let component;
 
@@ -1213,79 +1212,81 @@ describe(
 
 								jest.runAllTimers();
 
-								expect(spy).toHaveBeenCalledWith('ruleAdded', {
-										actions:
-											[
-												{
-													action : "show",
-													label : "date",
-													target : "date"
-												}
-											],
+								expect(spy).toHaveBeenCalledWith(
+									'ruleAdded',
+									{
+										actions: [
+											{
+												action: 'show',
+												label: 'date',
+												target: 'date'
+											}
+										],
 										conditions: [
 											{
 												operands: [
 													{
-														label : "Radio Field",
-														repeatable : undefined,
-														type : "field",
-														value : "radio",
+														label: 'Radio Field',
+														repeatable: undefined,
+														type: 'field',
+														value: 'radio'
 													},
 													{
-														label : "123",
-														type : "field",
-														value : "123",
+														label: '123',
+														type: 'field',
+														value: '123'
 													}
 												],
-												operator: "not-contains"
+												operator: 'not-contains'
 											}
 										],
 										['logical-operator']: 'or',
 										ruleEditedIndex: undefined
-								});
+									}
+								);
 							}
 						);
 
-						// it(
-						// 	'should be possible to cancel a rule',
-						// 	() => {
-						// 		component = new RuleEditor(
-						// 			{
-						// 				...getBaseConfig()
-						// 			}
-						// 		);
+						it.only(
+							'should be possible to cancel a rule',
+							() => {
+								component = new RuleEditor(
+									{
+										...getBaseConfig()
+									}
+								);
 
-						// 		const spy = jest.spyOn(component, 'emit');
+								const spy = jest.spyOn(component, 'emit');
 
-						// 		component.refs.firstOperand0.emitFieldEdited(['radio']);
+								component.refs.firstOperand0.emitFieldEdited(['radio']);
 
-						// 		jest.runAllTimers();
+								jest.runAllTimers();
 
-						// 		component.refs.conditionOperator0.emitFieldEdited(['not-contains']);
+								component.refs.conditionOperator0.emitFieldEdited(['not-contains']);
 
-						// 		jest.runAllTimers();
+								jest.runAllTimers();
 
-						// 		component.refs.secondOperandTypeSelector0.emitFieldEdited(['value']);
+								component.refs.secondOperandTypeSelector0.emitFieldEdited(['value']);
 
-						// 		jest.runAllTimers();
+								jest.runAllTimers();
 
-						// 		component.refs.secondOperand0.emitFieldEdited(['123']);
+								component.refs.secondOperand0.emitFieldEdited(['123']);
 
-						// 		component.refs.action0.emitFieldEdited(['show']);
+								component.refs.action0.emitFieldEdited(['show']);
 
-						// 		jest.runAllTimers();
+								jest.runAllTimers();
 
-						// 		component.refs.actionTarget0.emitFieldEdited(['date']);
+								component.refs.actionTarget0.emitFieldEdited(['date']);
 
-						// 		jest.runAllTimers();
+								jest.runAllTimers();
 
-						// 		dom.triggerEvent(component.refs.cancel.element, 'click', {});
+								dom.triggerEvent(component.refs.cancel.element, 'click', {});
 
-						// 		jest.runAllTimers();
+								jest.runAllTimers();
 
-						// 		expect(spy).toHaveBeenCalled('ruleCancel');
-						// 	}
-						// );
+								expect(spy).toHaveBeenCalledWith('ruleCancel', expect.anything());
+							}
+						);
 					}
 				);
 
@@ -1303,9 +1304,9 @@ describe(
 										...getBaseConfig(),
 										dataProvider: [
 											{
-												id: '36808', 
-												uuid: 'asdihgurevdnc36808', 
-												name: 'Liferay'
+												id: '36808',
+												name: 'Liferay',
+												uuid: 'asdihgurevdnc36808'
 											}
 										]
 									}
@@ -1381,14 +1382,14 @@ describe(
 						component = new RuleEditor(
 							{
 								...getBaseConfig(),
+								actions: [],
 								dataProvider: [
 									{
-										id: '36777', 
-										uuid: 'asdihgurevdnc36808', 
-										name: 'Liferay'
+										id: '36777',
+										name: 'Liferay',
+										uuid: 'asdihgurevdnc36808'
 									}
-								],
-								actions: []
+								]
 							}
 						);
 
@@ -1431,9 +1432,9 @@ describe(
 								...getBaseConfig(),
 								dataProvider: [
 									{
-										id: '36808', 
-										uuid: 'asdihgurevdnc36808', 
-										name: 'Liferay'
+										id: '36808',
+										name: 'Liferay',
+										uuid: 'asdihgurevdnc36808'
 									}
 								]
 							}
@@ -1500,9 +1501,9 @@ describe(
 								...getBaseConfig(),
 								dataProvider: [
 									{
-										id: '36808', 
-										uuid: 'asdihgurevdnc36808', 
-										name: 'Liferay'
+										id: '36808',
+										name: 'Liferay',
+										uuid: 'asdihgurevdnc36808'
 									}
 								]
 							}
@@ -1565,9 +1566,9 @@ describe(
 								...getBaseConfig(),
 								dataProvider: [
 									{
-										id: '36808', 
-										uuid: 'asdihgurevdnc36808', 
-										name: 'Liferay'
+										id: '36808',
+										name: 'Liferay',
+										uuid: 'asdihgurevdnc36808'
 									}
 								]
 							}

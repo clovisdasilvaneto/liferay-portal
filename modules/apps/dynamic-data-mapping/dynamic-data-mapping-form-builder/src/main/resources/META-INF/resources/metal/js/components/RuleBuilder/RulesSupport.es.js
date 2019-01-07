@@ -6,41 +6,41 @@ const clearTargetValue = (actions, index) => {
 	}
 
 	return actions;
-}
+};
 
-const clearFirstOperandValue = (condition) => {
+const clearFirstOperandValue = condition => {
 	if (condition && condition.operands[0]) {
 		condition.operands[0].type = '';
 		condition.operands[0].value = '';
 	}
 
 	return condition;
-}
+};
 
-const clearOperatorValue = (condition) => {
+const clearOperatorValue = condition => {
 	if (condition) {
 		condition.operator = '';
 	}
 
 	return condition;
-}
+};
 
-const clearSecondOperandValue = (condition) => {
+const clearSecondOperandValue = condition => {
 	if (condition && condition.operands[1]) {
 		condition.operands[1].type = '';
 		condition.operands[1].value = '';
 	}
 
 	return condition;
-}
+};
 
-const clearAllConditionFieldValues = (condition) => {
+const clearAllConditionFieldValues = condition => {
 	condition = clearFirstOperandValue(condition);
 	condition = clearOperatorValue(condition);
 	condition = clearSecondOperandValue(condition);
 
 	return condition;
-}
+};
 
 const syncActions = (pages, actions) => {
 	const visitor = new PagesVisitor(pages);
@@ -64,13 +64,13 @@ const syncActions = (pages, actions) => {
 	);
 
 	return actions;
-}
+};
 
 export default {
-	clearTargetValue,
+	clearAllConditionFieldValues,
 	clearFirstOperandValue,
 	clearOperatorValue,
 	clearSecondOperandValue,
-	clearAllConditionFieldValues,
-	syncActions,
-}
+	clearTargetValue,
+	syncActions
+};

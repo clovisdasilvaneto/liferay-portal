@@ -2971,3 +2971,14 @@ Array [
   },
 ]
 `;
+
+exports[`LayoutProvider should receive ruleAdded event to save a rule 1`] = `
+Array [
+  Object {
+    "action": "calculate",
+    "expression": "22+2",
+    "label": "liferay",
+    "target": "liferay",
+  },
+]
+`;
