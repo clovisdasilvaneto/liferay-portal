@@ -478,7 +478,6 @@
 					{if $showTargetDefault or $showTargetAutofill or $showTargetCalculator}
 						{let $options: ($showTargetAutofill) ? $dataProvider : ($showTargetDefault ? $fieldOptions : ($showTargetCalculator ? $calculatorResultOptions : [])) /}
 						{let $ref: $showTargetCalculator ? 'calculatorResult' : 'actionTarget' /}
-
 						{call .renderActionTarget}
 							{param _handleTargetSelection: $_handleTargetSelection /}
 							{param index: $index /}

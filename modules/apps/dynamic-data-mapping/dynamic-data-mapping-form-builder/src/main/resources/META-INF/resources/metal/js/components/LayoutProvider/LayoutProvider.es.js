@@ -518,9 +518,7 @@ class LayoutProvider extends Component {
 
 	_handleRuleSaveEdition(event) {
 		const {actions, conditions, ruleEditedIndex} = event;
-
 		const logicalOperator = event['logical-operator'];
-
 		const {rules} = this.state;
 
 		rules.splice(
@@ -530,6 +528,12 @@ class LayoutProvider extends Component {
 				actions,
 				conditions,
 				'logical-operator': logicalOperator
+			}
+		);
+
+		this.setState(
+			{
+				rules
 			}
 		);
 	}

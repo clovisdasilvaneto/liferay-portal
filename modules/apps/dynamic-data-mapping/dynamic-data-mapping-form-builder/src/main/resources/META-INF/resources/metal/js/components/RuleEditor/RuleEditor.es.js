@@ -279,9 +279,9 @@ class RuleEditor extends Component {
 							calculatorFields: Config.arrayOf(fieldOptionStructure).value([]),
 							ddmDataProviderInstanceUUID: Config.string(),
 							expression: Config.string(),
-							inputs: Config.object(),
+							inputs: Config.array(),
 							label: Config.string(),
-							outputs: Config.object(),
+							outputs: Config.array(),
 							target: Config.string()
 						}
 					)
@@ -388,10 +388,64 @@ class RuleEditor extends Component {
 
 	created() {
 		this._fetchFunctionsURL();
+		this._setDataProviderTarget();
+		this._setActionsInputsOutputs();
 
 		if (this.rule) {
 			this._prepareRuleEditor();
 		}
+	}
+
+	_setActionsInputsOutputs() {
+		const {rule} = this;
+
+		if (rule) {
+			rule.actions.forEach(
+				(action, index) => {
+					if (action.ddmDataProviderInstanceUUID) {
+						const {id} = this.dataProvider.find(
+							dataProvider => {
+								let dataProviderId;
+
+								if (dataProvider.uuid === action.ddmDataProviderInstanceUUID) {
+									dataProviderId = dataProvider.id;
+								}
+
+								return dataProviderId;
+							}
+						);
+
+						this.getDataProviderOptions(id, index);
+					}
+				}
+			);
+		}
+	}
+
+	_setDataProviderTarget() {
+		const {dataProvider, rule} = this;
+
+		if (!rule) {
+			return;
+		}
+
+		this.setState(
+			{
+				actions: rule.actions.map(
+					action => {
+						if (action.action == 'auto-fill') {
+							const {id} = dataProvider.find(
+								({uuid}) => uuid === action.ddmDataProviderInstanceUUID
+							);
+
+							action.target = id;
+						}
+
+						return action;
+					}
+				)
+			}
+		);
 	}
 
 	_prepareRuleEditor() {
@@ -541,7 +595,7 @@ class RuleEditor extends Component {
 	}
 
 	_syncActions(actions) {
-		const {pages} = this;
+		const {pages, rule} = this;
 
 		const visitor = new PagesVisitor(pages);
 
@@ -557,11 +611,17 @@ class RuleEditor extends Component {
 					}
 				);
 
-				if (!targetFieldExists) {
+				action.calculatorFields = this._updateCalculatorFields(action, action.target);
+
+				if (!targetFieldExists && action.action != 'auto-fill') {
 					action.target = '';
 				}
-
-				action.calculatorFields = this._updateCalculatorFields(action, action.target);
+				else if (action.action == 'auto-fill') {
+					action = {
+						...rule.actions[index],
+						calculatorFields: []
+					};
+				}
 			}
 		);
 
@@ -687,22 +747,33 @@ class RuleEditor extends Component {
 			}
 		).then(
 			({inputs, outputs}) => {
-				actions[index].inputs = [];
-				actions[index].outputs = [];
-
-				if (!this.isDisposed() && inputs.length && outputs.length) {
-					const newInput = {
-						...inputs[0],
-						[inputs[0].name]: ''
-					};
-					const newOutput = {
-						...outputs[0],
-						[outputs[0].name]: ''
-					};
-
-					actions[index].inputs = [newInput];
-					actions[index].outputs = [newOutput];
+				if (!actions[index].inputs) {
+					actions[index].inputs = [];
 				}
+
+				if (!actions[index].outputs) {
+					actions[index].outputs = [];
+				}
+
+				actions[index] = {
+					...actions[index],
+					inputs: inputs.map(
+						(input, inputIndex) => {
+							return {
+								...input,
+								...actions[index].inputs[inputIndex]
+							};
+						}
+					),
+					outputs: outputs.map(
+						(output, outputIndex) => {
+							return {
+								...output,
+								...actions[index].outputs[outputIndex]
+							};
+						}
+					)
+				};
 
 				return actions;
 			}
@@ -918,10 +989,7 @@ class RuleEditor extends Component {
 		const actionIndex = this._getIndex(fieldInstance, '.action');
 		const inputIndex = this._getIndex(fieldInstance, '.container-input-field');
 
-		const name = actions[actionIndex].inputs[inputIndex].name;
-
 		actions[actionIndex].inputs[inputIndex].value = value[0];
-		actions[actionIndex].inputs[inputIndex][name] = value[0];
 
 		this.setState(
 			{
@@ -936,10 +1004,7 @@ class RuleEditor extends Component {
 		const outputIndex = this._getIndex(fieldInstance, '.container-output-field');
 		const {actions} = this;
 
-		const name = actions[actionIndex].outputs[outputIndex].name;
-
 		actions[actionIndex].outputs[outputIndex].value = value[0];
-		actions[actionIndex].outputs[outputIndex][name] = value[0];
 
 		this.setState(
 			{
@@ -1134,15 +1199,24 @@ class RuleEditor extends Component {
 
 	_handleRuleAdded(event) {
 		const actions = this._removeActionInternalProperties();
-
 		const conditions = this._removeConditionInternalProperties();
-
 		const {ruleEditedIndex} = this;
 
 		this.emit(
 			'ruleAdded',
 			{
-				actions,
+				actions: actions.map(action => {
+					if(action.action === 'auto-fill') {
+						action.inputs = action.inputs.map(input => ({
+							[input.name]: input.value
+						}));
+						action.outputs = action.outputs.map(output => ({
+							[output.name]: output.value
+						}));
+					}
+
+					return action;
+				}),
 				conditions,
 				['logical-operator']: this.logicalOperator,
 				ruleEditedIndex
@@ -1403,10 +1477,8 @@ class RuleEditor extends Component {
 					delete input.name;
 					delete input.required;
 					delete input.type;
-					delete input.value;
 				}
 			);
-			action.inputs = Object.assign({}, ...action.inputs);
 		}
 
 		return action.inputs;
@@ -1419,10 +1491,8 @@ class RuleEditor extends Component {
 					delete output.fieldOptions;
 					delete output.name;
 					delete output.type;
-					delete output.value;
 				}
 			);
-			action.outputs = Object.assign({}, ...action.outputs);
 		}
 
 		return action.outputs;
@@ -1463,8 +1533,8 @@ class RuleEditor extends Component {
 					newAction.ddmDataProviderInstanceUUID = ddmDataProviderInstanceUUID;
 				}
 				else {
-					newAction.target = target;
 					newAction.label = label;
+					newAction.target = target;
 				}
 
 				if (actionType == 'calculate') {
@@ -1490,6 +1560,9 @@ class RuleEditor extends Component {
 					target: ''
 				}
 			);
+		}else {
+			actions.inputs = []
+			actions.outputs = [];
 		}
 
 		return actions;
@@ -1593,16 +1666,18 @@ class RuleEditor extends Component {
 			this._validateActionsAutofillFilling(autofillActions, 'outputs');
 	}
 
-	_validateActionsAutofillFilling(autofillActions, list) {
+	_validateActionsAutofillFilling(autofillActions, type) {
 		let allFieldsFilled = true;
 
 		autofillActions.forEach(
 			action => {
-				if (action[list].length == 0) {
+				const list = action[type] || [];
+
+				if (list.length === 0) {
 					allFieldsFilled = false;
 				}
-				else if (action[list].length > 0) {
-					action[list].forEach(
+				else {
+					list.forEach(
 						({value}) => {
 							if (!value || value == '') {
 								allFieldsFilled = false;

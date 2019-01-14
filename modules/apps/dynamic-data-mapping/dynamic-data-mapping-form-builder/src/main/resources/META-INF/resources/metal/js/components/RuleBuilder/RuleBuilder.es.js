@@ -58,8 +58,6 @@ class RuleBuilder extends Component {
 
 		rolesURL: Config.string().required(),
 
-		originalRule: Config.object(),
-
 		rules: Config.arrayOf(
 			Config.shapeOf(
 				{
@@ -127,6 +125,8 @@ class RuleBuilder extends Component {
 
 		mode: Config.oneOf(['view', 'edit', 'create']).value('view'),
 
+		originalRule: Config.object(),
+
 		roles: Config.arrayOf(
 			Config.shapeOf(
 				{
@@ -168,7 +168,7 @@ class RuleBuilder extends Component {
 					logicalOperator: Config.string()
 				}
 			)
-		)
+		).value([])
 	};
 
 	/**
@@ -182,6 +182,14 @@ class RuleBuilder extends Component {
 
 		this._fetchDataProvider();
 		this._fetchRoles();
+	}
+
+	willReceiveProps({rules}) {
+		if(rules && rules.newVal.length) {
+			this.setState({
+				rules: rules.newVal
+			});
+		}
 	}
 
 	_fetchRoles() {
@@ -250,20 +258,6 @@ class RuleBuilder extends Component {
 		);
 	}
 
-	/**
-	 * Continues the propagation of event.
-	 * @param {!Event} event
-	 * @private
-	 */
-
-	_showRuleEdition() {
-		this.setState(
-			{
-				mode: 'edit'
-			}
-		);
-	}
-
 	_showRuleCreation() {
 		this.setState(
 			{
@@ -305,9 +299,10 @@ class RuleBuilder extends Component {
 	}
 
 	_handleRuleCanceled(event) {
-		const rules = this.props.rules.map(
+		const {index} = this.state;
+		const rules = this.state.rules.map(
 			(rule, ruleIndex) => {
-				return this.index === ruleIndex ? this.originalRule : rule;
+				return index === ruleIndex ? this.state.originalRule : rule;
 			}
 		);
 
@@ -329,18 +324,18 @@ class RuleBuilder extends Component {
 	}
 
 	_handleRuleEdited({ruleId}) {
-		const {rules} = this.props;
+		const {rules} = this.state;
 
 		ruleId = parseInt(ruleId, 10);
 
 		this.setState(
 			{
 				index: ruleId,
-				originalRule: rules[ruleId]
+				originalRule: JSON.parse(JSON.stringify(rules[ruleId])),
+				mode: 'edit'
 			}
 		);
 
-		this._showRuleEdition();
 	}
 
 	_handleRuleSaveEdition(event) {
@@ -364,7 +359,7 @@ class RuleBuilder extends Component {
 	_hideAddRuleButton(element) {
 		dom.addClasses(element, 'hide');
 	}
-
+	
 	syncVisible(visible) {
 		super.syncVisible(visible);
 
@@ -431,18 +426,20 @@ class RuleBuilder extends Component {
 			functionsMetadata,
 			functionsURL,
 			pages,
-			rules,
 			spritemap
 		} = this.props;
 
 		const {
 			dataProvider,
-			roles
+			roles,
+			index,
+			rules,
+			mode
 		} = this.state;
-
+console.log(rules)
 		return (
 			<div class="container">
-				{this.state.mode === 'create' && (
+				{mode === 'create' && (
 					<RuleEditor
 						actions={[]}
 						conditions={[]}
@@ -459,9 +456,9 @@ class RuleBuilder extends Component {
 						spritemap={spritemap}
 					/>
 				)}
-				{this.state.mode === 'edit' && (
+				{mode === 'edit' && (
 					<RuleEditor
-
+						dataProvider={dataProvider}
 						dataProviderInstanceParameterSettingsURL={dataProviderInstanceParameterSettingsURL}
 						dataProviderInstancesURL={dataProviderInstancesURL}
 						events={RuleEditionEvents}
@@ -471,12 +468,12 @@ class RuleBuilder extends Component {
 						pages={pages}
 						ref="RuleEditor"
 						roles={roles}
-						rule={rules[this.state.index]}
-						ruleEditedIndex={this.state.index}
+						rule={rules[index]}
+						ruleEditedIndex={index}
 						spritemap={spritemap}
 					/>
 				)}
-				{this.state.mode === 'view' && (
+				{mode === 'view' && (
 					<RuleList
 						dataProvider={dataProvider}
 						events={RuleBuilderEvents}

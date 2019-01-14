@@ -74,7 +74,7 @@ class RuleList extends Component {
 					['logical-operator']: Config.string()
 				}
 			)
-		),
+		).value([]),
 
 		roles: Config.arrayOf(
 			Config.shapeOf(
@@ -137,11 +137,11 @@ class RuleList extends Component {
 	created() {
 		this._eventHandler = new EventHandler();
 
-		const newRules = this.rules;
-
-		this._setRules(newRules);
-
-		this.setState({rules: newRules});
+		this.setState(
+			{
+				rules: this._formatRules(this.rules)
+			}
+		);
 	}
 
 	attached() {
@@ -183,17 +183,19 @@ class RuleList extends Component {
 	_getFieldLabel(fieldName) {
 		const pages = this.pages;
 
-		let labelField = null;
+		let fieldLabel = null;
 
 		if (pages && fieldName) {
 			const visitor = new PagesVisitor(pages);
 
-			const {label} = visitor.findField(field => field.fieldName == fieldName);
+			const field = visitor.findField(field => field.fieldName == fieldName);
 
-			labelField = label;
+			if (field) {
+				fieldLabel = field.label;
+			}
 		}
 
-		return labelField;
+		return fieldLabel;
 	}
 
 	_handleRuleCardClicked({data, target}) {
@@ -258,59 +260,64 @@ class RuleList extends Component {
 		return dataProvider.find(data => data.uuid == id).label;
 	}
 
-	_setRules(newRules) {
-		for (let rule = 0; rule < newRules.length; rule++) {
-			const actions = newRules[rule].actions;
-			const conditions = newRules[rule].conditions;
+	_formatRules(rules) {
+		return rules.map(
+			rule => {
+				const {actions, conditions} = rule;
 
-			actions.forEach(
-				action => {
-					if (action.action === 'auto-fill') {
-						const inputValue = Object.values(action.inputs).map(fieldName => this._getFieldLabel(fieldName));
+				let logicalOperator;
 
-						action.inputValue = inputValue.toString();
-						const outputValue = Object.values(action.outputs).map(fieldName => this._getFieldLabel(fieldName));
-
-						action.outputValue = outputValue.toString();
-					}
+				if (rule['logical-operator']) {
+					logicalOperator = rule['logical-operator'].toLowerCase();
 				}
-			);
+				else if (rule.logicalOperator) {
+					logicalOperator = rule.logicalOperator.toLowerCase();
+				}
 
-			newRules[rule].conditions = conditions.map(
-				condition => {
-					if (condition.operands.length < 2 && condition.operands[0].type === 'list') {
-						condition.operands = [
-							{
-								label: 'user',
-								repeatable: false,
-								type: 'user',
-								value: 'user'
-							},
-							{
-								...condition.operands[0],
-								label: condition.operands[0].value
+				return {
+					actions: actions.map(
+						action => {
+							if (action.action === 'auto-fill') {
+								const {inputs, outputs} = action;
+								const inputValue = inputs[Object.keys(inputs)[0]];
+								const outputValue = outputs[Object.keys(outputs)[0]];
+								const inputLabel = this._getFieldLabel(inputValue);
+								const outputLabel = this._getFieldLabel(outputValue);
+
+								action = {
+									...action,
+									inputLabel: inputLabel.toString(),
+									outputLabel: outputLabel.toString()
+								};
 							}
-						];
-					}
 
-					return condition;
-				}
-			);
+							return action;
+						}
+					),
+					conditions: conditions.map(
+						condition => {
+							if (condition.operands.length < 2 && condition.operands[0].type === 'list') {
+								condition.operands = [
+									{
+										label: 'user',
+										repeatable: false,
+										type: 'user',
+										value: 'user'
+									},
+									{
+										...condition.operands[0],
+										label: condition.operands[0].value
+									}
+								];
+							}
 
-			let logicalOperator;
-
-			if (newRules[rule]['logical-operator']) {
-				logicalOperator = newRules[rule]['logical-operator'].toLowerCase();
-				newRules[rule].logicalOperator = logicalOperator;
-
+							return condition;
+						}
+					),
+					logicalOperator
+				};
 			}
-			else if (newRules[rule].logicalOperator) {
-				logicalOperator = newRules[rule].logicalOperator.toLowerCase();
-				newRules[rule].logicalOperator = logicalOperator;
-			}
-		}
-
-		return newRules;
+		);
 	}
 
 	_setDataProviderNames(states) {
@@ -354,51 +361,55 @@ class RuleList extends Component {
 		const {roles} = this;
 		const rules = this._setDataProviderNames(states);
 
-		return {
+		const newState = {
 			...states,
-			rules: rules.map(
-				rule => {
-					return {
-						...rule,
-						actions: rule.actions.map(
-							actionItem => {
-								return {
-									...actionItem,
-									label: this._getFieldLabel(actionItem.target),
-									target: this._getFieldLabel(actionItem.target)
-								};
-							}
-						),
-						conditions: rule.conditions.map(
-							condition => {
-								return {
-									...condition,
-									operands: condition.operands.map(
-										(operand, index) => {
-											let {label} = operand;
+			rules: this._formatRules(
+				rules.map(
+					rule => {
+						return {
+							...rule,
+							actions: rule.actions.map(
+								actionItem => {
+									return {
+										...actionItem,
+										label: this._getFieldLabel(actionItem.target),
+										target: this._getFieldLabel(actionItem.target)
+									};
+								}
+							),
+							conditions: rule.conditions.map(
+								condition => {
+									return {
+										...condition,
+										operands: condition.operands.map(
+											(operand, index) => {
+												let {label} = operand;
 
-											if (operand.type === 'field') {
-												label = this._getFieldLabel(operand.value);
-											}
-											else if (index == 1 && condition.operands[0].type === 'user' && roles.length) {
-												label = roles.find(role => role.id === operand.value).label;
-											}
+												if (operand.type === 'field') {
+													label = this._getFieldLabel(operand.value);
+												}
+												else if (index == 1 && condition.operands[0].type === 'user' && roles.length) {
+													label = roles.find(role => role.id === operand.value).label;
+												}
 
-											return {
-												...operand,
-												label,
-												value: this._setOperandValue(operand)
-											};
-										}
-									)
-								};
-							}
-						)
-					};
-				}
+												return {
+													...operand,
+													label,
+													value: this._setOperandValue(operand)
+												};
+											}
+										)
+									};
+								}
+							)
+						};
+					}
+				)
 			),
 			rulesCardOptions: this._getRulesCardOptions()
 		};
+
+		return newState;
 	}
 
 	_setOperandValue(operand) {

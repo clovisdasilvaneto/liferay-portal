@@ -18,10 +18,10 @@
 				action: string,
 				dataProviderName: ?,
 				expression: ?,
-				inputValue: ?,
+				inputLabel: ?,
 				target: string,
 				label: string,
-				outputValue: ?
+				outputLabel: ?
 			]>,
 			logicalOperator: string
 		]>
@@ -66,10 +66,10 @@
 				action: string,
 				dataProviderName: ?,
 				expression: ?,
-				inputValue: ?,
+				inputLabel: ?,
 				target: string,
 				label: string,
-				outputValue: ?
+				outputLabel: ?
 			]>,
 			logicalOperator: string
 		]>
@@ -120,11 +120,11 @@
 								{call .action}
 									{param action: $action.action /}
 									{param dataProviderName: $action.dataProviderName /}
-									{param inputValue: $action.inputValue /}
+									{param inputLabel: $action.inputLabel /}
 									{param expression: $action.expression /}
 									{param label: $action.label /}
 									{param logicalOperator: $rule.logicalOperator /}
-									{param outputValue: $action.outputValue /}
+									{param outputLabel: $action.outputLabel /}
 									{param strings: $strings /}
 								{/call}
 								{if not isLast($action)}
@@ -240,14 +240,14 @@
 	{@param dataProviderName: ?}
 	{@param expression: ?}
 	{@param label: ?}
-	{@param outputValue: ?}
+	{@param outputLabel: ?}
 	{@param strings: ?}
 
 	<span><b>{$action} </b></span>
 
 	{if $action == 'auto-fill'}
 		{call .label}
-			{param content: $outputValue /}
+			{param content: $outputLabel /}
 		{/call}
 		<span><b>{$strings['fromDataProvider']} {$dataProviderName}</b></span>
 	{elseif $action == 'calculate'}
