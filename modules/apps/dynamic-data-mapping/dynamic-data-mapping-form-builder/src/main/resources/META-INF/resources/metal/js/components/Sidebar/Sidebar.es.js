@@ -371,6 +371,7 @@ class Sidebar extends Component {
 			{
 				...focusedField,
 				...newFieldType,
+				label: focusedField.label,
 				settingsContext,
 				type: newFieldType.name
 			}
@@ -386,7 +387,7 @@ class Sidebar extends Component {
 
 			oldVisitor.mapFields(
 				oldField => {
-					if (oldField.fieldName === fieldName && oldField.type === type) {
+					if (fieldName !== 'type' && oldField.fieldName === fieldName && oldField.type === type) {
 						field = oldField;
 					}
 				}
