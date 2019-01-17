@@ -1229,6 +1229,12 @@ describe(
 				describe(
 					'When the user choose a data provider as a target',
 					() => {
+						afterEach(
+							() => {
+								fetch.resetMocks();
+							}
+						);
+
 						it(
 							'should show the inputs and outputs fields if Input and Outputs were not empty',
 							done => {
@@ -1252,56 +1258,63 @@ describe(
 
 								jest.runAllTimers();
 
-								fetch.mockResponse(
-									JSON.stringify(
-										{
-											inputs: [
-												{
-													label: 'Nome',
-													name: 'Name',
-													required: false,
-													type: 'text'
-												},
-												{
-													label: 'Outro Nome',
-													name: 'Name',
-													required: true,
-													type: 'text'
-												}
-											],
-											outputs: [
-												{
-													name: 'Name',
-													type: 'text'
-												}
-											]
+								fetch.mockImplementation(
+									url => {
+										let promise;
+
+										if (url.indexOf(dataProviderInstanceParameterSettingsURL) > -1) {
+											promise = Promise.resolve(
+												new Response(
+													JSON.stringify(
+														{
+															inputs: [
+																{
+																	label: 'Nome',
+																	name: 'Name',
+																	required: false,
+																	type: 'text'
+																},
+																{
+																	label: 'Outro Nome',
+																	name: 'Name',
+																	required: true,
+																	type: 'text'
+																}
+															],
+															outputs: [
+																{
+																	name: 'Name',
+																	type: 'text'
+																}
+															]
+														}
+													)
+												)
+											);
 										}
-									)
+
+										return promise;
+									}
+								);
+
+								component.on(
+									'actionsChanged',
+									() => {
+										if (component.actions[0].inputs.length) {
+											expect(component.actions[0].inputs).toMatchSnapshot();
+											expect(component.actions[0].outputs).toMatchSnapshot();
+
+											done();
+										}
+									}
 								);
 
 								component.refs.actionTarget0.emitFieldEdited(['36808']);
 
 								jest.runAllTimers();
 
-								component.once(
-									'rendered',
-									() => {
-										if (component.actions[0].inputs) {
-											expect(component.refs.action0dataProviderInput0).toBeTruthy();
-										}
-										if (component.actions[0].outputs) {
-											expect(component.refs.action0dataProviderOutput0).toBeTruthy();
-										}
-										done();
-									}
-								);
-
-								jest.runAllTimers();
-
-								const url = component.dataProviderInstanceParameterSettingsURL.slice(0, dataProviderInstanceParameterSettingsURL.length - 1);
-
 								expect(spy).toHaveBeenCalledWith(
-									`${url}?ddmDataProviderInstanceId=36808`,
+									`${component.dataProviderInstanceParameterSettingsURL}?ddmDataProviderInstanceId=36808`,
 									expect.anything()
 								);
 
@@ -1349,9 +1362,10 @@ describe(
 						component.once(
 							'rendered',
 							() => {
-								const divHasChildren = document.querySelector('.action-rule-data-provider > .col-md-12').hasChildNodes();
+								const children = document.querySelector('.action-rule-data-provider > .col-md-12');
 
-								expect(divHasChildren).toBeFalsy();
+								expect(children && children.hasChildNodes()).toBeFalsy();
+
 								done();
 							}
 						);
@@ -1380,50 +1394,58 @@ describe(
 
 						jest.runAllTimers();
 
-						fetch.mockResponse(
-							JSON.stringify(
-								{
-									inputs: [
-										{
-											label: 'Nome',
-											name: 'Name',
-											required: false,
-											type: 'text'
-										},
-										{
-											label: 'Outro Nome',
-											name: 'Name',
-											required: true,
-											type: 'text'
-										}
-									],
-									outputs: [
-										{
-											name: 'Name',
-											type: 'list'
-										}
-									]
+						fetch.mockImplementation(
+							url => {
+								let promise;
+
+								if (url.indexOf(dataProviderInstanceParameterSettingsURL) > -1) {
+									promise = Promise.resolve(
+										new Response(
+											JSON.stringify(
+												{
+													inputs: [
+														{
+															label: 'Nome',
+															name: 'Name',
+															required: false,
+															type: 'text'
+														},
+														{
+															label: 'Outro Nome',
+															name: 'Name',
+															required: true,
+															type: 'text'
+														}
+													],
+													outputs: [
+														{
+															name: 'Name',
+															type: 'text'
+														}
+													]
+												}
+											)
+										)
+									);
 								}
-							)
+
+								return promise;
+							}
 						);
 
 						component.refs.actionTarget0.emitFieldEdited(['36808']);
 
 						jest.runAllTimers();
 
-						component.once(
-							'rendered',
+						component.on(
+							'actionsChanged',
 							() => {
-								component.refs.action0dataProviderOutput0.emitFieldEdited(['Name']);
+								if (component.actions[0].inputs.length) {
+									expect(component.actions[0].inputs).toMatchSnapshot();
+									expect(component.actions[0].outputs).toMatchSnapshot();
 
-								jest.runAllTimers();
-
-								component.refs.actionTarget0.emitFieldEdited(['36808']);
-
-								jest.runAllTimers();
-
-								expect(component.refs.action0dataProviderOutput0.value).toEqual(['Name']);
-								done();
+									done();
+								}
 							}
 						);
 					}
