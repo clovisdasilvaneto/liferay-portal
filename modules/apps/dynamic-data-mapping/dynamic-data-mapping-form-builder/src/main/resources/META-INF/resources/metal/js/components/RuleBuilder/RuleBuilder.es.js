@@ -90,7 +90,7 @@ class RuleBuilder extends Component {
 					logicalOperator: Config.string()
 				}
 			)
-		),
+		).value([]),
 
 		/**
 		 * The path to the SVG spritemap file containing the icons.
@@ -168,7 +168,7 @@ class RuleBuilder extends Component {
 					logicalOperator: Config.string()
 				}
 			)
-		).value([])
+		).valueFn('setRulesValueFn')
 	};
 
 	/**
@@ -185,10 +185,12 @@ class RuleBuilder extends Component {
 	}
 
 	willReceiveProps({rules}) {
-		if(rules && rules.newVal.length) {
-			this.setState({
-				rules: rules.newVal
-			});
+		if (rules && rules.newVal.length) {
+			this.setState(
+				{
+					rules: rules.newVal
+				}
+			);
 		}
 	}
 
@@ -258,11 +260,14 @@ class RuleBuilder extends Component {
 		);
 	}
 
+	setRulesValueFn() {
+		return this.props.rules;
+	}
+
 	_showRuleCreation() {
 		this.setState(
 			{
-				mode: 'create',
-				rules: []
+				mode: 'create'
 			}
 		);
 	}
@@ -331,11 +336,10 @@ class RuleBuilder extends Component {
 		this.setState(
 			{
 				index: ruleId,
-				originalRule: JSON.parse(JSON.stringify(rules[ruleId])),
-				mode: 'edit'
+				mode: 'edit',
+				originalRule: JSON.parse(JSON.stringify(rules[ruleId]))
 			}
 		);
-
 	}
 
 	_handleRuleSaveEdition(event) {
@@ -359,7 +363,7 @@ class RuleBuilder extends Component {
 	_hideAddRuleButton(element) {
 		dom.addClasses(element, 'hide');
 	}
-	
+
 	syncVisible(visible) {
 		super.syncVisible(visible);
 
@@ -431,12 +435,12 @@ class RuleBuilder extends Component {
 
 		const {
 			dataProvider,
-			roles,
 			index,
-			rules,
-			mode
+			mode,
+			roles,
+			rules
 		} = this.state;
-console.log(rules)
+
 		return (
 			<div class="container">
 				{mode === 'create' && (
@@ -478,6 +482,7 @@ console.log(rules)
 						dataProvider={dataProvider}
 						events={RuleBuilderEvents}
 						pages={pages}
+						ref="RuleList"
 						roles={roles}
 						rules={rules}
 						spritemap={spritemap}

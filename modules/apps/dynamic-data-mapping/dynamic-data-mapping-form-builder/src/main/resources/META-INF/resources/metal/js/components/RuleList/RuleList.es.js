@@ -146,7 +146,7 @@ class RuleList extends Component {
 
 	attached() {
 		this._eventHandler.add(
-			dom.on(document, 'mousedown', this._handleDocumentMouseDown.bind(this), true)
+			dom.on(document, 'mouseup', this._handleDocumentMouseDown.bind(this), true)
 		);
 	}
 
@@ -161,10 +161,9 @@ class RuleList extends Component {
 	}
 
 	_handleDocumentMouseDown({target}) {
-		const dropdownNode = dom.closest(target, '.dropdown-menu');
 		const dropdownSettings = dom.closest(target, '.ddm-rule-list-settings');
 
-		if (dropdownNode || dropdownSettings) {
+		if (dropdownSettings) {
 			return;
 		}
 
@@ -279,15 +278,20 @@ class RuleList extends Component {
 						action => {
 							if (action.action === 'auto-fill') {
 								const {inputs, outputs} = action;
-								const inputValue = inputs[Object.keys(inputs)[0]];
-								const outputValue = outputs[Object.keys(outputs)[0]];
-								const inputLabel = this._getFieldLabel(inputValue);
-								const outputLabel = this._getFieldLabel(outputValue);
+
+								// const inputValue = inputs[Object.keys(inputs)[0]];
+								// const outputValue = outputs[Object.keys(outputs)[0]];
+
+								const inputLabel = Object.values(inputs).map(input => this._getFieldLabel(input));
+								const outputLabel = Object.values(outputs).map(output => this._getFieldLabel(output));
+
+								// const inputLabel = this._getFieldLabel(inputValue);
+								// const outputLabel = this._getFieldLabel(outputValue);
 
 								action = {
 									...action,
-									inputLabel: inputLabel.toString(),
-									outputLabel: outputLabel.toString()
+									inputLabel,
+									outputLabel
 								};
 							}
 

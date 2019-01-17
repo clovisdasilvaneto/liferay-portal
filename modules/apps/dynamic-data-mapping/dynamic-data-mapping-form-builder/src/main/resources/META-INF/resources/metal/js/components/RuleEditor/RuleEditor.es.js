@@ -1,5 +1,6 @@
 import 'clay-button';
 import 'clay-modal';
+import 'clay-alert';
 import {Config} from 'metal-state';
 import {PagesVisitor} from '../../util/visitors.es';
 import '../Calculator/Calculator.es';
@@ -41,29 +42,9 @@ class RuleEditor extends Component {
 					calculatorFields: Config.arrayOf(fieldOptionStructure).value([]),
 					expression: Config.string(),
 					hasRequiredInputs: Config.bool(),
-					inputs: Config.arrayOf(
-						Config.shapeOf(
-							{
-								fieldOptions: Config.arrayOf(fieldOptionStructure),
-								label: Config.string(),
-								name: Config.string(),
-								required: Config.bool(),
-								type: Config.string(),
-								value: Config.string()
-							}
-						)
-					),
+					inputs: Config.object(),
 					label: Config.string(),
-					outputs: Config.arrayOf(
-						Config.shapeOf(
-							{
-								fieldOptions: Config.arrayOf(fieldOptionStructure),
-								name: Config.string(),
-								type: Config.string(),
-								value: Config.string()
-							}
-						)
-					),
+					outputs: Config.object(),
 					target: Config.string()
 				}
 			)
@@ -263,6 +244,8 @@ class RuleEditor extends Component {
 			)
 		).value([]),
 
+		loadingDataProviderOptions: Config.bool(),
+
 		/**
 		 * @default 0
 		 * @instance
@@ -279,9 +262,9 @@ class RuleEditor extends Component {
 							calculatorFields: Config.arrayOf(fieldOptionStructure).value([]),
 							ddmDataProviderInstanceUUID: Config.string(),
 							expression: Config.string(),
-							inputs: Config.array(),
+							inputs: Config.object(),
 							label: Config.string(),
-							outputs: Config.array(),
+							outputs: Config.object(),
 							target: Config.string()
 						}
 					)
@@ -354,6 +337,7 @@ class RuleEditor extends Component {
 				cancel: Liferay.Language.get('cancel'),
 				chooseAnOption: Liferay.Language.get('choose-an-option'),
 				condition: Liferay.Language.get('condition'),
+				dataProviderError: Liferay.Language.get('data-provider-error'),
 				dataProviderParameterInput: Liferay.Language.get('data-provider-parameter-input'),
 				dataProviderParameterInputDescription: Liferay.Language.get('data-provider-parameter-input-description'),
 				dataProviderParameterOutput: Liferay.Language.get('data-provider-parameter-output'),
@@ -400,23 +384,50 @@ class RuleEditor extends Component {
 		const {rule} = this;
 
 		if (rule) {
-			rule.actions.forEach(
-				(action, index) => {
-					if (action.ddmDataProviderInstanceUUID) {
-						const {id} = this.dataProvider.find(
-							dataProvider => {
-								let dataProviderId;
+			this.setState(
+				{
+					loadingDataProviderOptions: true
+				}
+			);
 
-								if (dataProvider.uuid === action.ddmDataProviderInstanceUUID) {
-									dataProviderId = dataProvider.id;
+			Promise.all(
+				rule.actions.map(
+					(action, index) => {
+						let newAction = {...action};
+
+						if (action.ddmDataProviderInstanceUUID) {
+							const {id} = this.dataProvider.find(
+								dataProvider => {
+									let dataProviderId;
+
+									if (dataProvider.uuid === action.ddmDataProviderInstanceUUID) {
+										dataProviderId = dataProvider.id;
+									}
+
+									return dataProviderId;
 								}
+							);
 
-								return dataProviderId;
-							}
-						);
+							newAction = this.getDataProviderOptions(id, index);
+						}
 
-						this.getDataProviderOptions(id, index);
+						newAction.calculatorFields = this._updateCalculatorFields(newAction, newAction.target);
+
+						return newAction;
 					}
+				)
+			).then(
+				actions => {
+					this.setState(
+						{
+							actions,
+							loadingDataProviderOptions: false
+						}
+					);
+				}
+			).catch(
+				error => {
+					throw new Error(error);
 				}
 			);
 		}
@@ -473,6 +484,14 @@ class RuleEditor extends Component {
 	}
 
 	prepareStateForRender(state) {
+		const actions = state.loadingDataProviderOptions ? [] : state.actions.map(
+			action => ({
+				...action,
+				inputs: action.inputs ? this.convertAutoFillDataToArray(action, 'inputs') : [],
+				outputs: action.outputs ? this.convertAutoFillDataToArray(action, 'outputs') : []
+			})
+		);
+
 		const conditions = state.conditions.map(
 			condition => {
 				const fieldName = condition.operands[0].value;
@@ -498,6 +517,7 @@ class RuleEditor extends Component {
 
 		return {
 			...state,
+			actions,
 			conditions
 		};
 	}
@@ -506,6 +526,30 @@ class RuleEditor extends Component {
 		this.setState(
 			{
 				invalidRule: !this._validateConditionsFilling() || !this._validateActionsFilling()
+			}
+		);
+	}
+
+	convertAutoFillDataToArray(action, type) {
+		const data = action[type];
+		const originalData = action[`${type}Data`];
+
+		return Object.keys(data).map(
+			(key, index) => {
+				const {label, name, required, type} = originalData[index];
+
+				const fieldsTypes = this.getTypesByFieldType(type);
+
+				const fieldOptions = this.getFieldsByTypes(this.fieldOptions, fieldsTypes);
+
+				return {
+					fieldOptions,
+					label,
+					name,
+					required,
+					type,
+					value: data[key]
+				};
 			}
 		);
 	}
@@ -669,21 +713,17 @@ class RuleEditor extends Component {
 	_clearAction(index) {
 		const {actions} = this;
 
-		const newActions = actions;
-
-		newActions[index] = {
-			action: '',
-			calculatorFields: [],
-			expression: '',
-			inputs: [],
-			label: '',
-			outputs: [],
-			target: ''
-		};
-
-		this.setState(
-			{
-				actions: newActions
+		return actions.map(
+			(action, currentIndex) => {
+				return currentIndex === index ? {
+					action: '',
+					calculatorFields: [],
+					expression: '',
+					inputs: {},
+					label: '',
+					outputs: {},
+					target: ''
+				} : action;
 			}
 		);
 	}
@@ -736,46 +776,12 @@ class RuleEditor extends Component {
 	}
 
 	_fetchDataProviderParameters(id, index) {
-		const {actions, dataProviderInstanceParameterSettingsURL} = this;
-
-		const url = dataProviderInstanceParameterSettingsURL.slice(0, dataProviderInstanceParameterSettingsURL.length - 1);
+		const {dataProviderInstanceParameterSettingsURL} = this;
 
 		return makeFetch(
 			{
 				method: 'GET',
-				url: `${url}?ddmDataProviderInstanceId=${id}`
-			}
-		).then(
-			({inputs, outputs}) => {
-				if (!actions[index].inputs) {
-					actions[index].inputs = [];
-				}
-
-				if (!actions[index].outputs) {
-					actions[index].outputs = [];
-				}
-
-				actions[index] = {
-					...actions[index],
-					inputs: inputs.map(
-						(input, inputIndex) => {
-							return {
-								...input,
-								...actions[index].inputs[inputIndex]
-							};
-						}
-					),
-					outputs: outputs.map(
-						(output, outputIndex) => {
-							return {
-								...output,
-								...actions[index].outputs[outputIndex]
-							};
-						}
-					)
-				};
-
-				return actions;
+				url: `${dataProviderInstanceParameterSettingsURL}?ddmDataProviderInstanceId=${id}`
 			}
 		).catch(
 			error => {
@@ -795,7 +801,6 @@ class RuleEditor extends Component {
 		).then(
 			responseData => {
 				if (!this.isDisposed()) {
-
 					this.setState(
 						{
 							calculatorOptions: responseData
@@ -902,7 +907,7 @@ class RuleEditor extends Component {
 
 	_handleActionAdded() {
 		const {actions} = this;
-		const newAction = {action: '', calculatorFields: [], expression: '', inputs: [], label: '', outputs: [], target: ''};
+		const newAction = {action: '', calculatorFields: [], expression: '', inputs: {}, label: '', outputs: {}, target: ''};
 
 		if (actions.length == 0) {
 			actions.push(newAction);
@@ -920,11 +925,11 @@ class RuleEditor extends Component {
 
 	_handleActionSelection(event) {
 		const {fieldInstance, value} = event;
-		const index = this._getIndex(fieldInstance, '.action-type');
+		const index = parseInt(this._getIndex(fieldInstance, '.action-type'), 10);
 
 		const {actions} = this;
 
-		const newActions = actions;
+		let newActions = [...actions];
 
 		if (value && value.length > 0 && value[0]) {
 			const fieldName = value[0];
@@ -933,10 +938,17 @@ class RuleEditor extends Component {
 				const previousAction = actions[index].action;
 
 				if (fieldName !== previousAction) {
-					newActions[index].action = fieldName;
-					newActions[index].calculatorFields = [];
-					newActions[index].label = '';
-					newActions[index].target = '';
+					newActions = newActions.map(
+						(action, currentIndex) => {
+							return currentIndex === index ? {
+								...action,
+								action: fieldName,
+								calculatorFields: [],
+								label: '',
+								target: ''
+							} : action;
+						}
+					);
 				}
 			}
 			else {
@@ -944,7 +956,7 @@ class RuleEditor extends Component {
 			}
 		}
 		else {
-			this._clearAction(index);
+			newActions = this._clearAction(index);
 		}
 
 		this.setState(
@@ -989,7 +1001,9 @@ class RuleEditor extends Component {
 		const actionIndex = this._getIndex(fieldInstance, '.action');
 		const inputIndex = this._getIndex(fieldInstance, '.container-input-field');
 
-		actions[actionIndex].inputs[inputIndex].value = value[0];
+		const editedInput = Object.keys(actions[actionIndex].inputs)[inputIndex];
+
+		actions[actionIndex].inputs[editedInput] = value[0];
 
 		this.setState(
 			{
@@ -1004,7 +1018,9 @@ class RuleEditor extends Component {
 		const outputIndex = this._getIndex(fieldInstance, '.container-output-field');
 		const {actions} = this;
 
-		actions[actionIndex].outputs[outputIndex].value = value[0];
+		const editedOutput = Object.keys(actions[actionIndex].outputs)[outputIndex];
+
+		actions[actionIndex].outputs[editedOutput] = value[0];
 
 		this.setState(
 			{
@@ -1205,18 +1221,7 @@ class RuleEditor extends Component {
 		this.emit(
 			'ruleAdded',
 			{
-				actions: actions.map(action => {
-					if(action.action === 'auto-fill') {
-						action.inputs = action.inputs.map(input => ({
-							[input.name]: input.value
-						}));
-						action.outputs = action.outputs.map(output => ({
-							[output.name]: output.value
-						}));
-					}
-
-					return action;
-				}),
+				actions,
 				conditions,
 				['logical-operator']: this.logicalOperator,
 				ruleEditedIndex
@@ -1351,11 +1356,24 @@ class RuleEditor extends Component {
 
 	_handleTargetSelection(event) {
 		const {fieldInstance, value} = event;
+		const {actions} = this;
 		const id = value[0];
 		const index = this._getIndex(fieldInstance, '.target-action');
+
+		const previousTarget = actions[index].target;
+
+		if (previousTarget !== id && actions[index].action == 'auto-fill') {
+			this.populateDataProviderOptions(id, index);
+		}
+		else {
+			this.populateActionTargetValue(id, index);
+		}
+	}
+
+	populateActionTargetValue(id, index) {
 		const {actions} = this;
 
-		const previousTarget = this.actions[index].target;
+		const previousTarget = actions[index].target;
 
 		actions[index].target = id;
 		actions[index].label = id;
@@ -1364,17 +1382,12 @@ class RuleEditor extends Component {
 			actions[index].target = '';
 		}
 		else if (id === '') {
-			actions[index].inputs = [];
-			actions[index].outputs = [];
+			actions[index].inputs = {};
+			actions[index].outputs = {};
 			actions[index].hasRequiredInputs = false;
 		}
-		else if (previousTarget !== id) {
-			if (this.actions[index].action == 'auto-fill') {
-				this.getDataProviderOptions(id, index);
-			}
-			else if (this.actions[index].action == 'calculate') {
-				actions[index].calculatorFields = this._updateCalculatorFields(this.actions[index], id);
-			}
+		else if (previousTarget !== id && actions[index].action == 'calculate') {
+			actions[index].calculatorFields = this._updateCalculatorFields(this.actions[index], id);
 		}
 
 		this.setState(
@@ -1384,36 +1397,66 @@ class RuleEditor extends Component {
 		);
 	}
 
-	getDataProviderOptions(id, index) {
-		this._fetchDataProviderParameters(id, index)
-			.then(
-				actions => {
-					if (!this.isDisposed()) {
-						actions[index] = {
-							...actions[index],
-							inputs: this.formatDataProviderParameter(actions[index].inputs),
-							outputs: this.formatDataProviderParameter(actions[index].outputs)
-						};
+	populateDataProviderOptions(id, index) {
+		const {actions} = this;
 
-						actions[index].ddmDataProviderInstanceUUID = this.dataProvider.find(
-							data => {
-								return data.id == id;
-							}
-						).uuid;
+		actions[index].target = id;
+		actions[index].label = id;
 
-						actions[index].hasRequiredInputs = (actions[index].inputs)
-							.some(
-								input => {
-									return input.required;
+		this.getDataProviderOptions(id, index).then(
+			actionData => {
+				if (!this.isDisposed()) {
+					this.setState(
+						{
+							actions: actions.map(
+								(action, currentIndex) => {
+									return index == currentIndex ? actionData : action;
 								}
-							);
+							)
+						}
+					);
+				}
+			}
+		).catch(
+			error => {
+				throw new Error(error);
+			}
+		);
+	}
 
-						this.setState(
-							{
-								actions
+	getDataProviderOptions(id, index) {
+		return this._fetchDataProviderParameters(id, index)
+			.then(
+				({inputs, outputs}) => {
+					let actions = this.actions;
+
+					if (!this.isDisposed()) {
+						actions = actions.map(
+							(action, currentIndex) => {
+								return index == currentIndex ? ({
+									...action,
+									ddmDataProviderInstanceUUID: this.dataProvider.find(
+										data => {
+											return data.id == id;
+										}
+									).uuid,
+									hasRequiredInputs: inputs.some(
+										input => input.required
+									),
+									inputs: this.formatDataProviderParameter(action.inputs, inputs),
+									inputsData: inputs,
+									outputs: this.formatDataProviderParameter(action.outputs, outputs),
+									outputsData: outputs
+								}) : action;
 							}
 						);
 					}
+
+					return actions[index];
+				}
+			).catch(
+				error => {
+					throw new Error(error);
 				}
 			);
 	}
@@ -1436,17 +1479,13 @@ class RuleEditor extends Component {
 		);
 	}
 
-	formatDataProviderParameter(parameters) {
-		return parameters.map(
-			param => (
-				{
-					...param,
-					fieldOptions: this.getFieldsByTypes(
-						this.fieldOptions,
-						this.getTypesByFieldType(param.type)
-					)
-				}
-			)
+	formatDataProviderParameter(actionParameters, parameters) {
+		return parameters.reduce(
+			(result, {name, value}, index) => ({
+				...result,
+				[name]: Object.keys(actionParameters).indexOf(name) !== -1 ? actionParameters[name] : value
+			}),
+			{}
 		);
 	}
 
@@ -1466,22 +1505,6 @@ class RuleEditor extends Component {
 			value === 'less-than' ||
 			value === 'less-than-equals'
 		);
-	}
-
-	_prepareAutofillInputs(action) {
-		if (Array.isArray(action.inputs)) {
-			action.inputs.forEach(
-				input => {
-					delete input.fieldOptions;
-					delete input.label;
-					delete input.name;
-					delete input.required;
-					delete input.type;
-				}
-			);
-		}
-
-		return action.inputs;
 	}
 
 	_prepareAutofillOutputs(action) {
@@ -1522,14 +1545,22 @@ class RuleEditor extends Component {
 
 		return actions.map(
 			action => {
-				const {action: actionType, ddmDataProviderInstanceUUID, expression, label, target} = action;
+				const {
+					action: actionType,
+					ddmDataProviderInstanceUUID,
+					expression,
+					inputs,
+					label,
+					outputs,
+					target
+				} = action;
 				const newAction = {
 					action: actionType
 				};
 
 				if (actionType == 'auto-fill') {
-					newAction.inputs = this._prepareAutofillInputs(action);
-					newAction.outputs = this._prepareAutofillOutputs(action);
+					newAction.inputs = inputs;
+					newAction.outputs = outputs;
 					newAction.ddmDataProviderInstanceUUID = ddmDataProviderInstanceUUID;
 				}
 				else {
@@ -1554,15 +1585,12 @@ class RuleEditor extends Component {
 					calculatorFields: [],
 					expression: '',
 					hasRequiredInputs: false,
-					inputs: [],
+					inputs: {},
 					label: '',
-					outputs: [],
+					outputs: {},
 					target: ''
 				}
 			);
-		}else {
-			actions.inputs = []
-			actions.outputs = [];
 		}
 
 		return actions;
@@ -1649,8 +1677,8 @@ class RuleEditor extends Component {
 					allFieldsFilled = this._validateInputOutputs(autofillActions) && this._validateActionsCalculateFilling(calculateActions);
 				}
 				else if (autofillActions && autofillActions.length > 0) {
-					allFieldsFilled = this._validateActionsAutofillFilling(autofillActions, 'inputs') &&
-							this._validateActionsAutofillFilling(autofillActions, 'outputs');
+					allFieldsFilled = this._validateActionsAutoFill(autofillActions, 'inputs') &&
+							this._validateActionsAutoFill(autofillActions, 'outputs');
 				}
 				else if (calculateActions && calculateActions.length > 0) {
 					allFieldsFilled = this._validateActionsCalculateFilling(calculateActions);
@@ -1662,33 +1690,24 @@ class RuleEditor extends Component {
 	}
 
 	_validateInputOutputs(autofillActions) {
-		return this._validateActionsAutofillFilling(autofillActions, 'inputs') &&
-			this._validateActionsAutofillFilling(autofillActions, 'outputs');
+		return this._validateActionsAutoFill(autofillActions, 'inputs') &&
+			this._validateActionsAutoFill(autofillActions, 'outputs');
 	}
 
-	_validateActionsAutofillFilling(autofillActions, type) {
-		let allFieldsFilled = true;
-
-		autofillActions.forEach(
+	_validateActionsAutoFill(autoFillActions, type) {
+		return autoFillActions.every(
 			action => {
-				const list = action[type] || [];
+				const parameterKeys = Object.keys(action[type]);
 
-				if (list.length === 0) {
-					allFieldsFilled = false;
+				let validation = parameterKeys.every(key => action[type][key]);
+
+				if (type === 'inputs' && !parameterKeys.length) {
+					validation = Object.keys(action.outputs).length;
 				}
-				else {
-					list.forEach(
-						({value}) => {
-							if (!value || value == '') {
-								allFieldsFilled = false;
-							}
-						}
-					);
-				}
+
+				return validation;
 			}
 		);
-
-		return allFieldsFilled;
 	}
 
 	_validateActionsCalculateFilling(calculateActions) {
