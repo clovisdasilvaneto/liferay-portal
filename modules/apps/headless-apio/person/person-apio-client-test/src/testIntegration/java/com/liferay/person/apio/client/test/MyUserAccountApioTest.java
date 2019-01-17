@@ -14,17 +14,20 @@
 
 package com.liferay.person.apio.client.test;
 
+import com.liferay.oauth2.provider.test.util.OAuth2ProviderTestUtil;
+import com.liferay.person.apio.client.test.internal.activator.MyUserAccountTestBundleActivator;
 import com.liferay.portal.apio.test.util.ApioClientBuilder;
 import com.liferay.portal.kernel.util.StringUtil;
 
 import java.net.URL;
 
-import org.hamcrest.Matchers;
 import org.hamcrest.core.IsNull;
 
+import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
+import org.jboss.shrinkwrap.api.Archive;
 
 import org.junit.After;
 import org.junit.Before;
@@ -38,11 +41,17 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 public class MyUserAccountApioTest {
 
+	@Deployment
+	public static Archive<?> getArchive() throws Exception {
+		return OAuth2ProviderTestUtil.getArchive(
+			MyUserAccountTestBundleActivator.class);
+	}
+
 	@Before
 	public void setUp() throws Exception {
 		URL rootEndpointURL = new URL(_url, "/o/api");
 
-		String userAccountHrefURL = ApioClientBuilder.given(
+		String userAccountHref = ApioClientBuilder.given(
 		).basicAuth(
 			"test@liferay.com", "test"
 		).header(
@@ -68,10 +77,8 @@ public class MyUserAccountApioTest {
 				_read("test-get-my-user-account-create-user.json")
 			).when(
 			).post(
-				userAccountHrefURL
+				userAccountHref
 			).then(
-			).statusCode(
-				200
 			).extract(
 			).path(
 				"_links.self.href"
@@ -89,9 +96,6 @@ public class MyUserAccountApioTest {
 		).when(
 		).put(
 			_userURL.toExternalForm()
-		).then(
-		).statusCode(
-			200
 		);
 
 		_myUserAccountURL = new URL(
@@ -118,9 +122,6 @@ public class MyUserAccountApioTest {
 		).when(
 		).delete(
 			_userURL.toExternalForm()
-		).then(
-		).statusCode(
-			Matchers.isOneOf(200, 204)
 		);
 	}
 

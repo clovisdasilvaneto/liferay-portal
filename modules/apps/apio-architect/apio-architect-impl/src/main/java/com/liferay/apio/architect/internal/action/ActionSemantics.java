@@ -15,15 +15,17 @@
 package com.liferay.apio.architect.internal.action;
 
 import static java.util.Collections.unmodifiableList;
-import static java.util.stream.Collectors.toList;
 
+import com.liferay.apio.architect.annotation.Id;
 import com.liferay.apio.architect.form.Body;
+import com.liferay.apio.architect.form.Form;
 import com.liferay.apio.architect.internal.alias.ProvideFunction;
 import com.liferay.apio.architect.internal.annotation.Action;
 import com.liferay.apio.architect.operation.HTTPMethod;
 import com.liferay.apio.architect.resource.Resource;
 
 import io.vavr.CheckedFunction1;
+import io.vavr.Function2;
 import io.vavr.control.Try;
 
 import java.lang.annotation.Annotation;
@@ -31,7 +33,12 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import javax.ws.rs.ForbiddenException;
 
 /**
  * Instances of this class contains semantic information about an action like
@@ -56,12 +63,22 @@ public final class ActionSemantics {
 	}
 
 	/**
+	 * Executes the permission function with the provided params to check if we
+	 * have permissions to execute an action
+	 *
+	 * @review
+	 */
+	public Boolean checkPermissions(List<?> params) throws Throwable {
+		return _permissionCheckedFunction1.apply(params);
+	}
+
+	/**
 	 * Executes the action with the provided params.
 	 *
 	 * @review
 	 */
 	public Object execute(List<?> params) throws Throwable {
-		return _executeFunction.apply(params);
+		return _executeCheckedFunction1.apply(params);
 	}
 
 	/**
@@ -97,6 +114,16 @@ public final class ActionSemantics {
 	}
 
 	/**
+	 * Returns the form for the action, if present. Returns {@code
+	 * Optional#empty()} otherwise.
+	 *
+	 * @review
+	 */
+	public Optional<Form> getFormOptional() {
+		return Optional.ofNullable(_form);
+	}
+
+	/**
 	 * The method in which the action is executed.
 	 *
 	 * @review
@@ -112,6 +139,45 @@ public final class ActionSemantics {
 	 */
 	public List<Class<?>> getParamClasses() {
 		return unmodifiableList(_paramClasses);
+	}
+
+	public List<Object> getParams(Function<Class<?>, Object> provideFunction) {
+		Stream<Class<?>> stream = getParamClasses().stream();
+
+		return stream.map(
+			provideFunction
+		).collect(
+			Collectors.toList()
+		);
+	}
+
+	public List<Object> getPermissionParams(
+		Function<Class<?>, Object> provideFunction) {
+
+		Stream<Class<?>> stream = getPermissionProvidedClasses().stream();
+
+		return stream.map(
+			provideFunction
+		).map(
+			param -> {
+				if (param instanceof Resource.Id) {
+					return ((Resource.Id)param).asObject();
+				}
+
+				return param;
+			}
+		).collect(
+			Collectors.toList()
+		);
+	}
+
+	/**
+	 * The list of permission classes.
+	 *
+	 * @review
+	 */
+	public List<Class<?>> getPermissionProvidedClasses() {
+		return unmodifiableList(_permissionProvidedClasses);
 	}
 
 	/**
@@ -141,13 +207,20 @@ public final class ActionSemantics {
 	 */
 	public Action toAction(ProvideFunction provideFunction) {
 		return request -> Try.of(
-			getParamClasses()::stream
-		).map(
-			stream -> stream.map(
-				provideFunction.apply(this, request)
-			).collect(
-				toList()
-			)
+			() -> getPermissionParams(provideFunction.apply(this, request))
+		).mapTry(
+			this::checkPermissions
+		).filter(
+			aBoolean -> aBoolean
+		).<Try<List<?>>>transform(
+			aTry -> {
+				if (aTry.isSuccess()) {
+					return Try.of(
+						() -> getParams(provideFunction.apply(this, request)));
+				}
+
+				return Try.failure(new ForbiddenException());
+			}
 		).mapTry(
 			this::execute
 		);
@@ -172,10 +245,14 @@ public final class ActionSemantics {
 
 		actionSemantics._annotations = annotations;
 		actionSemantics._bodyFunction = _bodyFunction;
-		actionSemantics._executeFunction = _executeFunction;
+		actionSemantics._executeCheckedFunction1 = _executeCheckedFunction1;
+		actionSemantics._form = _form;
 		actionSemantics._method = _method;
 		actionSemantics._name = _name;
 		actionSemantics._paramClasses = _paramClasses;
+		actionSemantics._permissionCheckedFunction1 =
+			_permissionCheckedFunction1;
+		actionSemantics._permissionProvidedClasses = _permissionProvidedClasses;
 		actionSemantics._resource = _resource;
 		actionSemantics._returnClass = _returnClass;
 
@@ -201,10 +278,14 @@ public final class ActionSemantics {
 
 		actionSemantics._annotations = _annotations;
 		actionSemantics._bodyFunction = _bodyFunction;
-		actionSemantics._executeFunction = _executeFunction;
+		actionSemantics._executeCheckedFunction1 = _executeCheckedFunction1;
+		actionSemantics._form = _form;
 		actionSemantics._method = method;
 		actionSemantics._name = _name;
 		actionSemantics._paramClasses = _paramClasses;
+		actionSemantics._permissionCheckedFunction1 =
+			_permissionCheckedFunction1;
+		actionSemantics._permissionProvidedClasses = _permissionProvidedClasses;
 		actionSemantics._resource = _resource;
 		actionSemantics._returnClass = _returnClass;
 
@@ -230,10 +311,14 @@ public final class ActionSemantics {
 
 		actionSemantics._annotations = _annotations;
 		actionSemantics._bodyFunction = _bodyFunction;
-		actionSemantics._executeFunction = _executeFunction;
+		actionSemantics._executeCheckedFunction1 = _executeCheckedFunction1;
+		actionSemantics._form = _form;
 		actionSemantics._method = _method;
 		actionSemantics._name = name;
 		actionSemantics._paramClasses = _paramClasses;
+		actionSemantics._permissionCheckedFunction1 =
+			_permissionCheckedFunction1;
+		actionSemantics._permissionProvidedClasses = _permissionProvidedClasses;
 		actionSemantics._resource = _resource;
 		actionSemantics._returnClass = _returnClass;
 
@@ -255,10 +340,14 @@ public final class ActionSemantics {
 
 		actionSemantics._annotations = _annotations;
 		actionSemantics._bodyFunction = _bodyFunction;
-		actionSemantics._executeFunction = _executeFunction;
+		actionSemantics._executeCheckedFunction1 = _executeCheckedFunction1;
+		actionSemantics._form = _form;
 		actionSemantics._method = _method;
 		actionSemantics._name = _name;
 		actionSemantics._paramClasses = _paramClasses;
+		actionSemantics._permissionCheckedFunction1 =
+			_permissionCheckedFunction1;
+		actionSemantics._permissionProvidedClasses = _permissionProvidedClasses;
 		actionSemantics._resource = resource;
 		actionSemantics._returnClass = _returnClass;
 
@@ -284,10 +373,14 @@ public final class ActionSemantics {
 
 		actionSemantics._annotations = _annotations;
 		actionSemantics._bodyFunction = _bodyFunction;
-		actionSemantics._executeFunction = _executeFunction;
+		actionSemantics._executeCheckedFunction1 = _executeCheckedFunction1;
+		actionSemantics._form = _form;
 		actionSemantics._method = _method;
 		actionSemantics._name = _name;
 		actionSemantics._paramClasses = _paramClasses;
+		actionSemantics._permissionCheckedFunction1 =
+			_permissionCheckedFunction1;
+		actionSemantics._permissionProvidedClasses = _permissionProvidedClasses;
 		actionSemantics._resource = _resource;
 		actionSemantics._returnClass = returnClass;
 
@@ -295,7 +388,8 @@ public final class ActionSemantics {
 	}
 
 	public static class Builder
-		implements NameStep, MethodStep, ReturnStep, ExecuteStep, FinalStep {
+		implements NameStep, MethodStep, ReturnStep, PermissionStep,
+				   ExecuteStep, FinalStep {
 
 		public Builder(ActionSemantics actionSemantics) {
 			_actionSemantics = actionSemantics;
@@ -316,22 +410,28 @@ public final class ActionSemantics {
 		}
 
 		@Override
-		public FinalStep bodyFunction(Function<Body, Object> bodyFunction) {
-			_actionSemantics._bodyFunction = bodyFunction;
-
-			return this;
-		}
-
-		@Override
 		public ActionSemantics build() {
 			return _actionSemantics;
 		}
 
 		@Override
 		public FinalStep executeFunction(
-			CheckedFunction1<List<?>, ?> executeFunction) {
+			CheckedFunction1<List<?>, ?> executeCheckedFunction1) {
 
-			_actionSemantics._executeFunction = executeFunction;
+			_actionSemantics._executeCheckedFunction1 = executeCheckedFunction1;
+
+			return this;
+		}
+
+		@Override
+		public FinalStep form(
+			Form form, Function2<Form, Body, Object> function2) {
+
+			_actionSemantics._form = form;
+
+			if (form != null) {
+				_actionSemantics._bodyFunction = function2.apply(form);
+			}
 
 			return this;
 		}
@@ -351,6 +451,31 @@ public final class ActionSemantics {
 		}
 
 		@Override
+		public ExecuteStep permissionFunction() {
+			_actionSemantics._permissionCheckedFunction1 = params -> true;
+
+			return this;
+		}
+
+		@Override
+		public ExecuteStep permissionFunction(
+			CheckedFunction1<List<?>, Boolean> permissionCheckedFunction1) {
+
+			_actionSemantics._permissionCheckedFunction1 =
+				permissionCheckedFunction1;
+
+			return this;
+		}
+
+		@Override
+		public ExecuteStep permissionProvidedClasses(Class<?>... classes) {
+			_actionSemantics._permissionProvidedClasses = Arrays.asList(
+				classes);
+
+			return this;
+		}
+
+		@Override
 		public FinalStep receivesParams(Class<?>... classes) {
 			_actionSemantics._paramClasses = Arrays.asList(classes);
 
@@ -358,7 +483,7 @@ public final class ActionSemantics {
 		}
 
 		@Override
-		public ExecuteStep returns(Class<?> returnClass) {
+		public PermissionStep returns(Class<?> returnClass) {
 			_actionSemantics._returnClass = returnClass;
 
 			return this;
@@ -378,7 +503,16 @@ public final class ActionSemantics {
 		 * @review
 		 */
 		public FinalStep executeFunction(
-			CheckedFunction1<List<?>, ?> executeFunction);
+			CheckedFunction1<List<?>, ?> executeCheckedFunction1);
+
+		/**
+		 * Provides information about the permission method arguments. This
+		 * function receives the list of param classes to provide to the
+		 * permissionCheckedFunction1
+		 *
+		 * @review
+		 */
+		public ExecuteStep permissionProvidedClasses(Class<?>... classes);
 
 	}
 
@@ -390,9 +524,8 @@ public final class ActionSemantics {
 		 * <p>
 		 * The param instances will be provided in the {@link #execute(List)} in
 		 * the same order as their classes in this method. {@link Void} classes
-		 * will be ignored (will be provided as {@code null}. For the {@link
-		 * com.liferay.apio.architect.annotation.Id} or {@link
-		 * com.liferay.apio.architect.annotation.ParentId} params, the
+		 * will be ignored (will be provided as {@code null}. For the {@link Id}
+		 * or {@link com.liferay.apio.architect.annotation.ParentId} params, the
 		 * annotation class should be provided to the list.
 		 * </p>
 		 *
@@ -406,28 +539,14 @@ public final class ActionSemantics {
 		 * <p>
 		 * The param instances will be provided in the {@link #execute(List)} in
 		 * the same order as their classes in this method. {@link Void} classes
-		 * will be ignored (will be provided as {@code null}. For the {@link
-		 * com.liferay.apio.architect.annotation.Id} or {@link
-		 * com.liferay.apio.architect.annotation.ParentId} params, the
+		 * will be ignored (will be provided as {@code null}. For the {@link Id}
+		 * or {@link com.liferay.apio.architect.annotation.ParentId} params, the
 		 * annotation class should be provided to the list.
 		 * </p>
 		 *
 		 * @review
 		 */
 		public FinalStep annotatedWith(Annotation... annotations);
-
-		/**
-		 * Provides information about the function used to transform the body
-		 * value into the object needed by the action.
-		 *
-		 * <p>
-		 * If the action does not need information from the body, this method
-		 * shouldn't be called.
-		 * </p>
-		 *
-		 * @review
-		 */
-		public FinalStep bodyFunction(Function<Body, Object> bodyFunction);
 
 		/**
 		 * Creates the {@link ActionSemantics} object with the information
@@ -438,14 +557,27 @@ public final class ActionSemantics {
 		public ActionSemantics build();
 
 		/**
+		 * Provides information about the form and function used to transform
+		 * the body value into the object needed by the action.
+		 *
+		 * <p>
+		 * If the action does not need information from the body, this method
+		 * shouldn't be called.
+		 * </p>
+		 *
+		 * @review
+		 */
+		public FinalStep form(
+			Form form, Function2<Form, Body, Object> function2);
+
+		/**
 		 * Provides information about the params needed by the action.
 		 *
 		 * <p>
 		 * The param instances will be provided in the {@link #execute(List)} in
 		 * the same order as their classes in this method. {@link Void} classes
-		 * will be ignored (will be provided as {@code null}. For the {@link
-		 * com.liferay.apio.architect.annotation.Id} or {@link
-		 * com.liferay.apio.architect.annotation.ParentId} params, the
+		 * will be ignored (will be provided as {@code null}. For the {@link Id}
+		 * or {@link com.liferay.apio.architect.annotation.ParentId} params, the
 		 * annotation class should be provided to the list.
 		 * </p>
 		 *
@@ -488,6 +620,26 @@ public final class ActionSemantics {
 
 	}
 
+	public interface PermissionStep {
+
+		/**
+		 * Default empty implementation of the permission function.
+		 *
+		 * @review
+		 */
+		public ExecuteStep permissionFunction();
+
+		/**
+		 * Provides information about the permission function to check if the
+		 * execute function has permissions to be executed.
+		 *
+		 * @review
+		 */
+		public ExecuteStep permissionFunction(
+			CheckedFunction1<List<?>, Boolean> permissionCheckedFunction1);
+
+	}
+
 	public interface ReturnStep {
 
 		/**
@@ -495,16 +647,19 @@ public final class ActionSemantics {
 		 *
 		 * @review
 		 */
-		public ExecuteStep returns(Class<?> returnClass);
+		public PermissionStep returns(Class<?> returnClass);
 
 	}
 
 	private List<Annotation> _annotations = new ArrayList<>();
-	private Function<Body, Object> _bodyFunction;
-	private CheckedFunction1<List<?>, ?> _executeFunction;
+	private Function<Body, Object> _bodyFunction = __ -> null;
+	private CheckedFunction1<List<?>, ?> _executeCheckedFunction1;
+	private Form _form;
 	private String _method;
 	private String _name;
 	private List<Class<?>> _paramClasses = new ArrayList<>();
+	private CheckedFunction1<List<?>, Boolean> _permissionCheckedFunction1;
+	private List<Class<?>> _permissionProvidedClasses = new ArrayList<>();
 	private Resource _resource;
 	private Class<?> _returnClass;
 

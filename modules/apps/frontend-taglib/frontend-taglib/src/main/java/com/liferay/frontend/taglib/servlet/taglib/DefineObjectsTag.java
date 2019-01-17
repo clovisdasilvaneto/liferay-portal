@@ -14,6 +14,7 @@
 
 package com.liferay.frontend.taglib.servlet.taglib;
 
+import com.liferay.frontend.js.loader.modules.extender.npm.NPMResolvedPackageNameUtil;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.portlet.PortletURLUtil;
@@ -69,6 +70,10 @@ public class DefineObjectsTag extends TagSupport {
 			pageContext.setAttribute(
 				"windowState", liferayPortletRequest.getWindowState());
 		}
+
+		pageContext.setAttribute(
+			"npmResolvedPackageName",
+			NPMResolvedPackageNameUtil.get(request.getServletContext()));
 
 		if (_overrideResourceBundle != null) {
 			pageContext.setAttribute("resourceBundle", _overrideResourceBundle);

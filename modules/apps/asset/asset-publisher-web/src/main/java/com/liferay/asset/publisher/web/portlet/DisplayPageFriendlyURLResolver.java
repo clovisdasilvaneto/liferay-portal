@@ -45,6 +45,10 @@ import com.liferay.portal.kernel.model.LayoutTypePortletConstants;
 import com.liferay.portal.kernel.portlet.FriendlyURLResolver;
 import com.liferay.portal.kernel.portlet.PortletIdCodec;
 import com.liferay.portal.kernel.security.auth.AuthTokenUtil;
+import com.liferay.portal.kernel.security.auth.PrincipalException;
+import com.liferay.portal.kernel.security.permission.ActionKeys;
+import com.liferay.portal.kernel.security.permission.PermissionChecker;
+import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
 import com.liferay.portal.kernel.service.ClassNameLocalService;
 import com.liferay.portal.kernel.service.LayoutLocalService;
 import com.liferay.portal.kernel.util.FriendlyURLNormalizerUtil;
@@ -57,6 +61,7 @@ import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
+import com.liferay.portal.kernel.workflow.permission.WorkflowPermissionUtil;
 
 import java.util.List;
 import java.util.Locale;
@@ -91,8 +96,26 @@ public class DisplayPageFriendlyURLResolver implements FriendlyURLResolver {
 			FriendlyURLNormalizerUtil.normalizeWithEncoding(decodedUrlTitle);
 
 		JournalArticle journalArticle =
-			_journalArticleLocalService.getLatestArticleByUrlTitle(
+			_journalArticleLocalService.fetchLatestArticleByUrlTitle(
 				groupId, normalizedUrlTitle, WorkflowConstants.STATUS_APPROVED);
+
+		if (journalArticle == null) {
+			PermissionChecker permissionChecker =
+				PermissionThreadLocal.getPermissionChecker();
+
+			journalArticle =
+				_journalArticleLocalService.getLatestArticleByUrlTitle(
+					groupId, normalizedUrlTitle,
+					WorkflowConstants.STATUS_PENDING);
+
+			if (!WorkflowPermissionUtil.hasPermission(
+					permissionChecker, groupId,
+					"com.liferay.journal.model.JournalArticle",
+					journalArticle.getId(), ActionKeys.VIEW)) {
+
+				throw new PrincipalException();
+			}
+		}
 
 		Map<Locale, String> friendlyURLMap = journalArticle.getFriendlyURLMap();
 
@@ -112,8 +135,15 @@ public class DisplayPageFriendlyURLResolver implements FriendlyURLResolver {
 			AssetDisplayPageHelper.hasAssetDisplayPage(groupId, assetEntry)) {
 
 			return _getDisplayPageURL(
-				groupId, assetEntry, mainPath, requestContext);
+				groupId, assetEntry, mainPath, requestContext, urlTitle);
 		}
+
+		HttpServletRequest request = (HttpServletRequest)requestContext.get(
+			"request");
+
+		Locale locale = _portal.getLocale(request);
+
+		urlTitle = journalArticle.getUrlTitle(locale);
 
 		return _getBasicLayoutURL(
 			groupId, privateLayout, mainPath, friendlyURL, params,
@@ -151,8 +181,14 @@ public class DisplayPageFriendlyURLResolver implements FriendlyURLResolver {
 			FriendlyURLNormalizerUtil.normalizeWithEncoding(decodedUrlTitle);
 
 		JournalArticle journalArticle =
-			_journalArticleLocalService.getLatestArticleByUrlTitle(
+			_journalArticleLocalService.fetchLatestArticleByUrlTitle(
 				groupId, normalizedUrlTitle, WorkflowConstants.STATUS_APPROVED);
+
+		if (journalArticle == null) {
+			journalArticle =
+				_journalArticleLocalService.getLatestArticleByUrlTitle(
+					groupId, normalizedUrlTitle, WorkflowConstants.STATUS_ANY);
+		}
 
 		Map<Locale, String> friendlyURLMap = journalArticle.getFriendlyURLMap();
 
@@ -296,11 +332,9 @@ public class DisplayPageFriendlyURLResolver implements FriendlyURLResolver {
 		actualParams.put(
 			namespace + "type", new String[] {assetRendererFactory.getType()});
 
-		actualParams.put(
-			namespace + "urlTitle",
-			new String[] {journalArticle.getUrlTitle()});
-
 		Locale locale = _portal.getLocale(request);
+
+		actualParams.put(namespace + "urlTitle", new String[] {urlTitle});
 
 		FriendlyURLEntryLocalization friendlyURLEntryLocalization =
 			_friendlyURLEntryLocalService.fetchFriendlyURLEntryLocalization(
@@ -310,10 +344,6 @@ public class DisplayPageFriendlyURLResolver implements FriendlyURLResolver {
 
 		if (friendlyURLEntryLocalization != null) {
 			locale = LocaleUtil.fromLanguageId(
-				friendlyURLEntryLocalization.getLanguageId());
-
-			request.setAttribute(
-				WebKeys.I18N_LANGUAGE_ID,
 				friendlyURLEntryLocalization.getLanguageId());
 
 			actualParams.put(
@@ -349,7 +379,7 @@ public class DisplayPageFriendlyURLResolver implements FriendlyURLResolver {
 
 	private String _getDisplayPageURL(
 			long groupId, AssetEntry assetEntry, String mainPath,
-			Map<String, Object> requestContext)
+			Map<String, Object> requestContext, String urlTitle)
 		throws PortalException {
 
 		AssetDisplayContributor assetDisplayContributor =
@@ -368,7 +398,24 @@ public class DisplayPageFriendlyURLResolver implements FriendlyURLResolver {
 			assetDisplayContributor);
 		request.setAttribute(WebKeys.LAYOUT_ASSET_ENTRY, assetEntry);
 
+		FriendlyURLEntryLocalization friendlyURLEntryLocalization =
+			_friendlyURLEntryLocalService.fetchFriendlyURLEntryLocalization(
+				groupId,
+				_classNameLocalService.getClassNameId(JournalArticle.class),
+				urlTitle);
 		Locale locale = _portal.getLocale(request);
+
+		if (friendlyURLEntryLocalization != null) {
+			request.setAttribute(
+				AssetDisplayWebKeys.CURRENT_I18N_LANGUAGE_ID,
+				LocaleUtil.toLanguageId(locale));
+			request.setAttribute(
+				WebKeys.I18N_LANGUAGE_ID,
+				friendlyURLEntryLocalization.getLanguageId());
+
+			locale = LocaleUtil.fromLanguageId(
+				friendlyURLEntryLocalization.getLanguageId());
+		}
 
 		_portal.setPageTitle(assetEntry.getTitle(locale), request);
 		_portal.setPageDescription(assetEntry.getDescription(locale), request);

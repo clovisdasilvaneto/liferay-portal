@@ -10,6 +10,10 @@ AUI.add(
 		var DocumentLibrary = A.Component.create(
 			{
 				ATTRS: {
+					classNameId: {
+						validator: Lang.isString
+					},
+
 					downloadEntryUrl: {
 						validator: Lang.isString
 					},
@@ -56,6 +60,7 @@ AUI.add(
 				prototype: {
 					initializer: function(config) {
 						var instance = this;
+						var eventHandles = [];
 
 						var documentLibraryContainer = instance.byId('documentLibraryContainer');
 
@@ -70,14 +75,13 @@ AUI.add(
 
 						searchContainer.registerAction('move-to-folder', A.bind('_moveToFolder', instance));
 						searchContainer.registerAction('move-to-trash', A.bind('_moveToTrash', instance));
+						eventHandles.push(searchContainer.on('rowToggled', this._handleSearchContainerRowToggled, this));
 
 						instance._searchContainer = searchContainer;
 
 						var foldersConfig = config.folders;
 
 						instance._folderId = foldersConfig.defaultParentFolderId;
-
-						var eventHandles = [];
 
 						instance._config = config;
 
@@ -112,7 +116,9 @@ AUI.add(
 						var url = instance.get('editEntryUrl');
 
 						if (action === 'editTags') {
-							url = instance.get('editTagsUrl');
+							instance._openModalTags();
+
+							return;
 						}
 
 						if (action === 'move' || action === 'moveEntries') {
@@ -172,6 +178,19 @@ AUI.add(
 						}
 					},
 
+					_handleSearchContainerRowToggled: function(event) {
+						var instance = this;
+
+						var selectedElements = event.elements.allSelectedElements;
+
+						if (selectedElements.size() > 0) {
+							instance._selectedFileEntries = selectedElements.attr('value');
+						}
+						else {
+							instance._selectedFileEntries = [];
+						}
+					},
+
 					_moveToFolder: function(obj) {
 						var instance = this;
 
@@ -224,6 +243,39 @@ AUI.add(
 
 							}
 						);
+					},
+
+					_openModalTags: function() {
+						var instance = this;
+
+						var editTagsComponent = instance._editTagsComponent;
+
+						if (!editTagsComponent) {
+							var form = instance.get('form').node;
+							var namespace = instance.NS;
+							var urlTags = themeDisplay.getPortalURL() + '/o/bulk/asset/tags/' + instance.get('classNameId') + '/common';
+							var urlUpdateTags = themeDisplay.getPortalURL() + '/o/bulk/asset/tags/' + instance.get('classNameId');
+
+							Liferay.Loader.require(
+								'document-library-web/document_library/tags/EditTags.es',
+								function(EditTags) {
+									instance._editTagsComponent = new EditTags.default(
+										{
+											fileEntries: instance._selectedFileEntries,
+											repositoryId: parseFloat(form.get(namespace + 'repositoryId').val()),
+											spritemap: themeDisplay.getPathThemeImages() + "/lexicon/icons.svg",
+											urlTags: urlTags,
+											urlUpdateTags: urlUpdateTags
+										},
+										'#' + instance.NS + 'documentLibraryModal'
+									);
+								}
+							);
+						}
+						else {
+							editTagsComponent.fileEntries = instance._selectedFileEntries;
+							editTagsComponent.open();
+						}
 					},
 
 					_plugUpload: function(event, config) {

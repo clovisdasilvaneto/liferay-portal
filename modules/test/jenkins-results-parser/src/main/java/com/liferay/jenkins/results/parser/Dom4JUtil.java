@@ -48,12 +48,10 @@ public class Dom4JUtil {
 
 		List<Element> elements = new ArrayList<>();
 
-		for (Object object : rootElement.elements()) {
-			Element childElement = (Element)object;
-
+		for (Element childElement : rootElement.elements()) {
 			rootElement.remove(childElement);
 
-			element.add(childElement);
+			elements.add(childElement);
 		}
 
 		addToElement(element, elements.toArray());
@@ -204,20 +202,16 @@ public class Dom4JUtil {
 		Element element, boolean cascade, String replacementText,
 		String targetText) {
 
-		Iterator<?> attributeIterator = element.attributeIterator();
-
-		while (attributeIterator.hasNext()) {
-			Attribute attribute = (Attribute)attributeIterator.next();
-
+		for (Attribute attribute : element.attributes()) {
 			String text = attribute.getValue();
 
 			attribute.setValue(text.replace(targetText, replacementText));
 		}
 
-		Iterator<?> nodeIterator = element.nodeIterator();
+		Iterator<? extends Node> nodeIterator = element.nodeIterator();
 
 		while (nodeIterator.hasNext()) {
-			Node node = (Node)nodeIterator.next();
+			Node node = nodeIterator.next();
 
 			if (node instanceof Text) {
 				Text textNode = (Text)node;
@@ -229,14 +223,9 @@ public class Dom4JUtil {
 
 					textNode.setText(text);
 				}
-
-				continue;
 			}
-
-			if (node instanceof Element && cascade) {
+			else if (node instanceof Element && cascade) {
 				replace((Element)node, cascade, replacementText, targetText);
-
-				continue;
 			}
 		}
 	}
@@ -246,16 +235,6 @@ public class Dom4JUtil {
 			"pre", null,
 			getNewElement(
 				"code", null, JenkinsResultsParserUtil.redact(content)));
-	}
-
-	public static List<Element> toElementList(List<?> objects) {
-		List<Element> elements = new ArrayList<>(objects.size());
-
-		for (Object object : objects) {
-			elements.add((Element)object);
-		}
-
-		return elements;
 	}
 
 }

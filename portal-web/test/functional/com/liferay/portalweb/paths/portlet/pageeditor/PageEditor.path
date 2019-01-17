@@ -30,6 +30,11 @@
 </tr>
 <!--FRAGMENT_SIDEBAR-->
 <tr>
+	<td>FRAGMENT_SIDEBAR</td>
+	<td>//div[contains(@class,'fragments-editor-sidebar')]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>FRAGMENT_SIDEBAR_COLLECTION_PANEL</td>
 	<td>//div[contains(@class,'fragments-editor-sidebar-section')]//a[contains(@href,'fragment-collection')][normalize-space()='${key_collectionName}']</td>
 	<td></td>
@@ -45,8 +50,8 @@
 	<td></td>
 </tr>
 <tr>
-	<td>FRAGMENT_SIDEBAR_FRAGMENT</td>
-	<td>//div[contains(@class,'fragments-editor-sidebar-section')]//div[contains(@class,'draggable-item')][contains(.,'${key_fragmentName}')]//button</td>
+	<td>FRAGMENT_SIDEBAR_ADD_FRAGMENT_BUTTON</td>
+	<td>//button[@data-item-name='${key_fragmentName}']</td>
 	<td></td>
 </tr>
 <tr>
@@ -60,11 +65,6 @@
 	<td></td>
 </tr>
 <!--CONTENT_PAGE-->
-<tr>
-	<td>CONTENT_PAGE_FRAGMENT_SIDEBAR</td>
-	<td>//div[contains(@class,'fragments-editor-sidebar-section')]</td>
-	<td></td>
-</tr>
 <tr>
 	<td>CONTENT_PAGE_DISABLED_HEADER</td>
 	<td>//header[@class='lfr-edit-mode__disabled-area']</td>

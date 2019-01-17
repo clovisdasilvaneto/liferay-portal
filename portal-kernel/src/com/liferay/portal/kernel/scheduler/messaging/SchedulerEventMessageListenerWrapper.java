@@ -33,6 +33,10 @@ import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 
 import java.util.Date;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author Shuyang Zhou
@@ -61,6 +65,62 @@ public class SchedulerEventMessageListenerWrapper
 				return;
 			}
 		}
+
+		if (_lock.tryLock()) {
+			try {
+				do {
+					_processMessage(
+						message, destinationName, jobName, groupName);
+
+					message = _queuedMessages.poll();
+				}
+				while (message != null);
+			}
+			finally {
+				_lock.unlock();
+			}
+		}
+		else {
+			_queuedMessages.add(message);
+		}
+	}
+
+	/**
+	 * @deprecated As of Wilberforce (7.0.x)
+	 */
+	@Deprecated
+	public void setGroupName(String groupName) {
+		_groupName = groupName;
+	}
+
+	/**
+	 * @deprecated As of Wilberforce (7.0.x)
+	 */
+	@Deprecated
+	public void setJobName(String jobName) {
+		_jobName = jobName;
+	}
+
+	public void setMessageListener(MessageListener messageListener) {
+		_messageListener = messageListener;
+	}
+
+	public void setSchedulerEntry(SchedulerEntry schedulerEntry) {
+		_schedulerEntry = schedulerEntry;
+	}
+
+	protected void handleException(Message message, Exception exception) {
+		JobState jobState = (JobState)message.get(SchedulerEngine.JOB_STATE);
+
+		if (jobState != null) {
+			jobState.addException(exception, new Date());
+		}
+	}
+
+	private void _processMessage(
+			Message message, String destinationName, String jobName,
+			String groupName)
+		throws MessageListenerException {
 
 		try {
 			_messageListener.receive(message);
@@ -121,38 +181,6 @@ public class SchedulerEventMessageListenerWrapper
 		}
 	}
 
-	/**
-	 * @deprecated As of Wilberforce (7.0.x)
-	 */
-	@Deprecated
-	public void setGroupName(String groupName) {
-		_groupName = groupName;
-	}
-
-	/**
-	 * @deprecated As of Wilberforce (7.0.x)
-	 */
-	@Deprecated
-	public void setJobName(String jobName) {
-		_jobName = jobName;
-	}
-
-	public void setMessageListener(MessageListener messageListener) {
-		_messageListener = messageListener;
-	}
-
-	public void setSchedulerEntry(SchedulerEntry schedulerEntry) {
-		_schedulerEntry = schedulerEntry;
-	}
-
-	protected void handleException(Message message, Exception exception) {
-		JobState jobState = (JobState)message.get(SchedulerEngine.JOB_STATE);
-
-		if (jobState != null) {
-			jobState.addException(exception, new Date());
-		}
-	}
-
 	private static final Log _log = LogFactoryUtil.getLog(
 		SchedulerEventMessageListenerWrapper.class);
 
@@ -170,7 +198,10 @@ public class SchedulerEventMessageListenerWrapper
 	@SuppressWarnings("unused")
 	private String _jobName;
 
+	private final Lock _lock = new ReentrantLock();
 	private MessageListener _messageListener;
+	private final Queue<Message> _queuedMessages =
+		new ConcurrentLinkedQueue<>();
 	private volatile SchedulerEntry _schedulerEntry;
 
 }

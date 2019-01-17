@@ -45,6 +45,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -231,6 +232,17 @@ public class SourceFormatterUtil {
 		return null;
 	}
 
+	public static File getPortalDir(String baseDirName) {
+		File portalImplDir = getFile(
+			baseDirName, "portal-impl", ToolsUtil.PORTAL_MAX_DIR_LEVEL);
+
+		if (portalImplDir == null) {
+			return null;
+		}
+
+		return portalImplDir.getParentFile();
+	}
+
 	public static String getPropertyValue(
 		String attributeName, CheckType checkType, String checkName,
 		Map<String, Properties> propertiesMap) {
@@ -259,9 +271,22 @@ public class SourceFormatterUtil {
 	public static String getPropertyValue(
 		String propertyName, Map<String, Properties> propertiesMap) {
 
+		return getPropertyValue(propertyName, propertiesMap, null);
+	}
+
+	public static String getPropertyValue(
+		String propertyName, Map<String, Properties> propertiesMap,
+		String excludedPropertiesFileLocation) {
+
 		StringBundler sb = new StringBundler(propertiesMap.size() * 2);
 
 		for (Map.Entry<String, Properties> entry : propertiesMap.entrySet()) {
+			if (Objects.equals(
+					entry.getKey(), excludedPropertiesFileLocation)) {
+
+				continue;
+			}
+
 			Properties properties = entry.getValue();
 
 			String value = properties.getProperty(propertyName);

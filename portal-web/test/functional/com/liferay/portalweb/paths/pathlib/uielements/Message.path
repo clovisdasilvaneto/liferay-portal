@@ -35,7 +35,7 @@
 </tr>
 <tr>
 	<td>EMPTY_INFO</td>
-	<td>//div[@class=' main-content-body']/div[contains(@class,'sheet')]/div[contains(@class,'sheet-text')]</td>
+	<td>//div[contains(@class,'main-content-body')]/div[contains(@class,'sheet')]/div[contains(@class,'sheet-text')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -186,6 +186,11 @@
 <tr>
 	<td>INFO_SPECIFIC</td>
 	<td>//div[contains(@class,'alert alert-info') and not(contains(@class,'hide'))][contains(.,'${key_infoMessage}')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>INFO_SPECIFIC_WIDGET</td>
+	<td>//section[contains(.,'${key_widgetName}')]//div[contains(@class,'alert alert-info') and not(contains(@class,'hide'))]</td>
 	<td></td>
 </tr>
 <tr>

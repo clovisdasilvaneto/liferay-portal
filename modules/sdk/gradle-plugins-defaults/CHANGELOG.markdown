@@ -5297,6 +5297,74 @@ version 2.0.8.
 - [LPS-88170]: Update the [Liferay Gradle Plugins] dependency to version
 3.13.47.
 
+## 5.5.157 - 2019-01-02
+
+### Changed
+- [LPS-84119]: Update the [Liferay Gradle Plugins] dependency to version
+3.13.48.
+
+## 5.5.158 - 2019-01-03
+
+### Changed
+- [LPS-84119]: Update the [Liferay Gradle Plugins] dependency to version
+3.13.49.
+
+## 5.5.159 - 2019-01-05
+
+### Changed
+- [LPS-41848]: Update the [Liferay Gradle Plugins] dependency to version
+3.13.50.
+
+## 5.5.160 - 2019-01-07
+
+### Changed
+- [LPS-87479]: Update the [Liferay Gradle Plugins] dependency to version
+3.13.51.
+- [LPS-87479]: Update the [Liferay Gradle Plugins JSDoc] dependency to version
+2.0.13.
+
+## 5.5.161 - 2019-01-08
+
+### Changed
+- [LPS-88823]: Update the [Liferay Gradle Plugins] dependency to version
+3.13.52.
+
+## 5.5.162 - 2019-01-08
+
+### Removed
+- [LPS-88859]: Remove the logic that sets the `baseline.onlyIf` property to `false`
+when there is no previous published version for the project.
+
+## 5.5.163 - 2019-01-08
+
+### Changed
+- [LPS-88903]: Update the [Liferay Gradle Plugins] dependency to version
+3.13.53.
+- [LPS-88903]: Update the [Liferay Gradle Plugins Baseline] dependency to
+version 2.0.9.
+
+## 5.5.164 - 2019-01-08
+
+### Changed
+- [LPS-84119]: Update the [Liferay Gradle Plugins] dependency to version
+3.13.54.
+
+## 5.5.165 - 2019-01-09
+
+### Changed
+- [LPS-88909]: Update the [Liferay Gradle Plugins] dependency to version
+3.13.55.
+- [LPS-88909]: Update the [Liferay Gradle Plugins JSDoc] dependency to version
+2.0.14.
+
+## 5.5.166 - 2019-01-09
+
+### Changed
+- [LPS-87479]: Update the [Liferay Gradle Plugins] dependency to version
+3.13.56.
+- [LPS-87479]: Update the [Liferay Gradle Plugins JSDoc] dependency to version
+2.0.15.
+
 [Find Security Bugs]: https://github.com/liferay/liferay-portal/tree/master/modules/third-party/com-h3xstream-findsecbugs
 [Gradle Dependency Management]: https://github.com/spring-gradle-plugins/dependency-management-plugin
 [Gradle License Report]: https://github.com/jk1/Gradle-License-Report
@@ -5316,6 +5384,7 @@ version 2.0.8.
 [Liferay Gradle Plugins Whip]: https://github.com/liferay/liferay-portal/tree/master/modules/sdk/gradle-plugins-whip
 [Liferay Gradle Util]: https://github.com/liferay/liferay-portal/tree/master/modules/sdk/gradle-util
 [Liferay Source Formatter]: https://github.com/liferay/liferay-portal/tree/master/modules/util/source-formatter
+[LPS-41848]: https://issues.liferay.com/browse/LPS-41848
 [LPS-52675]: https://issues.liferay.com/browse/LPS-52675
 [LPS-53392]: https://issues.liferay.com/browse/LPS-53392
 [LPS-58672]: https://issues.liferay.com/browse/LPS-58672
@@ -5814,6 +5883,7 @@ version 2.0.8.
 [LPS-87466]: https://issues.liferay.com/browse/LPS-87466
 [LPS-87471]: https://issues.liferay.com/browse/LPS-87471
 [LPS-87477]: https://issues.liferay.com/browse/LPS-87477
+[LPS-87479]: https://issues.liferay.com/browse/LPS-87479
 [LPS-87488]: https://issues.liferay.com/browse/LPS-87488
 [LPS-87503]: https://issues.liferay.com/browse/LPS-87503
 [LPS-87590]: https://issues.liferay.com/browse/LPS-87590
@@ -5835,6 +5905,10 @@ version 2.0.8.
 [LPS-88382]: https://issues.liferay.com/browse/LPS-88382
 [LPS-88552]: https://issues.liferay.com/browse/LPS-88552
 [LPS-88588]: https://issues.liferay.com/browse/LPS-88588
+[LPS-88823]: https://issues.liferay.com/browse/LPS-88823
+[LPS-88859]: https://issues.liferay.com/browse/LPS-88859
+[LPS-88903]: https://issues.liferay.com/browse/LPS-88903
+[LPS-88909]: https://issues.liferay.com/browse/LPS-88909
 [LRDOCS-2594]: https://issues.liferay.com/browse/LRDOCS-2594
 [LRDOCS-2841]: https://issues.liferay.com/browse/LRDOCS-2841
 [LRDOCS-2981]: https://issues.liferay.com/browse/LRDOCS-2981

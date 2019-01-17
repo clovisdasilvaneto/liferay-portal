@@ -18,6 +18,7 @@ import com.liferay.asset.kernel.AssetRendererFactoryRegistryUtil;
 import com.liferay.asset.kernel.model.AssetEntry;
 import com.liferay.asset.kernel.model.AssetRendererFactory;
 import com.liferay.asset.kernel.service.AssetEntryLocalService;
+import com.liferay.asset.list.exception.AssetListEntryAssetEntryRelPostionException;
 import com.liferay.asset.list.model.AssetListEntryAssetEntryRel;
 import com.liferay.asset.list.service.base.AssetListEntryAssetEntryRelLocalServiceBaseImpl;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -47,11 +48,19 @@ public class AssetListEntryAssetEntryRelLocalServiceImpl
 			ServiceContext serviceContext)
 		throws PortalException {
 
+		AssetListEntryAssetEntryRel assetListEntryAssetEntryRel =
+			assetListEntryAssetEntryRelPersistence.fetchByA_P(
+				assetListEntryId, position);
+
+		if (assetListEntryAssetEntryRel != null) {
+			throw new AssetListEntryAssetEntryRelPostionException();
+		}
+
 		User user = userLocalService.getUser(serviceContext.getUserId());
 
 		long assetListEntryAssetEntryRelId = counterLocalService.increment();
 
-		AssetListEntryAssetEntryRel assetListEntryAssetEntryRel =
+		assetListEntryAssetEntryRel =
 			assetListEntryAssetEntryRelPersistence.create(
 				assetListEntryAssetEntryRelId);
 
@@ -80,6 +89,14 @@ public class AssetListEntryAssetEntryRelLocalServiceImpl
 		throws PortalException {
 
 		int position = getAssetListEntryAssetEntryRelsCount(assetListEntryId);
+
+		AssetListEntryAssetEntryRel assetListEntryAssetEntryRel =
+			assetListEntryAssetEntryRelPersistence.fetchByA_P(
+				assetListEntryId, position);
+
+		if (assetListEntryAssetEntryRel != null) {
+			throw new AssetListEntryAssetEntryRelPostionException();
+		}
 
 		return addAssetListEntryAssetEntryRel(
 			assetListEntryId, assetEntryId, position, serviceContext);

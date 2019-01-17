@@ -24,6 +24,10 @@ definition {
 
 		Portlet.addPG(portletName = "Asset Publisher");
 
+		AssetPublisherPortlet.configureAssetLinkBehaviorPG(
+			assetLinkBehavior = "Show Full Content"
+		);
+
 		Navigator.gotoPage(pageName = "Asset Publisher Page");
 	}
 
@@ -1529,6 +1533,7 @@ definition {
 		property testray.component.names = "Training";
 
 		AssetPublisherPortlet.configureAssetLinkBehaviorPG(
+			assetLinkBehavior = "View in Context",
 			disableConfiguration = "Show Add Content Button"
 		);
 
@@ -1789,9 +1794,7 @@ definition {
 			entryTitle = "Blogs Entry2 Title"
 		);
 
-		Panel.expandPanel(panel = "Related Assets");
-
-		BlogsEntry.addRelatedAsset(
+		RelatedAssets.selectAsset(
 			assetTitle = "Blogs Entry1 Title",
 			assetType = "Blogs Entry"
 		);
@@ -1896,6 +1899,7 @@ definition {
 		);
 
 		WebContent.deleteCP(
+			siteURLKey = "guest",
 			webContentContent = "WC WebContent Content",
 			webContentTitle = "WC WebContent Title"
 		);
@@ -1963,7 +1967,7 @@ definition {
 
 		Panel.expandPanel(panel = "Related Assets");
 
-		BlogsEntry.addRelatedAsset(
+		RelatedAssets.selectAsset(
 			assetTitle = "WC WebContent Title",
 			assetType = "Basic Web Content"
 		);
@@ -2078,7 +2082,7 @@ definition {
 			dmDocumentSize = "12KB",
 			dmDocumentTitle = "DM Document Title Edit",
 			dmDocumentUploader = "Test Test",
-			dmDocumentVersionNumber = "1.1",
+			dmDocumentVersionNumber = "2.0",
 			portletName = "Documents and Media",
 			searchTerm = "DM Document Title",
 			workflow = "APPROVED"

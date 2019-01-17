@@ -103,6 +103,14 @@ public class MediaObjectApioTest {
 			"Content-Type", "multipart/form-data"
 		).multipart(
 			"binaryFile", FileTestUtil.getFile("document.pdf", getClass())
+		).multipart(
+			"description", "My Document Description"
+		).multipart(
+			"keywords[0]", "document"
+		).multipart(
+			"keywords[1]", "test-pdf"
+		).multipart(
+			"title", "My Document Title"
 		).when(
 		).post(
 			_documentsHref
@@ -116,15 +124,19 @@ public class MediaObjectApioTest {
 		).body(
 			"dateModified", IsNull.notNullValue()
 		).body(
+			"description", Matchers.equalTo("My Document Description")
+		).body(
 			"encodingFormat", Matchers.equalTo("application/pdf")
 		).body(
 			"fileExtension", Matchers.equalTo("pdf")
 		).body(
-			"keywords", IsNull.notNullValue()
+			"keywords[0]", Matchers.equalTo("document")
+		).body(
+			"keywords[1]", Matchers.equalTo("test-pdf")
 		).body(
 			"sizeInBytes", Matchers.greaterThan(0)
 		).body(
-			"title", Matchers.equalTo("document.pdf")
+			"title", Matchers.equalTo("My Document Title")
 		).body(
 			"_links.self.href", IsNull.notNullValue()
 		).extract(
@@ -150,6 +162,14 @@ public class MediaObjectApioTest {
 			"Content-Type", "multipart/form-data"
 		).multipart(
 			"binaryFile", FileTestUtil.getFile("document.pdf", getClass())
+		).multipart(
+			"description", "My Document Description"
+		).multipart(
+			"keywords[0]", "document"
+		).multipart(
+			"keywords[1]", "test-pdf"
+		).multipart(
+			"title", "My Document Title"
 		).when(
 		).post(
 			documentsHref
@@ -163,15 +183,19 @@ public class MediaObjectApioTest {
 		).body(
 			"dateModified", IsNull.notNullValue()
 		).body(
+			"description", Matchers.equalTo("My Document Description")
+		).body(
 			"encodingFormat", Matchers.equalTo("application/pdf")
 		).body(
 			"fileExtension", Matchers.equalTo("pdf")
 		).body(
-			"keywords", IsNull.notNullValue()
+			"keywords[0]", Matchers.equalTo("document")
+		).body(
+			"keywords[1]", Matchers.equalTo("test-pdf")
 		).body(
 			"sizeInBytes", Matchers.greaterThan(0)
 		).body(
-			"title", Matchers.equalTo("document.pdf")
+			"title", Matchers.equalTo("My Document Title")
 		).body(
 			"_links.self.href", IsNull.notNullValue()
 		).extract(

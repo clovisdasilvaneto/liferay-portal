@@ -83,7 +83,9 @@
 	<source-processor name="GradleSourceProcessor">
 		<check name="GradleBlockOrderCheck" />
 		<check name="GradleBodyCheck" />
-		<check name="GradleDependenciesCheck" />
+		<check name="GradleDependenciesCheck">
+			<property name="checkPetraDependencies" value="false" />
+		</check>
 		<check name="GradleDependencyConfigurationCheck" />
 		<check name="GradleDependencyVersionCheck" />
 		<check name="GradleExportedPackageDependenciesCheck" />
@@ -382,7 +384,8 @@
 	</source-processor>
 	<source-processor name="PoshiSourceProcessor">
 		<check name="PoshiIndentationCheck" />
-		<check name="WhitespaceCheck" />
+		<check name="PoshiStylingCheck" />
+		<check name="PoshiWhitespaceCheck" />
 	</source-processor>
 	<source-processor name="PropertiesSourceProcessor">
 		<check name="PropertiesBuildIncludeDirsCheck">

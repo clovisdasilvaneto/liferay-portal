@@ -1261,6 +1261,21 @@ public class JenkinsResultsParserUtil {
 		return null;
 	}
 
+	public static String getRandomGitHubCacheHostname() {
+		try {
+			Properties buildProperties = getBuildProperties();
+
+			String gitCacheHostnames = buildProperties.getProperty(
+				"github.cache.hostnames");
+
+			return getRandomString(
+				Lists.newArrayList(gitCacheHostnames.split(",")));
+		}
+		catch (IOException ioe) {
+			throw new RuntimeException(ioe);
+		}
+	}
+
 	public static List<String> getRandomList(List<String> list, int size) {
 		if (list.size() < size) {
 			throw new IllegalStateException(
@@ -2166,18 +2181,27 @@ public class JenkinsResultsParserUtil {
 				urlConnection.connect();
 
 				if (url.startsWith("https://api.github.com")) {
-					int limit = Integer.parseInt(
-						urlConnection.getHeaderField("X-RateLimit-Limit"));
-					int remaining = Integer.parseInt(
-						urlConnection.getHeaderField("X-RateLimit-Remaining"));
-					long reset = Long.parseLong(
-						urlConnection.getHeaderField("X-RateLimit-Reset"));
+					try {
+						int limit = Integer.parseInt(
+							urlConnection.getHeaderField("X-RateLimit-Limit"));
+						int remaining = Integer.parseInt(
+							urlConnection.getHeaderField(
+								"X-RateLimit-Remaining"));
+						long reset = Long.parseLong(
+							urlConnection.getHeaderField("X-RateLimit-Reset"));
 
-					System.out.println(
-						combine(
-							_getGitHubAPIRateLimitStatusMessage(
-								limit, remaining, reset),
-							"\n    ", url));
+						System.out.println(
+							combine(
+								_getGitHubAPIRateLimitStatusMessage(
+									limit, remaining, reset),
+								"\n    ", url));
+					}
+					catch (Exception e) {
+						System.out.println(
+							"Unable to parse GitHub API rate limit headers");
+
+						e.printStackTrace();
+					}
 				}
 
 				StringBuilder sb = new StringBuilder();

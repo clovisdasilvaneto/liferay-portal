@@ -79,11 +79,10 @@ definition {
 	macro addExistingRelatedAssetCP {
 		var key_webContentTitle = "${webContentTitle}";
 
-		Panel.expandPanel(panel = "Related Assets");
-
 		RelatedAssets.selectAsset(
 			assetTitle = "${assetTitle}",
-			assetType = "${assetType}"
+			assetType = "${assetType}",
+			scopeSite = "${scopeSite}"
 		);
 
 		SelectFrame(value1 = "relative=top");
@@ -1932,7 +1931,7 @@ definition {
 
 	macro viewStructureWithWorkflowCP {
 		WebContentNavigator.gotoViewStatus(
-			webContentStatus = "Pending",
+			webContentStatus = "PENDING",
 			webContentTitle = "${webContentTitle}"
 		);
 
@@ -2094,7 +2093,7 @@ definition {
 
 	macro viewWithWorkflowCP {
 		WebContentNavigator.gotoViewStatus(
-			webContentStatus = "Pending",
+			webContentStatus = "PENDING",
 			webContentTitle = "${webContentTitle}"
 		);
 

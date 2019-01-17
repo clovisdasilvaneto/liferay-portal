@@ -18,7 +18,6 @@ import com.liferay.application.list.GroupProvider;
 import com.liferay.application.list.constants.ApplicationListWebKeys;
 import com.liferay.asset.display.contributor.AssetDisplayContributorTracker;
 import com.liferay.asset.kernel.exception.AssetCategoryException;
-import com.liferay.frontend.js.loader.modules.extender.npm.NPMResolver;
 import com.liferay.item.selector.ItemSelector;
 import com.liferay.layout.admin.constants.LayoutAdminPortletKeys;
 import com.liferay.layout.admin.web.internal.configuration.LayoutAdminWebConfiguration;
@@ -39,6 +38,7 @@ import com.liferay.portal.kernel.exception.LayoutParentLayoutIdException;
 import com.liferay.portal.kernel.exception.LayoutSetVirtualHostException;
 import com.liferay.portal.kernel.exception.LayoutTypeException;
 import com.liferay.portal.kernel.exception.NoSuchGroupException;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.RequiredLayoutException;
 import com.liferay.portal.kernel.exception.RequiredLayoutPrototypeException;
 import com.liferay.portal.kernel.exception.SitemapChangeFrequencyException;
@@ -50,12 +50,16 @@ import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.LayoutPrototype;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
 import com.liferay.portal.kernel.security.auth.PrincipalException;
+import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.service.LayoutPrototypeLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextFactory;
 import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
+import com.liferay.portal.kernel.service.permission.GroupPermissionUtil;
 import com.liferay.portal.kernel.servlet.SessionErrors;
+import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.upload.UploadException;
+import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.WebKeys;
 
@@ -120,6 +124,22 @@ public class GroupPagesPortlet extends MVCPortlet {
 			RenderRequest renderRequest, RenderResponse renderResponse)
 		throws IOException, PortletException {
 
+		long groupId = ParamUtil.getLong(renderRequest, "groupId");
+
+		if (groupId > 0) {
+			ThemeDisplay themeDisplay =
+				(ThemeDisplay)renderRequest.getAttribute(WebKeys.THEME_DISPLAY);
+
+			try {
+				GroupPermissionUtil.check(
+					themeDisplay.getPermissionChecker(), groupId,
+					ActionKeys.VIEW);
+			}
+			catch (PortalException pe) {
+				SessionErrors.add(renderRequest, pe.getClass());
+			}
+		}
+
 		HttpServletRequest request = _portal.getHttpServletRequest(
 			renderRequest);
 
@@ -173,9 +193,6 @@ public class GroupPagesPortlet extends MVCPortlet {
 				ApplicationListWebKeys.GROUP_PROVIDER, _groupProvider);
 			renderRequest.setAttribute(
 				LayoutAdminWebKeys.ITEM_SELECTOR, _itemSelector);
-			renderRequest.setAttribute(
-				LayoutAdminWebKeys.RESOLVED_MODULE_NAME,
-				_npmResolver.resolveModuleName("layout-admin-web"));
 
 			super.doDispatch(renderRequest, renderResponse);
 		}
@@ -238,9 +255,6 @@ public class GroupPagesPortlet extends MVCPortlet {
 
 	@Reference
 	private LayoutPrototypeLocalService _layoutPrototypeLocalService;
-
-	@Reference
-	private NPMResolver _npmResolver;
 
 	@Reference
 	private Portal _portal;

@@ -39,11 +39,19 @@ definition {
 
 	@priority = "5"
 	test AddAudioViaWebContent {
-		property custom.properties = "editor.wysiwyg.portal-impl.portlet.ddm.text_html.ftl=ckeditor";
+		property custom.properties = "editor.wysiwyg.portal-impl.portlet.ddm.text_html.ftl=ckeditor${line.separator}xuggler.enabled=true";
 		property dummy.socket.proxy.disabled = "true";
 		property portal.acceptance = "false";
 		property test.name.skip.portal.instance = "WebContentDisplay#AddAudioViaWebContent";
 		property testray.component.names = "Training,Web Content Administration";
+
+		ServerAdministration.openServerAdmin();
+
+		ServerAdministration.configureExternalServices(installXuggler  = "true");
+
+		Portlet.shutdownServer();
+
+		Portlet.startServer(deleteLiferayHome = "false");
 
 		ServerAdministration.openServerAdmin();
 
@@ -265,10 +273,18 @@ definition {
 
 	@priority = "4"
 	test AddVideoViaWebContent {
-		property custom.properties = "editor.wysiwyg.portal-impl.portlet.ddm.text_html.ftl=ckeditor";
+		property custom.properties = "editor.wysiwyg.portal-impl.portlet.ddm.text_html.ftl=ckeditor${line.separator}xuggler.enabled=true";
 		property dummy.socket.proxy.disabled = "true";
 		property test.name.skip.portal.instance = "WebContentDisplay#AddVideoViaWebContent";
 		property testray.component.names = "Web Content Administration";
+
+		ServerAdministration.openServerAdmin();
+
+		ServerAdministration.configureExternalServices(installXuggler  = "true");
+
+		Portlet.shutdownServer();
+
+		Portlet.startServer(deleteLiferayHome = "false");
 
 		ServerAdministration.openServerAdmin();
 
@@ -1415,7 +1431,10 @@ definition {
 			portlet = "Web Content"
 		);
 
-		WebContent.deleteCP(webContentTitle = "WC WebContent Title");
+		WebContent.deleteCP(
+			siteURLKey = "test-site-name",
+			webContentTitle = "WC WebContent Title"
+		);
 
 		Navigator.gotoSitePage(
 			pageName = "Web Content Display Page",

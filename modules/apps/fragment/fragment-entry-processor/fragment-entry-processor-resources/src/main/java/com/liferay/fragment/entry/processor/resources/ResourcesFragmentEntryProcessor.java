@@ -27,7 +27,8 @@ import com.liferay.portal.kernel.portletfilerepository.PortletFileRepositoryUtil
 import com.liferay.portal.kernel.repository.model.FileEntry;
 
 import java.util.Locale;
-import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -42,44 +43,50 @@ import org.osgi.service.component.annotations.Reference;
 public class ResourcesFragmentEntryProcessor implements FragmentEntryProcessor {
 
 	@Override
+	public String processFragmentEntryLinkCSS(
+			FragmentEntryLink fragmentEntryLink, String css, String mode,
+			Locale locale)
+		throws PortalException {
+
+		return _processResources(fragmentEntryLink, css);
+	}
+
+	@Override
 	public String processFragmentEntryLinkHTML(
 			FragmentEntryLink fragmentEntryLink, String html, String mode,
 			Locale locale)
+		throws PortalException {
+
+		return _processResources(fragmentEntryLink, html);
+	}
+
+	@Override
+	public void validateFragmentEntryHTML(String html) {
+	}
+
+	private String _processResources(
+			FragmentEntryLink fragmentEntryLink, String code)
 		throws PortalException {
 
 		FragmentEntry fragmentEntry = _fragmentEntryService.fetchFragmentEntry(
 			fragmentEntryLink.getFragmentEntryId());
 
 		if (fragmentEntry == null) {
-			return html;
+			return code;
 		}
 
 		FragmentCollection fragmentCollection =
 			_fragmentCollectionService.fetchFragmentCollection(
 				fragmentEntry.getFragmentCollectionId());
 
-		while (html.contains(_RESOURCES_PATH)) {
-			int index = html.indexOf(_RESOURCES_PATH);
+		Matcher matcher = _pattern.matcher(code);
 
-			String delimiter = html.substring(index - 1, index);
-
-			if (Objects.equals(delimiter, StringPool.OPEN_PARENTHESIS)) {
-				delimiter = StringPool.CLOSE_PARENTHESIS;
-			}
-
-			int lastIndex = html.indexOf(delimiter, index);
-
-			if (lastIndex < 0) {
-				break;
-			}
-
-			String fileName = html.substring(
-				index + _RESOURCES_PATH.length(), lastIndex);
-
+		while (matcher.find()) {
 			FileEntry fileEntry =
 				PortletFileRepositoryUtil.fetchPortletFileEntry(
 					fragmentEntry.getGroupId(),
-					fragmentCollection.getResourcesFolderId(), fileName);
+					fragmentCollection.getResourcesFolderId(),
+					matcher.group(1));
 
 			String fileEntryURL = StringPool.BLANK;
 
@@ -89,17 +96,14 @@ public class ResourcesFragmentEntryProcessor implements FragmentEntryProcessor {
 					StringPool.BLANK, false, false);
 			}
 
-			html = html.replaceAll(_RESOURCES_PATH + fileName, fileEntryURL);
+			code = code.replace(matcher.group(), fileEntryURL);
 		}
 
-		return html;
+		return code;
 	}
 
-	@Override
-	public void validateFragmentEntryHTML(String html) {
-	}
-
-	private static final String _RESOURCES_PATH = "../../resources/";
+	private static final Pattern _pattern = Pattern.compile(
+		"\\[resources:(.+?)\\]");
 
 	@Reference
 	private FragmentCollectionService _fragmentCollectionService;

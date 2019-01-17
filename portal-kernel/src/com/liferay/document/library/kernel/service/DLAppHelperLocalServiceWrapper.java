@@ -229,6 +229,12 @@ public class DLAppHelperLocalServiceWrapper implements DLAppHelperLocalService,
 	}
 
 	@Override
+	public void reindex(long companyId, java.util.List<Long> dlFileEntryIds)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		_dlAppHelperLocalService.reindex(companyId, dlFileEntryIds);
+	}
+
+	@Override
 	public void restoreDependentsFromTrash(
 		com.liferay.document.library.kernel.model.DLFolder dlFolder)
 		throws com.liferay.portal.kernel.exception.PortalException {
