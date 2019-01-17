@@ -397,11 +397,8 @@ class RuleEditor extends Component {
 	_prepareRuleEditor() {
 		const {rule} = this;
 
-		const actions = this._syncActions(rule.actions);
-
 		this.setState(
 			{
-				actions,
 				conditions: rule.conditions,
 				logicalOperator: rule['logical-operator']
 			}
@@ -492,28 +489,71 @@ class RuleEditor extends Component {
 	}
 
 	syncPages(pages) {
-		const {actions} = this;
-		let {conditions} = this;
-
 		const visitor = new PagesVisitor(pages);
+		const {actions, conditions} = this;
 
+		this.setState(
+			{
+				actions: this._syncActions(actions, visitor),
+				calculatorResultOptions: this._calculatorResultOptionsValueFn(),
+				conditions: this._syncConditions(conditions, visitor),
+				deletedFields: this._getDeletedFields(visitor),
+				fieldOptions: this._fieldOptionsValueFn()
+			}
+		);
+	}
+
+	_syncActions(actions, visitor) {
+		actions.forEach(
+			action => {
+				let targetFieldExists = false;
+				let targetType;
+
+				visitor.mapFields(
+					({fieldName, type}) => {
+						if (action.target === fieldName) {
+							targetFieldExists = true;
+							targetType = type;
+						}
+					}
+				);
+
+				if (!targetFieldExists || action.action === 'calculate' && targetType !== 'numeric') {
+					action.target = '';
+				}
+
+				action.calculatorFields = this._updateCalculatorFields(action, action.target);
+			}
+		);
+
+		return actions;
+	}
+
+	_syncConditions(conditions, visitor) {
 		conditions.forEach(
 			(condition, index) => {
+				const firstOperand = condition.operands[0];
 				let firstOperandFieldExists = false;
 				const secondOperand = condition.operands[1];
 				let secondOperandFieldExists = false;
+				let secondOperandType;
 
 				visitor.mapFields(
-					({fieldName}) => {
-						if (condition.operands[0].value === fieldName) {
+					({fieldName, type}) => {
+						if (firstOperand.type == 'field' && firstOperand.value === fieldName) {
 							firstOperandFieldExists = true;
+							secondOperandType = type;
 						}
 
-						if (secondOperand && secondOperand.value === fieldName) {
+						if (secondOperand && secondOperand.type === 'field' && secondOperand.value === fieldName) {
 							secondOperandFieldExists = true;
 						}
 					}
 				);
+
+				if (secondOperand && secondOperandType) {
+					secondOperand.type = secondOperandType;
+				}
 
 				if (condition.operands[0].value === 'user') {
 					firstOperandFieldExists = true;
@@ -529,43 +569,7 @@ class RuleEditor extends Component {
 			}
 		);
 
-		this.setState(
-			{
-				actions: this._syncActions(actions),
-				calculatorResultOptions: this._calculatorResultOptionsValueFn(),
-				conditions,
-				deletedFields: this._getDeletedFields(visitor),
-				fieldOptions: this._fieldOptionsValueFn()
-			}
-		);
-	}
-
-	_syncActions(actions) {
-		const {pages} = this;
-
-		const visitor = new PagesVisitor(pages);
-
-		actions.forEach(
-			(action, index) => {
-				let targetFieldExists = false;
-
-				visitor.mapFields(
-					({fieldName}) => {
-						if (action.target === fieldName) {
-							targetFieldExists = true;
-						}
-					}
-				);
-
-				if (!targetFieldExists) {
-					action.target = '';
-				}
-
-				action.calculatorFields = this._updateCalculatorFields(action, action.target);
-			}
-		);
-
-		return actions;
+		return conditions;
 	}
 
 	_getDeletedFields(visitor) {
@@ -678,7 +682,7 @@ class RuleEditor extends Component {
 	_fetchDataProviderParameters(id, index) {
 		const {actions, dataProviderInstanceParameterSettingsURL} = this;
 
-		const url = dataProviderInstanceParameterSettingsURL.slice(0, dataProviderInstanceParameterSettingsURL.length - 1);
+		const url = dataProviderInstanceParameterSettingsURL;
 
 		return makeFetch(
 			{
@@ -1336,10 +1340,14 @@ class RuleEditor extends Component {
 
 						this.setState(
 							{
-								actions
+								actions: [...actions]
 							}
 						);
 					}
+				}
+			).catch(
+				error => {
+					throw new Error(error);
 				}
 			);
 	}
@@ -1477,6 +1485,8 @@ class RuleEditor extends Component {
 	}
 
 	_setActions(actions) {
+		const {pages} = this;
+
 		if (actions.length == 0) {
 			actions.push(
 				{
@@ -1492,7 +1502,7 @@ class RuleEditor extends Component {
 			);
 		}
 
-		return actions;
+		return this._syncActions(actions, new PagesVisitor(pages));
 	}
 
 	_setConditions(conditions) {
