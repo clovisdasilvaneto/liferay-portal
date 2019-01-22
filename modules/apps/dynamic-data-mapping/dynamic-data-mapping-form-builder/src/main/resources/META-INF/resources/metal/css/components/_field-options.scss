@@ -1,0 +1,41 @@
+$c: '.ddm-field-options';
+
+#{$c} {
+    align-items: center;
+    display: flex;
+    margin-bottom: 1rem;
+    
+    &.dragging {
+        position: absolute;
+        z-index: 9999;
+    }
+
+    .lexicon-icon-drag {
+        color: #a7a9bc;
+        font-size: 29px;
+        margin-left: -8px;
+        margin-top: 1px;
+    }
+
+    .form-group {
+        margin: 0;
+        width: 100%;
+
+        label {
+            display: none;
+        }
+    }
+
+    .close-modal {
+        font-size: 8px;
+        position: absolute;
+        right: 8px;
+    }
+
+
+    .ddm-options-target {
+        height: 20px;
+        background: pink;
+        width: 100%;
+    }
+}

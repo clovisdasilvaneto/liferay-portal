@@ -2,9 +2,11 @@ import './OptionsRegister.soy.js';
 import 'dynamic-data-mapping-form-field-type/metal/FieldBase/index.es';
 import 'dynamic-data-mapping-form-field-type/metal/Text/index.es';
 import {Config} from 'metal-state';
+import dom from 'metal-dom';
 import Component from 'metal-component';
 import Soy from 'metal-soy';
 import templates from './Options.soy.js';
+import {Drag, DragDrop} from 'metal-drag-drop';
 
 /**
  * Options.
@@ -13,7 +15,7 @@ import templates from './Options.soy.js';
 
 class Options extends Component {
 	static STATE = {
-
+		fieldName: Config.string(),
 		/**
 		 * @default false
 		 * @instance
@@ -21,7 +23,7 @@ class Options extends Component {
 		 * @type {?bool}
 		 */
 
-		readOnly: Config.bool().value(true),
+		readOnly: Config.bool().value(false),
 
 		/**
 		 * @default undefined
@@ -49,14 +51,6 @@ class Options extends Component {
 				}
 			)
 		).internal(),
-
-		/**
-		 * @default undefined
-		 * @instance
-		 * @memberof Options
-		 * @type {?(string|undefined)}
-		 */
-
 		id: Config.string(),
 
 		/**
@@ -117,60 +111,156 @@ class Options extends Component {
 
 		type: Config.string().value('options'),
 
-		visible: Config.bool().setter('_setVisible')
+		value: Config.object(),
+
+		visible: Config.bool().value(true)
 	};
 
-	_setVisible() {
-		return true;
+	created() {
+		const currentLanguage = this.getCurrentLanguage();
+		const options = [...this.value[currentLanguage]];
+
+		this.setState({
+			items: this.getItems(options)
+		});
+
+		this._startDrag();
 	}
 
-	_getFieldIndex(element) {
-		return Array.prototype.indexOf.call(
-			Array.prototype.filter.call(
-				element.parentElement.children,
-				childrenElement => childrenElement.className === 'form-group'
-			),
-			element
-		);
+	/**
+	 * @inheritDoc
+	 */
+	disposeInternal() {
+		super.disposeInternal();
+		this.disposeDragAndDrop();
 	}
 
-	_handleTextChanged(data) {
-		const {originalEvent, value} = data;
-		const fieldIndex = this._getFieldIndex(
-			originalEvent.delegateTarget.parentNode
+	disposeDragAndDrop() {
+		if (this._dragAndDrop) {
+			this._dragAndDrop.dispose();
+		}
+	}
+
+	_startDrag() {
+		this._dragAndDrop = new DragDrop(
+			{
+				dragPlaceholder: Drag.Placeholder.CLONE,
+				sources: '.ddm-field-options',
+				targets: '.ddm-options-target',
+				useShim: false,
+				handles: '.ddm-options-drag'
+			}
 		);
 
-		if (typeof this.items[fieldIndex] === 'undefined') {
-			const newItem = {label: value};
+		// this._dragAndDrop.on(
+		// 	DragDrop.Events.END,
+		// 	this._handleDragAndDropEnd.bind(this)
+		// );
 
-			this.items.push(newItem);
-		}
-		else {
-			this.items[fieldIndex].label = value;
-		}
+		// this._dragAndDrop.on(DragDrop.Events.DRAG, this._handleDragStarted.bind(this));
+	}
 
-		this.setState({items: this.items});
+	_handleDeleteOption(event) {
+		const {delegateTarget} = event;
+
+		const deletedIndex = this.getFieldIndex(delegateTarget);
+
+		const currentLanguage = this.getCurrentLanguage();
+
+		let options = [...this.value[currentLanguage]];
+
+		options = options.filter((option, currentIndex) => currentIndex !== deletedIndex);
+
+		this.emit(
+			'fieldEdited',
+			{
+				fieldInstance: this,
+				value: options
+			}
+		);
+
+		this.setState({
+			items: this.getItems(options)
+		})
+	}
+
+	/**
+	 * TODO: get the current language dynamically
+	 */
+	getCurrentLanguage() {
+		return 'en_US';
+	}
+
+	/**
+	 * TODO: generate the field name dynamically
+	 */
+	getFieldName(value) {
+		return  value + Date.now();
+	}
+
+	getFieldIndex(element) {
+		return parseInt(dom.closest(element, '.ddm-field-options').dataset.index);
+	}
+
+	_handleTextChanged(event) {
+		const {value, originalEvent} = event;
+		const {target: {parentNode}} = originalEvent;
+		const itemIndex = this.getFieldIndex(parentNode);
+		const currentLanguage = this.getCurrentLanguage();
+
+		let options = [...this.value[currentLanguage]];
+
+		if(options[itemIndex]) {
+			options = options.map(
+				(option, index) => itemIndex === index ? (
+					{
+						label: value,
+						value
+					}
+				) : option
+			);
+		}else {
+			options = [
+				...options,
+				{
+					label: value,
+					value
+				}
+			]
+		}
 
 		this.emit(
 			'fieldEdited',
 			{
 				fieldInstance: this,
 				originalEvent,
-				value: this.items
+				value: options
 			}
 		);
+
+		this.setState({
+			items: this.getItems(options)
+		})
 	}
 
-	prepareStateForRender(state){
-		const items = state.value['en_US'].map(item => ({
+	getItems(options) {
+		let items = options.map(item => ({
 			...item,
-			name: 'option' + Date.now()
+			disabled: false,
+			name:  this.getFieldName(item.value)
 		}));
 
-		return {
-			...state,
-			items
-		}
+		items = [
+			...items,
+			{
+				disabled: false,
+				name: '',
+				label: '',
+				value: ''
+			}
+		];
+
+		return items;
 	}
 }
 
