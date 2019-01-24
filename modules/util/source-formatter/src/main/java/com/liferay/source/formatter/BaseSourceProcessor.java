@@ -693,7 +693,10 @@ public abstract class BaseSourceProcessor implements SourceProcessor {
 	private boolean _isModulesFile(
 		String absolutePath, boolean includePlugins) {
 
-		if (_subrepository) {
+		if (_subrepository ||
+			absolutePath.contains(
+				SourceFormatterUtil.SOURCE_FORMATTER_TEST_PATH)) {
+
 			return true;
 		}
 

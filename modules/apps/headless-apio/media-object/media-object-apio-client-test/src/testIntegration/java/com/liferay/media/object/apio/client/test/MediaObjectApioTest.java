@@ -26,6 +26,10 @@ import io.restassured.response.Response;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import java.util.concurrent.TimeUnit;
+
+import org.awaitility.Awaitility;
+
 import org.hamcrest.Matchers;
 import org.hamcrest.core.IsNull;
 
@@ -103,6 +107,14 @@ public class MediaObjectApioTest {
 			"Content-Type", "multipart/form-data"
 		).multipart(
 			"binaryFile", FileTestUtil.getFile("document.pdf", getClass())
+		).multipart(
+			"description", "My Document Description"
+		).multipart(
+			"keywords[0]", "document"
+		).multipart(
+			"keywords[1]", "test-pdf"
+		).multipart(
+			"title", "My Document Title"
 		).when(
 		).post(
 			_documentsHref
@@ -116,15 +128,19 @@ public class MediaObjectApioTest {
 		).body(
 			"dateModified", IsNull.notNullValue()
 		).body(
+			"description", Matchers.equalTo("My Document Description")
+		).body(
 			"encodingFormat", Matchers.equalTo("application/pdf")
 		).body(
 			"fileExtension", Matchers.equalTo("pdf")
 		).body(
-			"keywords", IsNull.notNullValue()
+			"keywords[0]", Matchers.equalTo("document")
+		).body(
+			"keywords[1]", Matchers.equalTo("test-pdf")
 		).body(
 			"sizeInBytes", Matchers.greaterThan(0)
 		).body(
-			"title", Matchers.equalTo("document.pdf")
+			"title", Matchers.equalTo("My Document Title")
 		).body(
 			"_links.self.href", IsNull.notNullValue()
 		).extract(
@@ -150,6 +166,14 @@ public class MediaObjectApioTest {
 			"Content-Type", "multipart/form-data"
 		).multipart(
 			"binaryFile", FileTestUtil.getFile("document.pdf", getClass())
+		).multipart(
+			"description", "My Document Description"
+		).multipart(
+			"keywords[0]", "document"
+		).multipart(
+			"keywords[1]", "test-pdf"
+		).multipart(
+			"title", "My Document Title"
 		).when(
 		).post(
 			documentsHref
@@ -163,15 +187,56 @@ public class MediaObjectApioTest {
 		).body(
 			"dateModified", IsNull.notNullValue()
 		).body(
+			"description", Matchers.equalTo("My Document Description")
+		).body(
 			"encodingFormat", Matchers.equalTo("application/pdf")
 		).body(
 			"fileExtension", Matchers.equalTo("pdf")
 		).body(
-			"keywords", IsNull.notNullValue()
+			"keywords[0]", Matchers.equalTo("document")
+		).body(
+			"keywords[1]", Matchers.equalTo("test-pdf")
 		).body(
 			"sizeInBytes", Matchers.greaterThan(0)
 		).body(
-			"title", Matchers.equalTo("document.pdf")
+			"title", Matchers.equalTo("My Document Title")
+		).body(
+			"_links.self.href", IsNull.notNullValue()
+		).extract(
+		).path(
+			"_links.self.href"
+		);
+	}
+
+	@Test
+	public void testCreateImageInDocumentRepository() {
+		_documentHref = ApioClientBuilder.given(
+		).basicAuth(
+			"test@liferay.com", "test"
+		).header(
+			"Accept", "application/hal+json"
+		).header(
+			"Content-Type", "multipart/form-data"
+		).multipart(
+			"binaryFile", FileTestUtil.getFile("image.png", getClass())
+		).when(
+		).post(
+			_documentsHref
+		).then(
+		).statusCode(
+			200
+		).body(
+			"contentUrl", IsNull.notNullValue()
+		).body(
+			"dateCreated", IsNull.notNullValue()
+		).body(
+			"dateModified", IsNull.notNullValue()
+		).body(
+			"encodingFormat", Matchers.equalTo("image/png")
+		).body(
+			"fileExtension", Matchers.equalTo("png")
+		).body(
+			"sizeInBytes", Matchers.greaterThan(0)
 		).body(
 			"_links.self.href", IsNull.notNullValue()
 		).extract(
@@ -198,7 +263,112 @@ public class MediaObjectApioTest {
 			documentHref
 		).then(
 		).statusCode(
-			Matchers.isOneOf(200, 204)
+			204
+		);
+	}
+
+	@Test
+	public void testGetAdaptiveMediaFromImageInDocumentRepository() {
+		String imageFileName = "image.png";
+
+		_documentHref = ApioClientBuilder.given(
+		).basicAuth(
+			"test@liferay.com", "test"
+		).header(
+			"Accept", "application/hal+json"
+		).header(
+			"Content-Type", "multipart/form-data"
+		).multipart(
+			"binaryFile", FileTestUtil.getFile(imageFileName, getClass())
+		).when(
+		).post(
+			_documentsHref
+		).then(
+		).extract(
+		).path(
+			"_links.self.href"
+		);
+
+		Awaitility.await(
+		).atMost(
+			2, TimeUnit.MINUTES
+		).until(
+			() -> {
+				Object adaptiveMedia = ApioClientBuilder.given(
+				).basicAuth(
+					"test@liferay.com", "test"
+				).header(
+					"Accept", "application/hal+json"
+				).when(
+				).get(
+					_documentsHref
+				).then(
+				).extract(
+				).path(
+					"_embedded.'Liferay:Document'.find {it.title == '" +
+						imageFileName + "'}._embedded.adaptedMedia._embedded"
+				);
+
+				return adaptiveMedia != null;
+			}
+		);
+
+		ApioClientBuilder.given(
+		).basicAuth(
+			"test@liferay.com", "test"
+		).header(
+			"Accept", "application/hal+json"
+		).when(
+		).get(
+			_documentsHref
+		).then(
+		).statusCode(
+			200
+		).body(
+			"_embedded.'Liferay:Document'.find {it.title == '" + imageFileName +
+				"'}._embedded.adaptedMedia._embedded.find {it.resolutionName " +
+					"== 'Preview-1000x0'}.contentUrl",
+			IsNull.notNullValue()
+		).body(
+			"_embedded.'Liferay:Document'.find {it.title == '" + imageFileName +
+				"'}._embedded.adaptedMedia._embedded.find {it.resolutionName " +
+					"== 'Preview-1000x0'}.height",
+			Matchers.greaterThan(0)
+		).body(
+			"_embedded.'Liferay:Document'.find {it.title == '" + imageFileName +
+				"'}._embedded.adaptedMedia._embedded.find {it.resolutionName " +
+					"== 'Preview-1000x0'}.sizeInBytes",
+			Matchers.greaterThan(0)
+		).body(
+			"_embedded.'Liferay:Document'.find {it.title == '" + imageFileName +
+				"'}._embedded.adaptedMedia._embedded.find {it.resolutionName " +
+					"== 'Preview-1000x0'}.width",
+			Matchers.greaterThan(0)
+		).body(
+			"_embedded.'Liferay:Document'.find {it.title == '" + imageFileName +
+				"'}._embedded.adaptedMedia._embedded.find {it.resolutionName " +
+					"== 'Thumbnail-300x300'}.contentUrl",
+			IsNull.notNullValue()
+		).body(
+			"_embedded.'Liferay:Document'.find {it.title == '" + imageFileName +
+				"'}._embedded.adaptedMedia._embedded.find {it.resolutionName " +
+					"== 'Thumbnail-300x300'}.height",
+			Matchers.greaterThan(0)
+		).body(
+			"_embedded.'Liferay:Document'.find {it.title == '" + imageFileName +
+				"'}._embedded.adaptedMedia._embedded.find {it.resolutionName " +
+					"== 'Thumbnail-300x300'}.sizeInBytes",
+			Matchers.greaterThan(0)
+		).body(
+			"_embedded.'Liferay:Document'.find {it.title == '" + imageFileName +
+				"'}._embedded.adaptedMedia._embedded.find {it.resolutionName " +
+					"== 'Thumbnail-300x300'}.width",
+			Matchers.greaterThan(0)
+		).body(
+			"_links.self.href", IsNull.notNullValue()
+		).extract(
+		).path(
+			"_links.self.href"
 		);
 	}
 

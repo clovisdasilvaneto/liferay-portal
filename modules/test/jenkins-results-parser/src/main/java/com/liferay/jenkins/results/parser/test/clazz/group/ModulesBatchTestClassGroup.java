@@ -29,6 +29,15 @@ import java.util.Set;
  */
 public abstract class ModulesBatchTestClassGroup extends BatchTestClassGroup {
 
+	@Override
+	public int getAxisCount() {
+		if (testRelevantIntegrationUnitOnly) {
+			return 0;
+		}
+
+		return super.getAxisCount();
+	}
+
 	public static class ModulesBatchTestClass extends BaseTestClass {
 
 		protected ModulesBatchTestClass(TestClassFile moduleBaseDir) {
@@ -91,7 +100,8 @@ public abstract class ModulesBatchTestClassGroup extends BatchTestClassGroup {
 			if (testRelevantChanges) {
 				moduleDirsList.addAll(
 					getRequiredModuleDirs(
-						portalGitWorkingDirectory.getModifiedModuleDirsList()));
+						portalGitWorkingDirectory.getModifiedModuleDirsList(
+							excludesPathMatchers, includesPathMatchers)));
 			}
 
 			setTestClasses();

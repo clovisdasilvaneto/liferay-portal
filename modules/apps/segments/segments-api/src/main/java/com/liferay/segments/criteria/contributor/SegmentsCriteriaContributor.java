@@ -22,6 +22,8 @@ import com.liferay.segments.criteria.Field;
 import java.util.List;
 import java.util.Locale;
 
+import javax.portlet.PortletRequest;
+
 /**
  * Provides an interface for extending the segment {@link Criteria} by adding
  * more filters.
@@ -40,9 +42,13 @@ public interface SegmentsCriteriaContributor {
 	 * @param conjunction the conjunction of the criterion
 	 * @review
 	 */
-	public void contribute(
+	public default void contribute(
 		Criteria criteria, String filterString,
-		Criteria.Conjunction conjunction);
+		Criteria.Conjunction conjunction) {
+
+		criteria.addCriterion(getKey(), getType(), filterString, conjunction);
+		criteria.addFilter(getType(), filterString, conjunction);
+	}
 
 	/**
 	 * Returns the contributed criterion from a criteria.
@@ -58,11 +64,11 @@ public interface SegmentsCriteriaContributor {
 	/**
 	 * Returns the list of fields that are supported by this contributor.
 	 *
-	 * @param  locale the locale of the language
+	 * @param  portletRequest the portlet request
 	 * @return the list of fields that are supported by this contributor
 	 * @review
 	 */
-	public List<Field> getFields(Locale locale);
+	public List<Field> getFields(PortletRequest portletRequest);
 
 	/**
 	 * Returns the contributor's key. This key must be unique.
@@ -79,5 +85,13 @@ public interface SegmentsCriteriaContributor {
 	 * @review
 	 */
 	public String getLabel(Locale locale);
+
+	/**
+	 * Returns the contributor's type. See {@link Criteria.Type}.
+	 *
+	 * @return the contributor's type
+	 * @review
+	 */
+	public Criteria.Type getType();
 
 }

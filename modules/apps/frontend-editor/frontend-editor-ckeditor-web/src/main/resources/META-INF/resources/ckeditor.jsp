@@ -125,7 +125,7 @@ name = HtmlUtil.escapeJS(name);
 <aui:script use="<%= modules %>">
 	var UA = A.UA;
 
-	var contents = '<%= HtmlUtil.escapeJS(contents) %>';
+	var windowNode = A.getWin();
 
 	var instanceDataReady = false;
 	var instancePendingData;
@@ -153,19 +153,38 @@ name = HtmlUtil.escapeJS(name);
 		nativeEditor.config.contentsLangDirection = contentsLanguageDir;
 	};
 
+	var preventImageDragoverHandler = windowNode.on(
+		'dragover',
+		function(event) {
+			var validDropTarget = event.target.getDOMNode().isContentEditable;
+
+			if (!validDropTarget) {
+				event.preventDefault();
+			}
+		}
+	);
+
+	var preventImageDropHandler = windowNode.on(
+		'drop',
+		function(event) {
+			var validDropTarget = event.target.getDOMNode().isContentEditable;
+
+			if (!validDropTarget) {
+				event.preventDefault();
+				event.stopImmediatePropagation();
+			}
+		}
+	);
+
 	var eventHandles = [
-		Liferay.on('inputLocalized:localeChanged', onLocaleChangedHandler)
+		Liferay.on('inputLocalized:localeChanged', onLocaleChangedHandler),
+		preventImageDragoverHandler,
+		preventImageDropHandler
 	];
 
 	window['<%= name %>'] = {
 		create: function() {
 			if (!window['<%= name %>'].instanceReady) {
-				var editorNode = A.Node.create('<%= HtmlUtil.escapeJS(editor) %>');
-
-				var editorContainer = A.one('#<%= name %>Container');
-
-				editorContainer.appendChild(editorNode);
-
 				createEditor();
 			}
 		},
@@ -286,9 +305,6 @@ name = HtmlUtil.escapeJS(name);
 			if (win.instanceReady) {
 				setHTML(value);
 			}
-			else {
-				contents = value;
-			}
 		}
 	};
 
@@ -398,6 +414,16 @@ name = HtmlUtil.escapeJS(name);
 	var createEditor = function() {
 		var editorNode = A.one('#<%= name %>');
 
+		if (!editorNode) {
+			var editorContainer = A.one('#<%= name %>Container');
+
+			editorContainer.setHTML('');
+
+			editorNode = A.Node.create('<%= HtmlUtil.escapeJS(editor) %>');
+
+			editorContainer.appendChild(editorNode);
+		}
+
 		if (editorNode) {
 			editorNode.attr('contenteditable', true);
 			editorNode.addClass('lfr-editable');
@@ -503,7 +529,6 @@ name = HtmlUtil.escapeJS(name);
 		ckEditor.on(
 			'instanceReady',
 			function() {
-
 				<c:choose>
 					<c:when test="<%= useCustomDataProcessor %>">
 						instanceReady = true;

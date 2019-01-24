@@ -413,18 +413,17 @@ public class JournalArticleExportImportContentProcessor
 
 				throw eicpe;
 			}
-			else {
-				String journalArticleReference =
-					"[$journal-article-reference=" + classPK + "$]";
 
-				JSONObject jsonObject = _jsonFactory.createJSONObject();
+			String journalArticleReference =
+				"[$journal-article-reference=" + classPK + "$]";
 
-				jsonObject.put("className", JournalArticle.class.getName());
-				jsonObject.put("classPK", journalArticle.getResourcePrimKey());
+			JSONObject jsonObject = _jsonFactory.createJSONObject();
 
-				content = StringUtil.replace(
-					content, journalArticleReference, jsonObject.toString());
-			}
+			jsonObject.put("className", JournalArticle.class.getName());
+			jsonObject.put("classPK", journalArticle.getResourcePrimKey());
+
+			content = StringUtil.replace(
+				content, journalArticleReference, jsonObject.toString());
 		}
 
 		return content;
@@ -539,9 +538,17 @@ public class JournalArticleExportImportContentProcessor
 	private List<String> _fetchContentsFromDDMFormValues(
 		List<DDMFormFieldValue> ddmFormFieldValues) {
 
-		List<String> contents = new ArrayList<>();
+		return _fetchContentsFromDDMFormValues(
+			new ArrayList<String>(), ddmFormFieldValues);
+	}
+
+	private List<String> _fetchContentsFromDDMFormValues(
+		List<String> contents, List<DDMFormFieldValue> ddmFormFieldValues) {
 
 		for (DDMFormFieldValue ddmFormFieldValue : ddmFormFieldValues) {
+			contents = _fetchContentsFromDDMFormValues(
+				contents, ddmFormFieldValue.getNestedDDMFormFieldValues());
+
 			Value value = ddmFormFieldValue.getValue();
 
 			if (value == null) {

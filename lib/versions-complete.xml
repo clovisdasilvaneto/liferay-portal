@@ -5351,10 +5351,58 @@
 				</licenses>
 			</library>
 			<library>
-				<file-name>lib/portal/asm-debug-all.jar</file-name>
-				<version>5.0.4</version>
+				<file-name>lib/portal/asm-analysis.jar</file-name>
+				<version>7.0</version>
 				<project-name>ASM</project-name>
-				<project-url>http://asm.objectweb.org</project-url>
+				<project-url>http://asm.ow2.io</project-url>
+				<licenses>
+					<license>
+						<license-name>ASM License</license-name>
+						<license-url>http://asm.ow2.org/license.html</license-url>
+					</license>
+				</licenses>
+			</library>
+			<library>
+				<file-name>lib/portal/asm-commons.jar</file-name>
+				<version>7.0</version>
+				<project-name>ASM</project-name>
+				<project-url>http://asm.ow2.io</project-url>
+				<licenses>
+					<license>
+						<license-name>ASM License</license-name>
+						<license-url>http://asm.ow2.org/license.html</license-url>
+					</license>
+				</licenses>
+			</library>
+			<library>
+				<file-name>lib/portal/asm-tree.jar</file-name>
+				<version>7.0</version>
+				<project-name>ASM</project-name>
+				<project-url>http://asm.ow2.io</project-url>
+				<licenses>
+					<license>
+						<license-name>ASM License</license-name>
+						<license-url>http://asm.ow2.org/license.html</license-url>
+					</license>
+				</licenses>
+			</library>
+			<library>
+				<file-name>lib/portal/asm-util.jar</file-name>
+				<version>7.0</version>
+				<project-name>ASM</project-name>
+				<project-url>http://asm.ow2.io</project-url>
+				<licenses>
+					<license>
+						<license-name>ASM License</license-name>
+						<license-url>http://asm.ow2.org/license.html</license-url>
+					</license>
+				</licenses>
+			</library>
+			<library>
+				<file-name>lib/portal/asm.jar</file-name>
+				<version>7.0</version>
+				<project-name>ASM</project-name>
+				<project-url>http://asm.ow2.io</project-url>
 				<licenses>
 					<license>
 						<license-name>ASM License</license-name>
@@ -5654,6 +5702,18 @@
 					<license>
 						<license-name>Apache License 2.0</license-name>
 						<license-url>http://www.apache.org/licenses/LICENSE-2.0</license-url>
+					</license>
+				</licenses>
+			</library>
+			<library>
+				<file-name>lib/portal/commons-collections4.jar</file-name>
+				<version>4.2</version>
+				<project-name>Apache Commons Collections</project-name>
+				<project-url>http://commons.apache.org/proper/commons-collections/</project-url>
+				<licenses>
+					<license>
+						<license-name>Apache License, Version 2.0</license-name>
+						<license-url>http://www.apache.org/licenses/LICENSE-2.0.txt</license-url>
 					</license>
 				</licenses>
 			</library>
@@ -6870,7 +6930,7 @@
 			</library>
 			<library>
 				<file-name>lib/portal/poi-ooxml-schemas.jar</file-name>
-				<version>3.11</version>
+				<version>4.0.1</version>
 				<project-name>POI</project-name>
 				<project-url>http://poi.apache.org</project-url>
 				<licenses>
@@ -6883,7 +6943,7 @@
 			</library>
 			<library>
 				<file-name>lib/portal/poi-ooxml.jar</file-name>
-				<version>3.11</version>
+				<version>4.0.1</version>
 				<project-name>POI</project-name>
 				<project-url>http://poi.apache.org</project-url>
 				<licenses>
@@ -6896,7 +6956,7 @@
 			</library>
 			<library>
 				<file-name>lib/portal/poi-scratchpad.jar</file-name>
-				<version>3.11</version>
+				<version>4.0.1</version>
 				<project-name>POI</project-name>
 				<project-url>http://poi.apache.org</project-url>
 				<licenses>
@@ -6909,7 +6969,7 @@
 			</library>
 			<library>
 				<file-name>lib/portal/poi.jar</file-name>
-				<version>3.11</version>
+				<version>4.0.1</version>
 				<project-name>POI</project-name>
 				<project-url>http://poi.apache.org</project-url>
 				<licenses>
@@ -7373,7 +7433,7 @@
 			</library>
 			<library>
 				<file-name>lib/portal/tika-core.jar</file-name>
-				<version>1.18</version>
+				<version>1.19</version>
 				<project-name>Tika</project-name>
 				<project-url>http://tika.apache.org</project-url>
 				<licenses>
@@ -7385,7 +7445,7 @@
 			</library>
 			<library>
 				<file-name>lib/portal/tika-parsers.jar</file-name>
-				<version>1.18</version>
+				<version>1.19</version>
 				<project-name>Tika</project-name>
 				<project-url>http://tika.apache.org</project-url>
 				<licenses>

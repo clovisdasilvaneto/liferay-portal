@@ -26,6 +26,7 @@ import com.liferay.segments.internal.asah.client.model.Results;
 import java.io.IOException;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -39,7 +40,6 @@ public class AsahFaroBackendJSONObjectMapper {
 
 	public static <T> Results<T> mapToResults(
 			String json, String embeddedRelName, Class<T> clazz)
-
 		throws IOException {
 
 		TypeFactory typeFactory = TypeFactory.defaultInstance();
@@ -51,9 +51,14 @@ public class AsahFaroBackendJSONObjectMapper {
 
 		JsonNode embeddedJsonNode = responseJsonNode.get("_embedded");
 
-		JsonNode embeddedRelJsonNode = embeddedJsonNode.get(embeddedRelName);
+		List<T> items = Collections.emptyList();
 
-		List<T> items = objectReader.readValue(embeddedRelJsonNode);
+		if (embeddedJsonNode != null) {
+			JsonNode embeddedRelJsonNode = embeddedJsonNode.get(
+				embeddedRelName);
+
+			items = objectReader.readValue(embeddedRelJsonNode);
+		}
 
 		JsonNode pageJsonNode = responseJsonNode.get("page");
 

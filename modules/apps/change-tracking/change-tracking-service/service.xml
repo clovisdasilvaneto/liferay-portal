@@ -76,7 +76,7 @@
 
 		<!-- Finder methods -->
 
-		<finder name="C_C" return-type="Collection">
+		<finder name="C_C" return-type="CTEntry" unique="true">
 			<finder-column name="classNameId" />
 			<finder-column name="classPK" />
 		</finder>
@@ -87,6 +87,6 @@
 	</entity>
 	<exceptions>
 		<exception>CTCollectionName</exception>
-		<exception>DuplicateCTEEntry</exception>
+		<exception>DuplicateCTEntry</exception>
 	</exceptions>
 </service-builder>

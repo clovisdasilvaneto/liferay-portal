@@ -23,7 +23,6 @@ import com.liferay.portal.configuration.extender.internal.FactoryConfigurationDe
 import com.liferay.portal.configuration.extender.internal.NamedConfigurationContent;
 import com.liferay.portal.configuration.extender.internal.SingleConfigurationDescription;
 import com.liferay.portal.kernel.util.PropertiesUtil;
-import com.liferay.portal.kernel.util.Supplier;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -36,6 +35,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Dictionary;
 import java.util.Hashtable;
+import java.util.function.Supplier;
 
 import org.apache.felix.utils.log.Logger;
 
@@ -405,31 +405,29 @@ public class ConfiguratorExtensionTest {
 
 					});
 			}
-			else {
-				final StringFactoryNamedConfigurationContent sfncc =
-					(StringFactoryNamedConfigurationContent)
-						namedConfigurationContent;
 
-				return new FactoryConfigurationDescription(
-					sfncc._factoryPid, sfncc._pid,
-					new Supplier<Dictionary<String, Object>>() {
+			final StringFactoryNamedConfigurationContent sfncc =
+				(StringFactoryNamedConfigurationContent)
+					namedConfigurationContent;
 
-						@Override
-						public Dictionary<String, Object> get() {
-							try {
-								Dictionary<?, ?> properties =
-									PropertiesUtil.load(
-										sfncc.getInputStream(), "UTF-8");
+			return new FactoryConfigurationDescription(
+				sfncc._factoryPid, sfncc._pid,
+				new Supplier<Dictionary<String, Object>>() {
 
-								return (Dictionary<String, Object>)properties;
-							}
-							catch (IOException ioe) {
-								throw new RuntimeException(ioe);
-							}
+					@Override
+					public Dictionary<String, Object> get() {
+						try {
+							Dictionary<?, ?> properties = PropertiesUtil.load(
+								sfncc.getInputStream(), "UTF-8");
+
+							return (Dictionary<String, Object>)properties;
 						}
+						catch (IOException ioe) {
+							throw new RuntimeException(ioe);
+						}
+					}
 
-					});
-			}
+				});
 		}
 
 	}

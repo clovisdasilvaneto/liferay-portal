@@ -23,6 +23,7 @@ import com.liferay.document.library.kernel.model.DLFolder;
 
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.messaging.async.Async;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.repository.model.FileShortcut;
 import com.liferay.portal.kernel.repository.model.FileVersion;
@@ -156,6 +157,11 @@ public interface DLAppHelperLocalService extends BaseLocalService {
 	* @return the moved folder
 	*/
 	public Folder moveFolderToTrash(long userId, Folder folder)
+		throws PortalException;
+
+	@Async
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public void reindex(long companyId, List<Long> dlFileEntryIds)
 		throws PortalException;
 
 	public void restoreDependentsFromTrash(DLFolder dlFolder)

@@ -65,6 +65,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
 import javax.mail.internet.InternetAddress;
 
@@ -623,15 +624,14 @@ public class SubscriptionSender implements Serializable {
 
 			return;
 		}
-		else {
-			if (_log.isDebugEnabled()) {
-				_log.debug(
-					"Add " + emailAddress +
-						" to the list of users who have received an email");
-			}
 
-			_sentEmailAddresses.add(emailAddress);
+		if (_log.isDebugEnabled()) {
+			_log.debug(
+				"Add " + emailAddress +
+					" to the list of users who have received an email");
 		}
+
+		_sentEmailAddresses.add(emailAddress);
 
 		if (!user.isActive()) {
 			if (_log.isDebugEnabled()) {

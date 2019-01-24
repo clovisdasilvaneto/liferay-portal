@@ -23,14 +23,15 @@ import com.liferay.document.library.kernel.model.DLFileEntryConstants;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.security.permission.PermissionCheckerFactoryUtil;
 import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
-import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.SetUtil;
+import com.liferay.portlet.asset.util.AssetUtil;
 
 import java.io.Serializable;
 
@@ -55,22 +56,22 @@ public class EditTagsBulkSelectionActionImpl
 
 	@Override
 	public void execute(
-			BulkSelection<FileEntry> bulkSelection,
+			User user, BulkSelection<FileEntry> bulkSelection,
 			Map<String, Serializable> inputMap)
 		throws Exception {
 
-		String[] toAddTagNames = (String[])inputMap.get("toAddTagNames");
+		String[] toAddTagNames = (String[])inputMap.getOrDefault(
+			"toAddTagNames", new String[0]);
 
 		Set<String> toAddTagNamesSet = SetUtil.fromArray(toAddTagNames);
 
 		Set<String> toRemoveTagNamesSet = SetUtil.fromArray(
-			(String[])inputMap.get("toRemoveTagNames"));
+			(String[])inputMap.getOrDefault("toRemoveTagNames", new String[0]));
 
 		Stream<FileEntry> fileEntryStream = bulkSelection.stream();
 
 		PermissionChecker permissionChecker =
-			PermissionCheckerFactoryUtil.create(
-				_userLocalService.getUser(MapUtil.getLong(inputMap, "userId")));
+			PermissionCheckerFactoryUtil.create(user);
 
 		fileEntryStream.forEach(
 			fileEntry -> {
@@ -92,7 +93,11 @@ public class EditTagsBulkSelectionActionImpl
 							assetEntry.getTagNames());
 
 						currentTagNamesSet.removeAll(toRemoveTagNamesSet);
+
 						currentTagNamesSet.addAll(toAddTagNamesSet);
+
+						currentTagNamesSet.removeIf(
+							tagName -> !AssetUtil.isValidWord(tagName));
 
 						newTagNames = currentTagNamesSet.toArray(
 							new String[currentTagNamesSet.size()]);
@@ -122,8 +127,5 @@ public class EditTagsBulkSelectionActionImpl
 	)
 	private ModelResourcePermission<FileEntry>
 		_fileEntryModelResourcePermission;
-
-	@Reference
-	private UserLocalService _userLocalService;
 
 }

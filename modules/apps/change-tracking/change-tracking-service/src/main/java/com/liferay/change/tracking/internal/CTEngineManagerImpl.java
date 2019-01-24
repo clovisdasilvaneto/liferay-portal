@@ -15,8 +15,10 @@
 package com.liferay.change.tracking.internal;
 
 import com.liferay.change.tracking.CTEngineManager;
+import com.liferay.change.tracking.configuration.CTConfiguration;
 import com.liferay.change.tracking.constants.CTConstants;
 import com.liferay.change.tracking.constants.CTPortletKeys;
+import com.liferay.change.tracking.internal.configuration.CTConfigurationRegistry;
 import com.liferay.change.tracking.model.CTCollection;
 import com.liferay.change.tracking.model.CTEntry;
 import com.liferay.change.tracking.service.CTCollectionLocalService;
@@ -36,6 +38,7 @@ import com.liferay.portal.kernel.transaction.TransactionConfig;
 import com.liferay.portal.kernel.transaction.TransactionInvokerUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ListUtil;
+import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 
 import java.util.Collections;
@@ -130,16 +133,8 @@ public class CTEngineManagerImpl implements CTEngineManager {
 	}
 
 	@Override
-	public void disableChangeTracking(long userId) {
-		User user = _userLocalService.fetchUser(userId);
-
-		if (user == null) {
-			_log.error("Unable to get user " + userId);
-
-			return;
-		}
-
-		if (!isChangeTrackingEnabled(user.getCompanyId())) {
+	public void disableChangeTracking(long companyId) {
+		if (!isChangeTrackingEnabled(companyId)) {
 			return;
 		}
 
@@ -148,7 +143,7 @@ public class CTEngineManagerImpl implements CTEngineManager {
 				_transactionConfig,
 				() -> {
 					_ctCollectionLocalService.deleteCompanyCTCollections(
-						user.getCompanyId());
+						companyId);
 
 					_productionCTCollection = null;
 
@@ -161,7 +156,7 @@ public class CTEngineManagerImpl implements CTEngineManager {
 	}
 
 	@Override
-	public void enableChangeTracking(long userId) {
+	public void enableChangeTracking(long companyId, long userId) {
 		User user = _userLocalService.fetchUser(userId);
 
 		if (user == null) {
@@ -170,7 +165,7 @@ public class CTEngineManagerImpl implements CTEngineManager {
 			return;
 		}
 
-		if (isChangeTrackingEnabled(user.getCompanyId())) {
+		if (isChangeTrackingEnabled(companyId)) {
 			return;
 		}
 
@@ -276,9 +271,24 @@ public class CTEngineManagerImpl implements CTEngineManager {
 
 	@Override
 	public boolean isChangeTrackingSupported(
-		long companyId, Class<BaseModel> clazz) {
+		long companyId, Class<? extends BaseModel> clazz) {
 
-		return false;
+		Optional<CTConfiguration<?, ?>> ctConfigurationOptional =
+			_ctConfigurationRegistry.getCTConfigurationOptionalByVersionClass(
+				clazz);
+
+		return ctConfigurationOptional.isPresent();
+	}
+
+	@Override
+	public boolean isChangeTrackingSupported(long companyId, long classNameId) {
+		String className = _portal.getClassName(classNameId);
+
+		Optional<CTConfiguration<?, ?>> ctConfigurationOptional =
+			_ctConfigurationRegistry.
+				getCTConfigurationOptionalByVersionClassName(className);
+
+		return ctConfigurationOptional.isPresent();
 	}
 
 	@Override
@@ -463,7 +473,13 @@ public class CTEngineManagerImpl implements CTEngineManager {
 	private CTCollectionLocalService _ctCollectionLocalService;
 
 	@Reference
+	private CTConfigurationRegistry _ctConfigurationRegistry;
+
+	@Reference
 	private CTEntryLocalService _ctEntryLocalService;
+
+	@Reference
+	private Portal _portal;
 
 	private CTCollection _productionCTCollection;
 	private final TransactionConfig _transactionConfig =

@@ -16,18 +16,13 @@ package com.liferay.portal.kernel.model;
 
 import aQute.bnd.annotation.ProviderType;
 
-import com.liferay.expando.kernel.model.ExpandoBridge;
-
 import com.liferay.exportimport.kernel.lar.StagedModelType;
 
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -39,19 +34,10 @@ import java.util.Objects;
  * @generated
  */
 @ProviderType
-public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
+public class LayoutWrapper extends BaseModelWrapper<Layout> implements Layout,
+	ModelWrapper<Layout> {
 	public LayoutWrapper(Layout layout) {
-		_layout = layout;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return Layout.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return Layout.class.getName();
+		super(layout);
 	}
 
 	@Override
@@ -81,6 +67,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 		attributes.put("type", getType());
 		attributes.put("typeSettings", getTypeSettings());
 		attributes.put("hidden", isHidden());
+		attributes.put("system", isSystem());
 		attributes.put("friendlyURL", getFriendlyURL());
 		attributes.put("iconImageId", getIconImageId());
 		attributes.put("themeId", getThemeId());
@@ -237,6 +224,12 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 			setHidden(hidden);
 		}
 
+		Boolean system = (Boolean)attributes.get("system");
+
+		if (system != null) {
+			setSystem(system);
+		}
+
 		String friendlyURL = (String)attributes.get("friendlyURL");
 
 		if (friendlyURL != null) {
@@ -301,16 +294,6 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 		}
 	}
 
-	@Override
-	public Object clone() {
-		return new LayoutWrapper((Layout)_layout.clone());
-	}
-
-	@Override
-	public int compareTo(Layout layout) {
-		return _layout.compareTo(layout);
-	}
-
 	/**
 	* Returns all layouts that are direct or indirect children of the current
 	* layout.
@@ -320,7 +303,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public java.util.List<Layout> getAllChildren() {
-		return _layout.getAllChildren();
+		return model.getAllChildren();
 	}
 
 	/**
@@ -332,7 +315,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	@Override
 	public long getAncestorLayoutId()
 		throws com.liferay.portal.kernel.exception.PortalException {
-		return _layout.getAncestorLayoutId();
+		return model.getAncestorLayoutId();
 	}
 
 	/**
@@ -344,7 +327,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	@Override
 	public long getAncestorPlid()
 		throws com.liferay.portal.kernel.exception.PortalException {
-		return _layout.getAncestorPlid();
+		return model.getAncestorPlid();
 	}
 
 	/**
@@ -357,12 +340,12 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	@Override
 	public java.util.List<Layout> getAncestors()
 		throws com.liferay.portal.kernel.exception.PortalException {
-		return _layout.getAncestors();
+		return model.getAncestors();
 	}
 
 	@Override
 	public String[] getAvailableLanguageIds() {
-		return _layout.getAvailableLanguageIds();
+		return model.getAvailableLanguageIds();
 	}
 
 	/**
@@ -373,7 +356,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public java.util.List<Layout> getChildren() {
-		return _layout.getChildren();
+		return model.getChildren();
 	}
 
 	/**
@@ -388,7 +371,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	public java.util.List<Layout> getChildren(
 		com.liferay.portal.kernel.security.permission.PermissionChecker permissionChecker)
 		throws com.liferay.portal.kernel.exception.PortalException {
-		return _layout.getChildren(permissionChecker);
+		return model.getChildren(permissionChecker);
 	}
 
 	/**
@@ -403,7 +386,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	@Override
 	public ColorScheme getColorScheme()
 		throws com.liferay.portal.kernel.exception.PortalException {
-		return _layout.getColorScheme();
+		return model.getColorScheme();
 	}
 
 	/**
@@ -413,7 +396,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public String getColorSchemeId() {
-		return _layout.getColorSchemeId();
+		return model.getColorSchemeId();
 	}
 
 	/**
@@ -423,7 +406,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public long getCompanyId() {
-		return _layout.getCompanyId();
+		return model.getCompanyId();
 	}
 
 	/**
@@ -433,7 +416,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public Date getCreateDate() {
-		return _layout.getCreateDate();
+		return model.getCreateDate();
 	}
 
 	/**
@@ -443,7 +426,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public String getCss() {
-		return _layout.getCss();
+		return model.getCss();
 	}
 
 	/**
@@ -461,18 +444,18 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	@Override
 	public String getCssText()
 		throws com.liferay.portal.kernel.exception.PortalException {
-		return _layout.getCssText();
+		return model.getCssText();
 	}
 
 	@Override
 	public String getDefaultLanguageId() {
-		return _layout.getDefaultLanguageId();
+		return model.getDefaultLanguageId();
 	}
 
 	@Override
 	public String getDefaultThemeSetting(String key, String device,
 		boolean inheritLookAndFeel) {
-		return _layout.getDefaultThemeSetting(key, device, inheritLookAndFeel);
+		return model.getDefaultThemeSetting(key, device, inheritLookAndFeel);
 	}
 
 	/**
@@ -482,7 +465,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public String getDescription() {
-		return _layout.getDescription();
+		return model.getDescription();
 	}
 
 	/**
@@ -493,7 +476,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public String getDescription(java.util.Locale locale) {
-		return _layout.getDescription(locale);
+		return model.getDescription(locale);
 	}
 
 	/**
@@ -505,7 +488,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public String getDescription(java.util.Locale locale, boolean useDefault) {
-		return _layout.getDescription(locale, useDefault);
+		return model.getDescription(locale, useDefault);
 	}
 
 	/**
@@ -516,7 +499,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public String getDescription(String languageId) {
-		return _layout.getDescription(languageId);
+		return model.getDescription(languageId);
 	}
 
 	/**
@@ -528,17 +511,17 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public String getDescription(String languageId, boolean useDefault) {
-		return _layout.getDescription(languageId, useDefault);
+		return model.getDescription(languageId, useDefault);
 	}
 
 	@Override
 	public String getDescriptionCurrentLanguageId() {
-		return _layout.getDescriptionCurrentLanguageId();
+		return model.getDescriptionCurrentLanguageId();
 	}
 
 	@Override
 	public String getDescriptionCurrentValue() {
-		return _layout.getDescriptionCurrentValue();
+		return model.getDescriptionCurrentValue();
 	}
 
 	/**
@@ -548,22 +531,17 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public Map<java.util.Locale, String> getDescriptionMap() {
-		return _layout.getDescriptionMap();
+		return model.getDescriptionMap();
 	}
 
 	@Override
 	public java.util.List<Portlet> getEmbeddedPortlets() {
-		return _layout.getEmbeddedPortlets();
+		return model.getEmbeddedPortlets();
 	}
 
 	@Override
 	public java.util.List<Portlet> getEmbeddedPortlets(long groupId) {
-		return _layout.getEmbeddedPortlets(groupId);
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _layout.getExpandoBridge();
+		return model.getEmbeddedPortlets(groupId);
 	}
 
 	/**
@@ -573,7 +551,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public String getFriendlyURL() {
-		return _layout.getFriendlyURL();
+		return model.getFriendlyURL();
 	}
 
 	/**
@@ -584,7 +562,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public String getFriendlyURL(java.util.Locale locale) {
-		return _layout.getFriendlyURL(locale);
+		return model.getFriendlyURL(locale);
 	}
 
 	/**
@@ -594,12 +572,12 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public Map<java.util.Locale, String> getFriendlyURLMap() {
-		return _layout.getFriendlyURLMap();
+		return model.getFriendlyURLMap();
 	}
 
 	@Override
 	public String getFriendlyURLsXML() {
-		return _layout.getFriendlyURLsXML();
+		return model.getFriendlyURLsXML();
 	}
 
 	/**
@@ -613,7 +591,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public Group getGroup() {
-		return _layout.getGroup();
+		return model.getGroup();
 	}
 
 	/**
@@ -623,7 +601,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public long getGroupId() {
-		return _layout.getGroupId();
+		return model.getGroupId();
 	}
 
 	/**
@@ -633,7 +611,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public boolean getHidden() {
-		return _layout.getHidden();
+		return model.getHidden();
 	}
 
 	/**
@@ -648,7 +626,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public String getHTMLTitle(java.util.Locale locale) {
-		return _layout.getHTMLTitle(locale);
+		return model.getHTMLTitle(locale);
 	}
 
 	/**
@@ -662,7 +640,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public String getHTMLTitle(String localeLanguageId) {
-		return _layout.getHTMLTitle(localeLanguageId);
+		return model.getHTMLTitle(localeLanguageId);
 	}
 
 	/**
@@ -673,7 +651,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public boolean getIconImage() {
-		return _layout.getIconImage();
+		return model.getIconImage();
 	}
 
 	/**
@@ -683,7 +661,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public long getIconImageId() {
-		return _layout.getIconImageId();
+		return model.getIconImageId();
 	}
 
 	/**
@@ -693,7 +671,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public String getKeywords() {
-		return _layout.getKeywords();
+		return model.getKeywords();
 	}
 
 	/**
@@ -704,7 +682,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public String getKeywords(java.util.Locale locale) {
-		return _layout.getKeywords(locale);
+		return model.getKeywords(locale);
 	}
 
 	/**
@@ -716,7 +694,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public String getKeywords(java.util.Locale locale, boolean useDefault) {
-		return _layout.getKeywords(locale, useDefault);
+		return model.getKeywords(locale, useDefault);
 	}
 
 	/**
@@ -727,7 +705,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public String getKeywords(String languageId) {
-		return _layout.getKeywords(languageId);
+		return model.getKeywords(languageId);
 	}
 
 	/**
@@ -739,17 +717,17 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public String getKeywords(String languageId, boolean useDefault) {
-		return _layout.getKeywords(languageId, useDefault);
+		return model.getKeywords(languageId, useDefault);
 	}
 
 	@Override
 	public String getKeywordsCurrentLanguageId() {
-		return _layout.getKeywordsCurrentLanguageId();
+		return model.getKeywordsCurrentLanguageId();
 	}
 
 	@Override
 	public String getKeywordsCurrentValue() {
-		return _layout.getKeywordsCurrentValue();
+		return model.getKeywordsCurrentValue();
 	}
 
 	/**
@@ -759,7 +737,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public Map<java.util.Locale, String> getKeywordsMap() {
-		return _layout.getKeywordsMap();
+		return model.getKeywordsMap();
 	}
 
 	/**
@@ -769,7 +747,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public Date getLastPublishDate() {
-		return _layout.getLastPublishDate();
+		return model.getLastPublishDate();
 	}
 
 	/**
@@ -779,7 +757,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public long getLayoutId() {
-		return _layout.getLayoutId();
+		return model.getLayoutId();
 	}
 
 	/**
@@ -789,7 +767,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public boolean getLayoutPrototypeLinkEnabled() {
-		return _layout.getLayoutPrototypeLinkEnabled();
+		return model.getLayoutPrototypeLinkEnabled();
 	}
 
 	/**
@@ -799,7 +777,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public String getLayoutPrototypeUuid() {
-		return _layout.getLayoutPrototypeUuid();
+		return model.getLayoutPrototypeUuid();
 	}
 
 	/**
@@ -809,7 +787,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public LayoutSet getLayoutSet() {
-		return _layout.getLayoutSet();
+		return model.getLayoutSet();
 	}
 
 	/**
@@ -819,7 +797,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public LayoutType getLayoutType() {
-		return _layout.getLayoutType();
+		return model.getLayoutType();
 	}
 
 	/**
@@ -829,7 +807,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public long getLeftPlid() {
-		return _layout.getLeftPlid();
+		return model.getLeftPlid();
 	}
 
 	/**
@@ -840,7 +818,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public Layout getLinkedToLayout() {
-		return _layout.getLinkedToLayout();
+		return model.getLinkedToLayout();
 	}
 
 	/**
@@ -850,7 +828,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public Date getModifiedDate() {
-		return _layout.getModifiedDate();
+		return model.getModifiedDate();
 	}
 
 	/**
@@ -860,7 +838,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public long getMvccVersion() {
-		return _layout.getMvccVersion();
+		return model.getMvccVersion();
 	}
 
 	/**
@@ -870,7 +848,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public String getName() {
-		return _layout.getName();
+		return model.getName();
 	}
 
 	/**
@@ -881,7 +859,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public String getName(java.util.Locale locale) {
-		return _layout.getName(locale);
+		return model.getName(locale);
 	}
 
 	/**
@@ -893,7 +871,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public String getName(java.util.Locale locale, boolean useDefault) {
-		return _layout.getName(locale, useDefault);
+		return model.getName(locale, useDefault);
 	}
 
 	/**
@@ -904,7 +882,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public String getName(String languageId) {
-		return _layout.getName(languageId);
+		return model.getName(languageId);
 	}
 
 	/**
@@ -916,17 +894,17 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public String getName(String languageId, boolean useDefault) {
-		return _layout.getName(languageId, useDefault);
+		return model.getName(languageId, useDefault);
 	}
 
 	@Override
 	public String getNameCurrentLanguageId() {
-		return _layout.getNameCurrentLanguageId();
+		return model.getNameCurrentLanguageId();
 	}
 
 	@Override
 	public String getNameCurrentValue() {
-		return _layout.getNameCurrentValue();
+		return model.getNameCurrentValue();
 	}
 
 	/**
@@ -936,7 +914,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public Map<java.util.Locale, String> getNameMap() {
-		return _layout.getNameMap();
+		return model.getNameMap();
 	}
 
 	/**
@@ -946,7 +924,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public long getParentLayoutId() {
-		return _layout.getParentLayoutId();
+		return model.getParentLayoutId();
 	}
 
 	/**
@@ -956,7 +934,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public long getParentPlid() {
-		return _layout.getParentPlid();
+		return model.getParentPlid();
 	}
 
 	/**
@@ -966,7 +944,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public long getPlid() {
-		return _layout.getPlid();
+		return model.getPlid();
 	}
 
 	/**
@@ -976,12 +954,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public long getPrimaryKey() {
-		return _layout.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _layout.getPrimaryKeyObj();
+		return model.getPrimaryKey();
 	}
 
 	/**
@@ -991,7 +964,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public int getPriority() {
-		return _layout.getPriority();
+		return model.getPriority();
 	}
 
 	/**
@@ -1001,27 +974,27 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public boolean getPrivateLayout() {
-		return _layout.getPrivateLayout();
+		return model.getPrivateLayout();
 	}
 
 	@Override
 	public String getRegularURL(javax.servlet.http.HttpServletRequest request)
 		throws com.liferay.portal.kernel.exception.PortalException {
-		return _layout.getRegularURL(request);
+		return model.getRegularURL(request);
 	}
 
 	@Override
 	public String getResetLayoutURL(
 		javax.servlet.http.HttpServletRequest request)
 		throws com.liferay.portal.kernel.exception.PortalException {
-		return _layout.getResetLayoutURL(request);
+		return model.getResetLayoutURL(request);
 	}
 
 	@Override
 	public String getResetMaxStateURL(
 		javax.servlet.http.HttpServletRequest request)
 		throws com.liferay.portal.kernel.exception.PortalException {
-		return _layout.getResetMaxStateURL(request);
+		return model.getResetMaxStateURL(request);
 	}
 
 	/**
@@ -1031,7 +1004,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public long getRightPlid() {
-		return _layout.getRightPlid();
+		return model.getRightPlid();
 	}
 
 	/**
@@ -1041,7 +1014,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public String getRobots() {
-		return _layout.getRobots();
+		return model.getRobots();
 	}
 
 	/**
@@ -1052,7 +1025,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public String getRobots(java.util.Locale locale) {
-		return _layout.getRobots(locale);
+		return model.getRobots(locale);
 	}
 
 	/**
@@ -1064,7 +1037,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public String getRobots(java.util.Locale locale, boolean useDefault) {
-		return _layout.getRobots(locale, useDefault);
+		return model.getRobots(locale, useDefault);
 	}
 
 	/**
@@ -1075,7 +1048,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public String getRobots(String languageId) {
-		return _layout.getRobots(languageId);
+		return model.getRobots(languageId);
 	}
 
 	/**
@@ -1087,17 +1060,17 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public String getRobots(String languageId, boolean useDefault) {
-		return _layout.getRobots(languageId, useDefault);
+		return model.getRobots(languageId, useDefault);
 	}
 
 	@Override
 	public String getRobotsCurrentLanguageId() {
-		return _layout.getRobotsCurrentLanguageId();
+		return model.getRobotsCurrentLanguageId();
 	}
 
 	@Override
 	public String getRobotsCurrentValue() {
-		return _layout.getRobotsCurrentValue();
+		return model.getRobotsCurrentValue();
 	}
 
 	/**
@@ -1107,13 +1080,13 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public Map<java.util.Locale, String> getRobotsMap() {
-		return _layout.getRobotsMap();
+		return model.getRobotsMap();
 	}
 
 	@Override
 	public Group getScopeGroup()
 		throws com.liferay.portal.kernel.exception.PortalException {
-		return _layout.getScopeGroup();
+		return model.getScopeGroup();
 	}
 
 	/**
@@ -1123,12 +1096,22 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public String getSourcePrototypeLayoutUuid() {
-		return _layout.getSourcePrototypeLayoutUuid();
+		return model.getSourcePrototypeLayoutUuid();
+	}
+
+	/**
+	* Returns the system of this layout.
+	*
+	* @return the system of this layout
+	*/
+	@Override
+	public boolean getSystem() {
+		return model.getSystem();
 	}
 
 	@Override
 	public String getTarget() {
-		return _layout.getTarget();
+		return model.getTarget();
 	}
 
 	/**
@@ -1141,7 +1124,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	@Override
 	public Theme getTheme()
 		throws com.liferay.portal.kernel.exception.PortalException {
-		return _layout.getTheme();
+		return model.getTheme();
 	}
 
 	/**
@@ -1151,18 +1134,18 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public String getThemeId() {
-		return _layout.getThemeId();
+		return model.getThemeId();
 	}
 
 	@Override
 	public String getThemeSetting(String key, String device) {
-		return _layout.getThemeSetting(key, device);
+		return model.getThemeSetting(key, device);
 	}
 
 	@Override
 	public String getThemeSetting(String key, String device,
 		boolean inheritLookAndFeel) {
-		return _layout.getThemeSetting(key, device, inheritLookAndFeel);
+		return model.getThemeSetting(key, device, inheritLookAndFeel);
 	}
 
 	/**
@@ -1172,7 +1155,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public String getTitle() {
-		return _layout.getTitle();
+		return model.getTitle();
 	}
 
 	/**
@@ -1183,7 +1166,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public String getTitle(java.util.Locale locale) {
-		return _layout.getTitle(locale);
+		return model.getTitle(locale);
 	}
 
 	/**
@@ -1195,7 +1178,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public String getTitle(java.util.Locale locale, boolean useDefault) {
-		return _layout.getTitle(locale, useDefault);
+		return model.getTitle(locale, useDefault);
 	}
 
 	/**
@@ -1206,7 +1189,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public String getTitle(String languageId) {
-		return _layout.getTitle(languageId);
+		return model.getTitle(languageId);
 	}
 
 	/**
@@ -1218,17 +1201,17 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public String getTitle(String languageId, boolean useDefault) {
-		return _layout.getTitle(languageId, useDefault);
+		return model.getTitle(languageId, useDefault);
 	}
 
 	@Override
 	public String getTitleCurrentLanguageId() {
-		return _layout.getTitleCurrentLanguageId();
+		return model.getTitleCurrentLanguageId();
 	}
 
 	@Override
 	public String getTitleCurrentValue() {
-		return _layout.getTitleCurrentValue();
+		return model.getTitleCurrentValue();
 	}
 
 	/**
@@ -1238,7 +1221,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public Map<java.util.Locale, String> getTitleMap() {
-		return _layout.getTitleMap();
+		return model.getTitleMap();
 	}
 
 	/**
@@ -1248,7 +1231,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public String getType() {
-		return _layout.getType();
+		return model.getType();
 	}
 
 	/**
@@ -1258,22 +1241,22 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public String getTypeSettings() {
-		return _layout.getTypeSettings();
+		return model.getTypeSettings();
 	}
 
 	@Override
 	public com.liferay.portal.kernel.util.UnicodeProperties getTypeSettingsProperties() {
-		return _layout.getTypeSettingsProperties();
+		return model.getTypeSettingsProperties();
 	}
 
 	@Override
 	public String getTypeSettingsProperty(String key) {
-		return _layout.getTypeSettingsProperty(key);
+		return model.getTypeSettingsProperty(key);
 	}
 
 	@Override
 	public String getTypeSettingsProperty(String key, String defaultValue) {
-		return _layout.getTypeSettingsProperty(key, defaultValue);
+		return model.getTypeSettingsProperty(key, defaultValue);
 	}
 
 	/**
@@ -1283,7 +1266,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public long getUserId() {
-		return _layout.getUserId();
+		return model.getUserId();
 	}
 
 	/**
@@ -1293,7 +1276,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public String getUserName() {
-		return _layout.getUserName();
+		return model.getUserName();
 	}
 
 	/**
@@ -1303,7 +1286,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public String getUserUuid() {
-		return _layout.getUserUuid();
+		return model.getUserUuid();
 	}
 
 	/**
@@ -1313,7 +1296,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public String getUuid() {
-		return _layout.getUuid();
+		return model.getUuid();
 	}
 
 	/**
@@ -1329,7 +1312,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	@Override
 	public boolean hasAncestor(long layoutId)
 		throws com.liferay.portal.kernel.exception.PortalException {
-		return _layout.hasAncestor(layoutId);
+		return model.hasAncestor(layoutId);
 	}
 
 	/**
@@ -1340,23 +1323,18 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public boolean hasChildren() {
-		return _layout.hasChildren();
-	}
-
-	@Override
-	public int hashCode() {
-		return _layout.hashCode();
+		return model.hasChildren();
 	}
 
 	@Override
 	public boolean hasScopeGroup()
 		throws com.liferay.portal.kernel.exception.PortalException {
-		return _layout.hasScopeGroup();
+		return model.hasScopeGroup();
 	}
 
 	@Override
 	public boolean hasSetModifiedDate() {
-		return _layout.hasSetModifiedDate();
+		return model.hasSetModifiedDate();
 	}
 
 	@Override
@@ -1364,18 +1342,13 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 		javax.servlet.http.HttpServletRequest request,
 		javax.servlet.http.HttpServletResponse response)
 		throws Exception {
-		return _layout.includeLayoutContent(request, response);
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _layout.isCachedModel();
+		return model.includeLayoutContent(request, response);
 	}
 
 	@Override
 	public boolean isChildSelected(boolean selectable, Layout layout)
 		throws com.liferay.portal.kernel.exception.PortalException {
-		return _layout.isChildSelected(selectable, layout);
+		return model.isChildSelected(selectable, layout);
 	}
 
 	/**
@@ -1392,17 +1365,12 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public boolean isContentDisplayPage() {
-		return _layout.isContentDisplayPage();
+		return model.isContentDisplayPage();
 	}
 
 	@Override
 	public boolean isCustomizable() {
-		return _layout.isCustomizable();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _layout.isEscapedModel();
+		return model.isCustomizable();
 	}
 
 	/**
@@ -1415,7 +1383,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public boolean isFirstChild() {
-		return _layout.isFirstChild();
+		return model.isFirstChild();
 	}
 
 	/**
@@ -1427,7 +1395,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public boolean isFirstParent() {
-		return _layout.isFirstParent();
+		return model.isFirstParent();
 	}
 
 	/**
@@ -1437,12 +1405,12 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public boolean isHidden() {
-		return _layout.isHidden();
+		return model.isHidden();
 	}
 
 	@Override
 	public boolean isIconImage() {
-		return _layout.isIconImage();
+		return model.isIconImage();
 	}
 
 	/**
@@ -1454,7 +1422,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public boolean isInheritLookAndFeel() {
-		return _layout.isInheritLookAndFeel();
+		return model.isInheritLookAndFeel();
 	}
 
 	/**
@@ -1467,7 +1435,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public boolean isLayoutPrototypeLinkActive() {
-		return _layout.isLayoutPrototypeLinkActive();
+		return model.isLayoutPrototypeLinkActive();
 	}
 
 	/**
@@ -1477,17 +1445,12 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public boolean isLayoutPrototypeLinkEnabled() {
-		return _layout.isLayoutPrototypeLinkEnabled();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _layout.isNew();
+		return model.isLayoutPrototypeLinkEnabled();
 	}
 
 	@Override
 	public boolean isPortletEmbedded(String portletId, long groupId) {
-		return _layout.isPortletEmbedded(portletId, groupId);
+		return model.isPortletEmbedded(portletId, groupId);
 	}
 
 	/**
@@ -1497,7 +1460,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public boolean isPrivateLayout() {
-		return _layout.isPrivateLayout();
+		return model.isPrivateLayout();
 	}
 
 	/**
@@ -1514,7 +1477,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public boolean isPublicLayout() {
-		return _layout.isPublicLayout();
+		return model.isPublicLayout();
 	}
 
 	/**
@@ -1525,13 +1488,13 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public boolean isRootLayout() {
-		return _layout.isRootLayout();
+		return model.isRootLayout();
 	}
 
 	@Override
 	public boolean isSelected(boolean selectable, Layout layout,
 		long ancestorPlid) {
-		return _layout.isSelected(selectable, layout, ancestorPlid);
+		return model.isSelected(selectable, layout, ancestorPlid);
 	}
 
 	/**
@@ -1543,7 +1506,17 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public boolean isSupportsEmbeddedPortlets() {
-		return _layout.isSupportsEmbeddedPortlets();
+		return model.isSupportsEmbeddedPortlets();
+	}
+
+	/**
+	* Returns <code>true</code> if this layout is system.
+	*
+	* @return <code>true</code> if this layout is system; <code>false</code> otherwise
+	*/
+	@Override
+	public boolean isSystem() {
+		return model.isSystem();
 	}
 
 	/**
@@ -1552,32 +1525,32 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	@Deprecated
 	@Override
 	public boolean isTypeArticle() {
-		return _layout.isTypeArticle();
+		return model.isTypeArticle();
 	}
 
 	@Override
 	public boolean isTypeControlPanel() {
-		return _layout.isTypeControlPanel();
+		return model.isTypeControlPanel();
 	}
 
 	@Override
 	public boolean isTypeEmbedded() {
-		return _layout.isTypeEmbedded();
+		return model.isTypeEmbedded();
 	}
 
 	@Override
 	public boolean isTypeLinkToLayout() {
-		return _layout.isTypeLinkToLayout();
+		return model.isTypeLinkToLayout();
 	}
 
 	@Override
 	public boolean isTypePanel() {
-		return _layout.isTypePanel();
+		return model.isTypePanel();
 	}
 
 	@Override
 	public boolean isTypePortlet() {
-		return _layout.isTypePortlet();
+		return model.isTypePortlet();
 	}
 
 	/**
@@ -1586,41 +1559,36 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	@Deprecated
 	@Override
 	public boolean isTypeSharedPortlet() {
-		return _layout.isTypeSharedPortlet();
+		return model.isTypeSharedPortlet();
 	}
 
 	@Override
 	public boolean isTypeURL() {
-		return _layout.isTypeURL();
+		return model.isTypeURL();
 	}
 
 	@Override
 	public boolean matches(javax.servlet.http.HttpServletRequest request,
 		String friendlyURL) {
-		return _layout.matches(request, friendlyURL);
+		return model.matches(request, friendlyURL);
 	}
 
 	@Override
 	public void persist() {
-		_layout.persist();
+		model.persist();
 	}
 
 	@Override
 	public void prepareLocalizedFieldsForImport()
 		throws com.liferay.portal.kernel.exception.LocaleException {
-		_layout.prepareLocalizedFieldsForImport();
+		model.prepareLocalizedFieldsForImport();
 	}
 
 	@Override
 	public void prepareLocalizedFieldsForImport(
 		java.util.Locale defaultImportLocale)
 		throws com.liferay.portal.kernel.exception.LocaleException {
-		_layout.prepareLocalizedFieldsForImport(defaultImportLocale);
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_layout.setCachedModel(cachedModel);
+		model.prepareLocalizedFieldsForImport(defaultImportLocale);
 	}
 
 	/**
@@ -1630,7 +1598,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public void setColorSchemeId(String colorSchemeId) {
-		_layout.setColorSchemeId(colorSchemeId);
+		model.setColorSchemeId(colorSchemeId);
 	}
 
 	/**
@@ -1640,7 +1608,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public void setCompanyId(long companyId) {
-		_layout.setCompanyId(companyId);
+		model.setCompanyId(companyId);
 	}
 
 	/**
@@ -1650,7 +1618,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public void setCreateDate(Date createDate) {
-		_layout.setCreateDate(createDate);
+		model.setCreateDate(createDate);
 	}
 
 	/**
@@ -1660,7 +1628,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public void setCss(String css) {
-		_layout.setCss(css);
+		model.setCss(css);
 	}
 
 	/**
@@ -1670,7 +1638,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public void setDescription(String description) {
-		_layout.setDescription(description);
+		model.setDescription(description);
 	}
 
 	/**
@@ -1681,7 +1649,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public void setDescription(String description, java.util.Locale locale) {
-		_layout.setDescription(description, locale);
+		model.setDescription(description, locale);
 	}
 
 	/**
@@ -1694,12 +1662,12 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	@Override
 	public void setDescription(String description, java.util.Locale locale,
 		java.util.Locale defaultLocale) {
-		_layout.setDescription(description, locale, defaultLocale);
+		model.setDescription(description, locale, defaultLocale);
 	}
 
 	@Override
 	public void setDescriptionCurrentLanguageId(String languageId) {
-		_layout.setDescriptionCurrentLanguageId(languageId);
+		model.setDescriptionCurrentLanguageId(languageId);
 	}
 
 	/**
@@ -1709,7 +1677,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public void setDescriptionMap(Map<java.util.Locale, String> descriptionMap) {
-		_layout.setDescriptionMap(descriptionMap);
+		model.setDescriptionMap(descriptionMap);
 	}
 
 	/**
@@ -1722,22 +1690,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	public void setDescriptionMap(
 		Map<java.util.Locale, String> descriptionMap,
 		java.util.Locale defaultLocale) {
-		_layout.setDescriptionMap(descriptionMap, defaultLocale);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(BaseModel<?> baseModel) {
-		_layout.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_layout.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_layout.setExpandoBridgeAttributes(serviceContext);
+		model.setDescriptionMap(descriptionMap, defaultLocale);
 	}
 
 	/**
@@ -1747,7 +1700,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public void setFriendlyURL(String friendlyURL) {
-		_layout.setFriendlyURL(friendlyURL);
+		model.setFriendlyURL(friendlyURL);
 	}
 
 	/**
@@ -1757,7 +1710,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public void setGroupId(long groupId) {
-		_layout.setGroupId(groupId);
+		model.setGroupId(groupId);
 	}
 
 	/**
@@ -1767,7 +1720,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public void setHidden(boolean hidden) {
-		_layout.setHidden(hidden);
+		model.setHidden(hidden);
 	}
 
 	/**
@@ -1777,7 +1730,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public void setIconImageId(long iconImageId) {
-		_layout.setIconImageId(iconImageId);
+		model.setIconImageId(iconImageId);
 	}
 
 	/**
@@ -1787,7 +1740,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public void setKeywords(String keywords) {
-		_layout.setKeywords(keywords);
+		model.setKeywords(keywords);
 	}
 
 	/**
@@ -1798,7 +1751,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public void setKeywords(String keywords, java.util.Locale locale) {
-		_layout.setKeywords(keywords, locale);
+		model.setKeywords(keywords, locale);
 	}
 
 	/**
@@ -1811,12 +1764,12 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	@Override
 	public void setKeywords(String keywords, java.util.Locale locale,
 		java.util.Locale defaultLocale) {
-		_layout.setKeywords(keywords, locale, defaultLocale);
+		model.setKeywords(keywords, locale, defaultLocale);
 	}
 
 	@Override
 	public void setKeywordsCurrentLanguageId(String languageId) {
-		_layout.setKeywordsCurrentLanguageId(languageId);
+		model.setKeywordsCurrentLanguageId(languageId);
 	}
 
 	/**
@@ -1826,7 +1779,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public void setKeywordsMap(Map<java.util.Locale, String> keywordsMap) {
-		_layout.setKeywordsMap(keywordsMap);
+		model.setKeywordsMap(keywordsMap);
 	}
 
 	/**
@@ -1838,7 +1791,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	@Override
 	public void setKeywordsMap(Map<java.util.Locale, String> keywordsMap,
 		java.util.Locale defaultLocale) {
-		_layout.setKeywordsMap(keywordsMap, defaultLocale);
+		model.setKeywordsMap(keywordsMap, defaultLocale);
 	}
 
 	/**
@@ -1848,7 +1801,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public void setLastPublishDate(Date lastPublishDate) {
-		_layout.setLastPublishDate(lastPublishDate);
+		model.setLastPublishDate(lastPublishDate);
 	}
 
 	/**
@@ -1858,7 +1811,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public void setLayoutId(long layoutId) {
-		_layout.setLayoutId(layoutId);
+		model.setLayoutId(layoutId);
 	}
 
 	/**
@@ -1869,7 +1822,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	@Override
 	public void setLayoutPrototypeLinkEnabled(
 		boolean layoutPrototypeLinkEnabled) {
-		_layout.setLayoutPrototypeLinkEnabled(layoutPrototypeLinkEnabled);
+		model.setLayoutPrototypeLinkEnabled(layoutPrototypeLinkEnabled);
 	}
 
 	/**
@@ -1879,12 +1832,12 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public void setLayoutPrototypeUuid(String layoutPrototypeUuid) {
-		_layout.setLayoutPrototypeUuid(layoutPrototypeUuid);
+		model.setLayoutPrototypeUuid(layoutPrototypeUuid);
 	}
 
 	@Override
 	public void setLayoutSet(LayoutSet layoutSet) {
-		_layout.setLayoutSet(layoutSet);
+		model.setLayoutSet(layoutSet);
 	}
 
 	/**
@@ -1894,7 +1847,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public void setLeftPlid(long leftPlid) {
-		_layout.setLeftPlid(leftPlid);
+		model.setLeftPlid(leftPlid);
 	}
 
 	/**
@@ -1904,7 +1857,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public void setModifiedDate(Date modifiedDate) {
-		_layout.setModifiedDate(modifiedDate);
+		model.setModifiedDate(modifiedDate);
 	}
 
 	/**
@@ -1914,7 +1867,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public void setMvccVersion(long mvccVersion) {
-		_layout.setMvccVersion(mvccVersion);
+		model.setMvccVersion(mvccVersion);
 	}
 
 	/**
@@ -1924,7 +1877,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public void setName(String name) {
-		_layout.setName(name);
+		model.setName(name);
 	}
 
 	/**
@@ -1935,7 +1888,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public void setName(String name, java.util.Locale locale) {
-		_layout.setName(name, locale);
+		model.setName(name, locale);
 	}
 
 	/**
@@ -1948,12 +1901,12 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	@Override
 	public void setName(String name, java.util.Locale locale,
 		java.util.Locale defaultLocale) {
-		_layout.setName(name, locale, defaultLocale);
+		model.setName(name, locale, defaultLocale);
 	}
 
 	@Override
 	public void setNameCurrentLanguageId(String languageId) {
-		_layout.setNameCurrentLanguageId(languageId);
+		model.setNameCurrentLanguageId(languageId);
 	}
 
 	/**
@@ -1963,7 +1916,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public void setNameMap(Map<java.util.Locale, String> nameMap) {
-		_layout.setNameMap(nameMap);
+		model.setNameMap(nameMap);
 	}
 
 	/**
@@ -1975,12 +1928,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	@Override
 	public void setNameMap(Map<java.util.Locale, String> nameMap,
 		java.util.Locale defaultLocale) {
-		_layout.setNameMap(nameMap, defaultLocale);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_layout.setNew(n);
+		model.setNameMap(nameMap, defaultLocale);
 	}
 
 	/**
@@ -1990,7 +1938,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public void setParentLayoutId(long parentLayoutId) {
-		_layout.setParentLayoutId(parentLayoutId);
+		model.setParentLayoutId(parentLayoutId);
 	}
 
 	/**
@@ -2000,7 +1948,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public void setParentPlid(long parentPlid) {
-		_layout.setParentPlid(parentPlid);
+		model.setParentPlid(parentPlid);
 	}
 
 	/**
@@ -2010,7 +1958,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public void setPlid(long plid) {
-		_layout.setPlid(plid);
+		model.setPlid(plid);
 	}
 
 	/**
@@ -2020,12 +1968,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public void setPrimaryKey(long primaryKey) {
-		_layout.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_layout.setPrimaryKeyObj(primaryKeyObj);
+		model.setPrimaryKey(primaryKey);
 	}
 
 	/**
@@ -2035,7 +1978,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public void setPriority(int priority) {
-		_layout.setPriority(priority);
+		model.setPriority(priority);
 	}
 
 	/**
@@ -2045,7 +1988,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public void setPrivateLayout(boolean privateLayout) {
-		_layout.setPrivateLayout(privateLayout);
+		model.setPrivateLayout(privateLayout);
 	}
 
 	/**
@@ -2055,7 +1998,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public void setRightPlid(long rightPlid) {
-		_layout.setRightPlid(rightPlid);
+		model.setRightPlid(rightPlid);
 	}
 
 	/**
@@ -2065,7 +2008,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public void setRobots(String robots) {
-		_layout.setRobots(robots);
+		model.setRobots(robots);
 	}
 
 	/**
@@ -2076,7 +2019,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public void setRobots(String robots, java.util.Locale locale) {
-		_layout.setRobots(robots, locale);
+		model.setRobots(robots, locale);
 	}
 
 	/**
@@ -2089,12 +2032,12 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	@Override
 	public void setRobots(String robots, java.util.Locale locale,
 		java.util.Locale defaultLocale) {
-		_layout.setRobots(robots, locale, defaultLocale);
+		model.setRobots(robots, locale, defaultLocale);
 	}
 
 	@Override
 	public void setRobotsCurrentLanguageId(String languageId) {
-		_layout.setRobotsCurrentLanguageId(languageId);
+		model.setRobotsCurrentLanguageId(languageId);
 	}
 
 	/**
@@ -2104,7 +2047,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public void setRobotsMap(Map<java.util.Locale, String> robotsMap) {
-		_layout.setRobotsMap(robotsMap);
+		model.setRobotsMap(robotsMap);
 	}
 
 	/**
@@ -2116,7 +2059,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	@Override
 	public void setRobotsMap(Map<java.util.Locale, String> robotsMap,
 		java.util.Locale defaultLocale) {
-		_layout.setRobotsMap(robotsMap, defaultLocale);
+		model.setRobotsMap(robotsMap, defaultLocale);
 	}
 
 	/**
@@ -2126,7 +2069,17 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public void setSourcePrototypeLayoutUuid(String sourcePrototypeLayoutUuid) {
-		_layout.setSourcePrototypeLayoutUuid(sourcePrototypeLayoutUuid);
+		model.setSourcePrototypeLayoutUuid(sourcePrototypeLayoutUuid);
+	}
+
+	/**
+	* Sets whether this layout is system.
+	*
+	* @param system the system of this layout
+	*/
+	@Override
+	public void setSystem(boolean system) {
+		model.setSystem(system);
 	}
 
 	/**
@@ -2136,7 +2089,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public void setThemeId(String themeId) {
-		_layout.setThemeId(themeId);
+		model.setThemeId(themeId);
 	}
 
 	/**
@@ -2146,7 +2099,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public void setTitle(String title) {
-		_layout.setTitle(title);
+		model.setTitle(title);
 	}
 
 	/**
@@ -2157,7 +2110,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public void setTitle(String title, java.util.Locale locale) {
-		_layout.setTitle(title, locale);
+		model.setTitle(title, locale);
 	}
 
 	/**
@@ -2170,12 +2123,12 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	@Override
 	public void setTitle(String title, java.util.Locale locale,
 		java.util.Locale defaultLocale) {
-		_layout.setTitle(title, locale, defaultLocale);
+		model.setTitle(title, locale, defaultLocale);
 	}
 
 	@Override
 	public void setTitleCurrentLanguageId(String languageId) {
-		_layout.setTitleCurrentLanguageId(languageId);
+		model.setTitleCurrentLanguageId(languageId);
 	}
 
 	/**
@@ -2185,7 +2138,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public void setTitleMap(Map<java.util.Locale, String> titleMap) {
-		_layout.setTitleMap(titleMap);
+		model.setTitleMap(titleMap);
 	}
 
 	/**
@@ -2197,7 +2150,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	@Override
 	public void setTitleMap(Map<java.util.Locale, String> titleMap,
 		java.util.Locale defaultLocale) {
-		_layout.setTitleMap(titleMap, defaultLocale);
+		model.setTitleMap(titleMap, defaultLocale);
 	}
 
 	/**
@@ -2207,7 +2160,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public void setType(String type) {
-		_layout.setType(type);
+		model.setType(type);
 	}
 
 	/**
@@ -2217,13 +2170,13 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public void setTypeSettings(String typeSettings) {
-		_layout.setTypeSettings(typeSettings);
+		model.setTypeSettings(typeSettings);
 	}
 
 	@Override
 	public void setTypeSettingsProperties(
 		com.liferay.portal.kernel.util.UnicodeProperties typeSettingsProperties) {
-		_layout.setTypeSettingsProperties(typeSettingsProperties);
+		model.setTypeSettingsProperties(typeSettingsProperties);
 	}
 
 	/**
@@ -2233,7 +2186,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public void setUserId(long userId) {
-		_layout.setUserId(userId);
+		model.setUserId(userId);
 	}
 
 	/**
@@ -2243,7 +2196,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public void setUserName(String userName) {
-		_layout.setUserName(userName);
+		model.setUserName(userName);
 	}
 
 	/**
@@ -2253,7 +2206,7 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public void setUserUuid(String userUuid) {
-		_layout.setUserUuid(userUuid);
+		model.setUserUuid(userUuid);
 	}
 
 	/**
@@ -2263,102 +2216,41 @@ public class LayoutWrapper implements Layout, ModelWrapper<Layout> {
 	*/
 	@Override
 	public void setUuid(String uuid) {
-		_layout.setUuid(uuid);
-	}
-
-	@Override
-	public CacheModel<Layout> toCacheModel() {
-		return _layout.toCacheModel();
-	}
-
-	@Override
-	public Layout toEscapedModel() {
-		return new LayoutWrapper(_layout.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _layout.toString();
-	}
-
-	@Override
-	public Layout toUnescapedModel() {
-		return new LayoutWrapper(_layout.toUnescapedModel());
-	}
-
-	@Override
-	public String toXmlString() {
-		return _layout.toXmlString();
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-
-		if (!(obj instanceof LayoutWrapper)) {
-			return false;
-		}
-
-		LayoutWrapper layoutWrapper = (LayoutWrapper)obj;
-
-		if (Objects.equals(_layout, layoutWrapper._layout)) {
-			return true;
-		}
-
-		return false;
+		model.setUuid(uuid);
 	}
 
 	@Override
 	public long getNestedSetsTreeNodeLeft() {
-		return _layout.getNestedSetsTreeNodeLeft();
+		return model.getNestedSetsTreeNodeLeft();
 	}
 
 	@Override
 	public long getNestedSetsTreeNodeRight() {
-		return _layout.getNestedSetsTreeNodeRight();
+		return model.getNestedSetsTreeNodeRight();
 	}
 
 	@Override
 	public long getNestedSetsTreeNodeScopeId() {
-		return _layout.getNestedSetsTreeNodeScopeId();
+		return model.getNestedSetsTreeNodeScopeId();
 	}
 
 	@Override
 	public void setNestedSetsTreeNodeLeft(long nestedSetsTreeNodeLeft) {
-		_layout.setNestedSetsTreeNodeLeft(nestedSetsTreeNodeLeft);
+		model.setNestedSetsTreeNodeLeft(nestedSetsTreeNodeLeft);
 	}
 
 	@Override
 	public void setNestedSetsTreeNodeRight(long nestedSetsTreeNodeRight) {
-		_layout.setNestedSetsTreeNodeRight(nestedSetsTreeNodeRight);
+		model.setNestedSetsTreeNodeRight(nestedSetsTreeNodeRight);
 	}
 
 	@Override
 	public StagedModelType getStagedModelType() {
-		return _layout.getStagedModelType();
+		return model.getStagedModelType();
 	}
 
 	@Override
-	public Layout getWrappedModel() {
-		return _layout;
+	protected LayoutWrapper wrap(Layout layout) {
+		return new LayoutWrapper(layout);
 	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _layout.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _layout.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_layout.resetOriginalValues();
-	}
-
-	private final Layout _layout;
 }

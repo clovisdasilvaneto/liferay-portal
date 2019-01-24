@@ -15,7 +15,6 @@
 package com.liferay.forms.apio.client.test.internal.activator;
 
 import com.liferay.dynamic.data.mapping.model.DDMForm;
-import com.liferay.dynamic.data.mapping.model.DDMFormInstance;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.model.DDMStructureConstants;
 import com.liferay.dynamic.data.mapping.model.LocalizedValue;
@@ -53,9 +52,6 @@ import org.osgi.framework.ServiceReference;
  */
 public abstract class BaseFormApioTestBundleActivator
 	implements BundleActivator {
-
-	public static final String SITE_NAME =
-		BaseFormApioTestBundleActivator.class.getSimpleName() + "Site";
 
 	@Override
 	public void start(BundleContext bundleContext) {
@@ -97,9 +93,15 @@ public abstract class BaseFormApioTestBundleActivator
 		bundleContext.ungetService(_portalServiceReference);
 	}
 
+	protected DDMForm createDDMForm() {
+		return DDMFormFactory.create(getFormDefinitionClass());
+	}
+
 	protected abstract Class<?> getFormDefinitionClass();
 
-	private DDMFormInstance _addDDMFormInstance(
+	protected abstract String getSiteName();
+
+	private void _addDDMFormInstance(
 			User user, Group group, DDMStructure ddmStructure)
 		throws PortalException {
 
@@ -111,7 +113,7 @@ public abstract class BaseFormApioTestBundleActivator
 
 		description.addString(LocaleUtil.getDefault(), "This is my Form");
 
-		return _ddmFormInstanceLocalService.addFormInstance(
+		_ddmFormInstanceLocalService.addFormInstance(
 			user.getUserId(), group.getGroupId(), ddmStructure.getStructureId(),
 			name.getValues(), description.getValues(),
 			DDMFormValuesTestUtil.createDDMFormValues(
@@ -129,8 +131,8 @@ public abstract class BaseFormApioTestBundleActivator
 			new DDMStructureTestHelper(classNameId, group);
 
 		return ddmStructureTestHelper.addStructure(
-			classNameId, null, SITE_NAME, ddmForm, StorageType.JSON.getValue(),
-			DDMStructureConstants.TYPE_DEFAULT);
+			classNameId, null, getSiteName(), ddmForm,
+			StorageType.JSON.getValue(), DDMStructureConstants.TYPE_DEFAULT);
 	}
 
 	private void _cleanUp() {
@@ -143,20 +145,21 @@ public abstract class BaseFormApioTestBundleActivator
 	}
 
 	private void _prepareTest() throws Exception {
+		String siteName = getSiteName();
+
 		User user = UserTestUtil.getAdminUser(TestPropsValues.getCompanyId());
 		Map<Locale, String> nameMap = Collections.singletonMap(
-			LocaleUtil.getDefault(), SITE_NAME);
+			LocaleUtil.getDefault(), siteName);
 
 		_group = _groupLocalService.addGroup(
 			user.getUserId(), GroupConstants.DEFAULT_PARENT_GROUP_ID, null, 0,
 			GroupConstants.DEFAULT_LIVE_GROUP_ID, nameMap, nameMap,
 			GroupConstants.TYPE_SITE_OPEN, true,
 			GroupConstants.DEFAULT_MEMBERSHIP_RESTRICTION,
-			StringPool.SLASH +
-				FriendlyURLNormalizerUtil.normalize(SITE_NAME),
+			StringPool.SLASH + FriendlyURLNormalizerUtil.normalize(siteName),
 			true, true, ServiceContextTestUtil.getServiceContext());
 
-		DDMForm ddmForm = DDMFormFactory.create(getFormDefinitionClass());
+		DDMForm ddmForm = createDDMForm();
 
 		DDMStructure ddmStructure = _addDDMStructure(_group, ddmForm);
 

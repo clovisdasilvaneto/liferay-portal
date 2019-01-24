@@ -1,5 +1,6 @@
 import Component from 'metal-component';
 import {Config} from 'metal-state';
+import {contains} from 'metal-dom';
 import Soy from 'metal-soy';
 
 import './FragmentEntryLinkContent.es';
@@ -8,12 +9,12 @@ import {
 	CLEAR_ACTIVE_ITEM,
 	REMOVE_FRAGMENT_ENTRY_LINK,
 	UPDATE_ACTIVE_ITEM,
-	UPDATE_HOVERED_ITEM,
-	UPDATE_LAST_SAVE_DATE,
-	UPDATE_SAVING_CHANGES_STATUS
+	UPDATE_HOVERED_ITEM
 } from '../../actions/actions.es';
-import {DROP_TARGET_ITEM_TYPES} from '../../reducers/placeholders.es';
+import {FRAGMENTS_EDITOR_ITEM_TYPES} from '../../utils/constants';
 import {getItemMoveDirection} from '../../utils/FragmentsEditorGetUtils.es';
+import {shouldUpdatePureComponent} from '../../utils/FragmentsEditorComponentUtils.es';
+import {removeItem} from '../../utils/FragmentsEditorUpdateUtils.es';
 import templates from './FragmentEntryLink.soy';
 
 /**
@@ -23,25 +24,46 @@ import templates from './FragmentEntryLink.soy';
 class FragmentEntryLink extends Component {
 
 	/**
+	 * @inheritdoc
+	 * @return {boolean}
+	 * @review
+	 */
+	shouldUpdate(changes) {
+		return shouldUpdatePureComponent(changes);
+	}
+
+	/**
 	 * Callback executed when a fragment lose the focus
 	 * @private
 	 */
-	_handleFragmentBlur() {
-		this.store.dispatchAction(CLEAR_ACTIVE_ITEM);
+	_handleFragmentFocusOut() {
+		requestAnimationFrame(
+			() => {
+				if (
+					this.element &&
+					document.activeElement &&
+					(this.element !== document.activeElement) &&
+					!contains(this.element, document.activeElement)
+				) {
+					this.store.dispatchAction(CLEAR_ACTIVE_ITEM);
+				}
+			}
+		);
 	}
 
 	/**
 	 * Callback executed when a fragment is clicked
+	 * @param {object} event
 	 * @private
 	 */
-	_handleFragmentClick() {
+	_handleFragmentClick(event) {
 		event.stopPropagation();
 
 		this.store.dispatchAction(
 			UPDATE_ACTIVE_ITEM,
 			{
 				activeItemId: this.fragmentEntryLinkId,
-				activeItemType: DROP_TARGET_ITEM_TYPES.fragment
+				activeItemType: FRAGMENTS_EDITOR_ITEM_TYPES.fragment
 			}
 		);
 	}
@@ -59,22 +81,9 @@ class FragmentEntryLink extends Component {
 				UPDATE_HOVERED_ITEM,
 				{
 					hoveredItemId: this.fragmentEntryLinkId,
-					hoveredItemType: DROP_TARGET_ITEM_TYPES.fragment
+					hoveredItemType: FRAGMENTS_EDITOR_ITEM_TYPES.fragment
 				}
 			);
-		}
-	}
-
-	/**
-	 * Destroy existing FragmentEditableField instances.
-	 */
-	_destroyEditables() {
-		if (this._editables) {
-			this._editables.forEach(
-				editable => editable.dispose()
-			);
-
-			this._editables = [];
 		}
 	}
 
@@ -101,38 +110,20 @@ class FragmentEntryLink extends Component {
 
 	/**
 	 * Callback executed when the fragment remove button is clicked.
+	 * @param {object} event
 	 * @private
 	 */
-	_handleFragmentRemoveButtonClick() {
+	_handleFragmentRemoveButtonClick(event) {
 		event.stopPropagation();
 
-		this.store
-			.dispatchAction(
-				UPDATE_SAVING_CHANGES_STATUS,
-				{
-					savingChanges: true
-				}
-			)
-			.dispatchAction(
-				REMOVE_FRAGMENT_ENTRY_LINK,
-				{
-					fragmentEntryLinkId: this.fragmentEntryLinkId
-				}
-			)
-			.dispatchAction(
-				UPDATE_LAST_SAVE_DATE,
-				{
-					lastSaveDate: new Date()
-				}
-			)
-			.dispatchAction(
-				UPDATE_SAVING_CHANGES_STATUS,
-				{
-					savingChanges: false
-				}
-			);
+		removeItem(
+			this.store,
+			REMOVE_FRAGMENT_ENTRY_LINK,
+			{
+				fragmentEntryLinkId: this.fragmentEntryLinkId
+			}
+		);
 	}
-
 }
 
 /**

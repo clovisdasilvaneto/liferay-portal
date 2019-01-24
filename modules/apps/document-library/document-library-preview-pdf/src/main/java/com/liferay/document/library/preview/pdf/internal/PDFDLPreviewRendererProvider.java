@@ -19,8 +19,7 @@ import com.liferay.document.library.kernel.util.PDFProcessorUtil;
 import com.liferay.document.library.preview.DLPreviewRenderer;
 import com.liferay.document.library.preview.DLPreviewRendererProvider;
 import com.liferay.document.library.preview.exception.DLPreviewGenerationInProcessException;
-import com.liferay.document.library.preview.pdf.internal.constants.PDFDLPreviewWebKeys;
-import com.liferay.frontend.js.loader.modules.extender.npm.NPMResolver;
+import com.liferay.document.library.preview.exception.DLPreviewSizeException;
 import com.liferay.portal.kernel.repository.model.FileVersion;
 import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.WebKeys;
@@ -60,7 +59,7 @@ public class PDFDLPreviewRendererProvider implements DLPreviewRendererProvider {
 					if (!DLProcessorRegistryUtil.isPreviewableSize(
 							fileVersion)) {
 
-						throw new DLPreviewGenerationInProcessException();
+						throw new DLPreviewSizeException();
 					}
 
 					throw new DLPreviewGenerationInProcessException();
@@ -72,12 +71,6 @@ public class PDFDLPreviewRendererProvider implements DLPreviewRendererProvider {
 				request.setAttribute(
 					WebKeys.DOCUMENT_LIBRARY_FILE_VERSION, fileVersion);
 
-				request.setAttribute(
-					PDFDLPreviewWebKeys.MODULE_PATH,
-					_npmResolver.resolveModuleName(
-						"document-library-preview-pdf/preview/js" +
-							"/PdfPreviewer.es"));
-
 				requestDispatcher.include(request, response);
 			});
 	}
@@ -88,9 +81,6 @@ public class PDFDLPreviewRendererProvider implements DLPreviewRendererProvider {
 
 		return Optional.empty();
 	}
-
-	@Reference
-	private NPMResolver _npmResolver;
 
 	@Reference(
 		target = "(osgi.web.symbolicname=com.liferay.document.library.preview.pdf)"

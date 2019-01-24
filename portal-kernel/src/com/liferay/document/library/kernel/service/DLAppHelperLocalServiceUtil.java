@@ -214,6 +214,12 @@ public class DLAppHelperLocalServiceUtil {
 		return getService().moveFolderToTrash(userId, folder);
 	}
 
+	public static void reindex(long companyId,
+		java.util.List<Long> dlFileEntryIds)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		getService().reindex(companyId, dlFileEntryIds);
+	}
+
 	public static void restoreDependentsFromTrash(
 		com.liferay.document.library.kernel.model.DLFolder dlFolder)
 		throws com.liferay.portal.kernel.exception.PortalException {

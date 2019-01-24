@@ -16,13 +16,8 @@ package com.liferay.portal.kernel.model;
 
 import aQute.bnd.annotation.ProviderType;
 
-import com.liferay.expando.kernel.model.ExpandoBridge;
-
 import com.liferay.portal.kernel.bean.AutoEscape;
 import com.liferay.portal.kernel.exception.LocaleException;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
 
 import java.util.Date;
 import java.util.Locale;
@@ -865,6 +860,27 @@ public interface LayoutModel extends BaseModel<Layout>, LocalizedModel, MVCCMode
 	public void setHidden(boolean hidden);
 
 	/**
+	 * Returns the system of this layout.
+	 *
+	 * @return the system of this layout
+	 */
+	public boolean getSystem();
+
+	/**
+	 * Returns <code>true</code> if this layout is system.
+	 *
+	 * @return <code>true</code> if this layout is system; <code>false</code> otherwise
+	 */
+	public boolean isSystem();
+
+	/**
+	 * Sets whether this layout is system.
+	 *
+	 * @param system the system of this layout
+	 */
+	public void setSystem(boolean system);
+
+	/**
 	 * Returns the friendly url of this layout.
 	 *
 	 * @return the friendly url of this layout
@@ -1021,39 +1037,6 @@ public interface LayoutModel extends BaseModel<Layout>, LocalizedModel, MVCCMode
 	public void setLastPublishDate(Date lastPublishDate);
 
 	@Override
-	public boolean isNew();
-
-	@Override
-	public void setNew(boolean n);
-
-	@Override
-	public boolean isCachedModel();
-
-	@Override
-	public void setCachedModel(boolean cachedModel);
-
-	@Override
-	public boolean isEscapedModel();
-
-	@Override
-	public Serializable getPrimaryKeyObj();
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj);
-
-	@Override
-	public ExpandoBridge getExpandoBridge();
-
-	@Override
-	public void setExpandoBridgeAttributes(BaseModel<?> baseModel);
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge);
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext);
-
-	@Override
 	public String[] getAvailableLanguageIds();
 
 	@Override
@@ -1065,28 +1048,4 @@ public interface LayoutModel extends BaseModel<Layout>, LocalizedModel, MVCCMode
 	@Override
 	public void prepareLocalizedFieldsForImport(Locale defaultImportLocale)
 		throws LocaleException;
-
-	@Override
-	public Object clone();
-
-	@Override
-	public int compareTo(Layout layout);
-
-	@Override
-	public int hashCode();
-
-	@Override
-	public CacheModel<Layout> toCacheModel();
-
-	@Override
-	public Layout toEscapedModel();
-
-	@Override
-	public Layout toUnescapedModel();
-
-	@Override
-	public String toString();
-
-	@Override
-	public String toXmlString();
 }

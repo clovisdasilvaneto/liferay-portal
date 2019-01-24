@@ -12,6 +12,15 @@ class Select extends Component {
 	static STATE = {
 
 		/**
+		 * @default 'string'
+		 * @instance
+		 * @memberof Text
+		 * @type {?(string|undefined)}
+		 */
+
+		dataType: Config.string().value('string'),
+
+		/**
 		 * @default false
 		 * @instance
 		 * @memberof Select
@@ -52,17 +61,13 @@ class Select extends Component {
 		fixedOptions: Config.arrayOf(
 			Config.shapeOf(
 				{
-					dataType: Config.string(),
+					active: Config.bool().value(false),
+					disabled: Config.bool().value(false),
+					id: Config.string(),
+					inline: Config.bool().value(false),
+					label: Config.string(),
 					name: Config.string(),
-					options: Config.arrayOf(
-						Config.shapeOf(
-							{
-								label: Config.string(),
-								value: Config.string()
-							}
-						)
-					),
-					type: Config.string(),
+					showLabel: Config.bool().value(true),
 					value: Config.string()
 				}
 			)
@@ -178,6 +183,15 @@ class Select extends Component {
 		/**
 		 * @default undefined
 		 * @instance
+		 * @memberof Text
+		 * @type {?(string|undefined)}
+		 */
+
+		type: Config.string().value('select'),
+
+		/**
+		 * @default undefined
+		 * @instance
 		 * @memberof Select
 		 * @type {?(string|undefined)}
 		 */
@@ -188,9 +202,32 @@ class Select extends Component {
 	attached() {
 		this._eventHandler = new EventHandler();
 
+		// const {fixedOptions, options} = this;
+
+		// let newOptions = [...options];
+
+		// if (newOptions.length > 2) {
+		// 	newOptions[options.length - 2].separator = true;
+		// 	newOptions = newOptions.concat(
+		// 		{
+		// 			active: true,
+		// 			disabled: true,
+		// 			id: 'neva-papai',
+		// 			inline: false,
+		// 			label: 'Nevinha',
+		// 			name: 'NevinhaName',
+		// 			showLabel: true,
+		// 			value: 'porque nevinha?',
+		// 			type:'radio'
+		// 		}
+		// 	);
+		// }
+
 		this._eventHandler.add(
 			dom.on(document, 'click', this._handleDocumentClicked.bind(this))
 		);
+
+		// this.setState({options: newOptions});
 	}
 
 	disposeInternal() {
@@ -201,6 +238,9 @@ class Select extends Component {
 
 	prepareStateForRender(state) {
 		const {predefinedValue, value} = state;
+
+		const {fixedOptions, options} = this;
+
 		let newValue = value;
 
 		if (typeof (newValue) === 'string') {
@@ -211,8 +251,32 @@ class Select extends Component {
 
 		const selectedLabel = this._getSelectedLabel(selectedValue);
 
+		let newOptions = [...options];
+
+		newOptions = newOptions.map(option => {
+			let active = false;
+			let type = option.type;
+
+			if (option.value === selectedValue) {
+				active = true;
+			}
+
+			return {
+				...option,
+				active,
+				type: 'item'
+			}
+		});
+
+		if (newOptions.length && fixedOptions.length) {
+			newOptions[options.length - 1].separator = true;
+		}
+
+		newOptions = newOptions.concat(fixedOptions);
+
 		return {
 			...state,
+			options: newOptions,
 			predefinedValue: predefinedValue && predefinedValue.length ? predefinedValue[0] : '',
 			selectedLabel,
 			value: selectedValue
@@ -237,7 +301,9 @@ class Select extends Component {
 	}
 
 	_handleItemClicked(event) {
-		const value = [event.target.dataset.optionValue];
+		// const value = [event.target.dataset.optionValue];
+
+		const value = [event.data.item.value];
 
 		this.setState(
 			{

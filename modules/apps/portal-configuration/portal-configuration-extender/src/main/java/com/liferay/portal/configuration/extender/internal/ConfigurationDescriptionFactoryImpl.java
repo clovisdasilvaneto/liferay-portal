@@ -15,12 +15,12 @@
 package com.liferay.portal.configuration.extender.internal;
 
 import com.liferay.portal.kernel.util.PropertiesUtil;
-import com.liferay.portal.kernel.util.Supplier;
 
 import java.io.IOException;
 import java.io.InputStream;
 
 import java.util.Dictionary;
+import java.util.function.Supplier;
 
 import org.osgi.service.component.annotations.Component;
 
@@ -56,14 +56,12 @@ public class ConfigurationDescriptionFactoryImpl
 				new PropertiesSupplier(
 					namedConfigurationContent.getInputStream()));
 		}
-		else {
-			pid = name;
 
-			return new SingleConfigurationDescription(
-				pid,
-				new PropertiesSupplier(
-					namedConfigurationContent.getInputStream()));
-		}
+		pid = name;
+
+		return new SingleConfigurationDescription(
+			pid,
+			new PropertiesSupplier(namedConfigurationContent.getInputStream()));
 	}
 
 	private class PropertiesSupplier

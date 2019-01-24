@@ -44,6 +44,7 @@ import org.gradle.api.Task;
 import org.gradle.api.logging.Logger;
 import org.gradle.api.plugins.PluginContainer;
 import org.gradle.api.specs.Spec;
+import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.OutputDirectory;
@@ -117,6 +118,18 @@ public class NpmInstallTask extends ExecuteNpmTask {
 		return project.file("node_modules");
 	}
 
+	@Input
+	@Optional
+	public String getNodeVersion() {
+		return GradleUtil.toString(_nodeVersion);
+	}
+
+	@Input
+	@Optional
+	public String getNpmVersion() {
+		return GradleUtil.toString(_npmVersion);
+	}
+
 	@InputFile
 	public File getPackageJsonFile() {
 		Project project = getProject();
@@ -134,6 +147,24 @@ public class NpmInstallTask extends ExecuteNpmTask {
 	@Optional
 	public File getShrinkwrapJsonFile() {
 		return _getExistentFile("npm-shrinkwrap.json");
+	}
+
+	public boolean isCheckDigest() {
+		if (_isCacheEnabled()) {
+			return false;
+		}
+
+		Project project = getProject();
+
+		PluginContainer pluginContainer = project.getPlugins();
+
+		if (!pluginContainer.hasPlugin("com.liferay.cache") &&
+			(getNodeModulesDigestFile() != null)) {
+
+			return true;
+		}
+
+		return false;
 	}
 
 	public boolean isNodeModulesCacheNativeSync() {
@@ -160,6 +191,14 @@ public class NpmInstallTask extends ExecuteNpmTask {
 
 	public void setNodeModulesDigestFile(Object nodeModulesDigestFile) {
 		_nodeModulesDigestFile = nodeModulesDigestFile;
+	}
+
+	public void setNodeVersion(Object nodeVersion) {
+		_nodeVersion = nodeVersion;
+	}
+
+	public void setNpmVersion(Object npmVersion) {
+		_npmVersion = npmVersion;
 	}
 
 	public void setRemoveShrinkwrappedUrls(Object removeShrinkwrappedUrls) {
@@ -204,7 +243,7 @@ public class NpmInstallTask extends ExecuteNpmTask {
 					logger.info("Cache for {} is disabled", this);
 				}
 
-				if (_isCheckDigest()) {
+				if (isCheckDigest()) {
 					_npmInstallCheckDigest(reset);
 				}
 				else {
@@ -449,21 +488,6 @@ public class NpmInstallTask extends ExecuteNpmTask {
 		return false;
 	}
 
-	private boolean _isCheckDigest() {
-		Project project = getProject();
-
-		PluginContainer pluginContainer = project.getPlugins();
-
-		if (!pluginContainer.hasPlugin("com.liferay.cache") &&
-			(getNodeModulesCacheDir() == null) &&
-			(getNodeModulesDigestFile() != null)) {
-
-			return true;
-		}
-
-		return false;
-	}
-
 	private void _npmCacheVerify() {
 		Logger logger = getLogger();
 
@@ -574,7 +598,9 @@ public class NpmInstallTask extends ExecuteNpmTask {
 	private Object _nodeModulesCacheDir;
 	private boolean _nodeModulesCacheNativeSync = true;
 	private Object _nodeModulesDigestFile;
+	private Object _nodeVersion;
 	private boolean _npmCacheVerify;
+	private Object _npmVersion;
 	private Object _removeShrinkwrappedUrls;
 	private Object _useNpmCI;
 

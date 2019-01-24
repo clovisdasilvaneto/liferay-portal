@@ -1,0 +1,9 @@
+@import "./rule-list-settings";
+
+.liferay-ddm-form-builder-rule-builder-content {
+    .liferay-ddm-form-rule-builder-timeline .form-group-item div.dropdown, .action {
+        position: relative!important;
+        top: inherit!important;
+        right: inherit!important;
+    }
+}

@@ -10,7 +10,7 @@
 	padding-left: $sidebarWidth - $sidebarButtonsWidth;
 	position: fixed;
 	right: 0;
-	top: 0;
+	top: $managementBarHeight;
 	transition: padding-left ease $productMenuTransitionDuration;
 	will-change: padding-left;
 	z-index: $sidebarZIndex;
@@ -24,8 +24,11 @@
 	&-section {
 		border-left: $sidebarLeftBorderWidth solid $sidebarLeftBorderColor;
 		height: 100vh;
+		overflow-x: hidden;
+		overflow-y: auto;
 		position: fixed;
 		right: $sidebarButtonsWidth;
+		top: 0;
 		transform: translateX(0);
 		transition: transform ease $productMenuTransitionDuration;
 		width: $sidebarWidth - $sidebarButtonsWidth;
@@ -41,13 +44,19 @@
 		transform: translateX(calc(100% + #{$sidebarButtonsWidth + $sidebarLeftBorderWidth}));
 	}
 
-	body.has-control-menu & {
-		height: calc(100vh - #{$controlMenuHeight});
-		top: $controlMenuHeight;
+	@media (min-width: 768px) {
+		height: calc(100vh - #{$desktopManagementBarHeight});
+		top: $desktopManagementBarHeight;
+	}
+
+	body.has-control-menu &,
+	body.has-control-menu &-section {
+		height: calc(100vh - #{$controlMenuHeight + $managementBarHeight});
+		top: $controlMenuHeight + $managementBarHeight;
 
 		@media (min-width: 768px) {
-			height: calc(100vh - #{$desktopControlMenuHeight});
-			top: $desktopControlMenuHeight;
+			height: calc(100vh - #{$desktopControlMenuHeight + $desktopManagementBarHeight});
+			top: $desktopControlMenuHeight + $desktopManagementBarHeight;
 		}
 	}
 }

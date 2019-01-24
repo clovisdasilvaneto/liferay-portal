@@ -10,6 +10,10 @@ AUI.add(
 		var DocumentLibrary = A.Component.create(
 			{
 				ATTRS: {
+					classNameId: {
+						validator: Lang.isString
+					},
+
 					downloadEntryUrl: {
 						validator: Lang.isString
 					},
@@ -27,6 +31,10 @@ AUI.add(
 					},
 
 					moveEntryUrl: {
+						validator: Lang.isString
+					},
+
+					npmResolvedPackageName: {
 						validator: Lang.isString
 					},
 
@@ -57,6 +65,8 @@ AUI.add(
 					initializer: function(config) {
 						var instance = this;
 
+						var eventHandles = [];
+
 						var documentLibraryContainer = instance.byId('documentLibraryContainer');
 
 						instance._documentLibraryContainer = documentLibraryContainer;
@@ -70,14 +80,13 @@ AUI.add(
 
 						searchContainer.registerAction('move-to-folder', A.bind('_moveToFolder', instance));
 						searchContainer.registerAction('move-to-trash', A.bind('_moveToTrash', instance));
+						eventHandles.push(searchContainer.on('rowToggled', this._handleSearchContainerRowToggled, this));
 
 						instance._searchContainer = searchContainer;
 
 						var foldersConfig = config.folders;
 
 						instance._folderId = foldersConfig.defaultParentFolderId;
-
-						var eventHandles = [];
 
 						instance._config = config;
 
@@ -86,6 +95,12 @@ AUI.add(
 
 							eventHandles.push(A.getDoc().once('dragenter', instance._plugUpload, instance, config));
 						}
+
+						Liferay.componentReady('entriesManagementToolbar').then(
+							function(managementToolbar) {
+								eventHandles.push(managementToolbar.on(['selectPageCheckboxChanged'], instance._handleSelectPageCheckboxChanged.bind(instance)));
+							}
+						);
 
 						instance._eventHandles = eventHandles;
 					},
@@ -112,7 +127,9 @@ AUI.add(
 						var url = instance.get('editEntryUrl');
 
 						if (action === 'editTags') {
-							url = instance.get('editTagsUrl');
+							instance._openModalTags();
+
+							return;
 						}
 
 						if (action === 'move' || action === 'moveEntries') {
@@ -172,6 +189,34 @@ AUI.add(
 						}
 					},
 
+					_handleSearchContainerRowToggled: function(event) {
+						var instance = this;
+
+						var selectedElements = event.elements.allSelectedElements;
+
+						if (selectedElements.size() > 0) {
+							instance._selectedFileEntries = selectedElements.attr('value');
+						}
+						else {
+							instance._selectedFileEntries = [];
+						}
+
+						instance._isSelectAllChecked = false;
+					},
+
+					_handleSelectPageCheckboxChanged: function(event) {
+						var instance = this;
+
+						var checked = event.data.checked;
+
+						setTimeout(
+							function() {
+								instance._isSelectAllChecked = checked;
+							},
+							100
+						);
+					},
+
 					_moveToFolder: function(obj) {
 						var instance = this;
 
@@ -221,9 +266,46 @@ AUI.add(
 
 									openMSOfficeError.removeClass('hide');
 								}
-
 							}
 						);
+					},
+
+					_openModalTags: function() {
+						var instance = this;
+
+						var editTagsComponent = instance._editTagsComponent;
+						var form = instance.get('form').node;
+						var namespace = instance.NS;
+
+						if (!editTagsComponent) {
+							var urlTags = themeDisplay.getPortalURL() + '/o/bulk/asset/tags/' + instance.get('classNameId') + '/common';
+							var urlUpdateTags = themeDisplay.getPortalURL() + '/o/bulk/asset/tags/' + instance.get('classNameId');
+
+							Liferay.Loader.require(
+								instance.get('npmResolvedPackageName') + '/document_library/tags/EditTags.es',
+								function(EditTags) {
+									instance._editTagsComponent = new EditTags.default(
+										{
+											fileEntries: instance._selectedFileEntries,
+											folderId: instance.getFolderId(),
+											portletNamespace: namespace,
+											repositoryId: parseFloat(form.get(namespace + 'repositoryId').val()),
+											selectAll: instance._isSelectAllChecked,
+											spritemap: themeDisplay.getPathThemeImages() + '/lexicon/icons.svg',
+											urlTags: urlTags,
+											urlUpdateTags: urlUpdateTags
+										},
+										'#' + instance.NS + 'documentLibraryModal'
+									);
+								}
+							);
+						}
+						else {
+							editTagsComponent.fileEntries = instance._selectedFileEntries;
+							editTagsComponent.selectAll = instance._isSelectAllChecked;
+							editTagsComponent.folderId = instance.getFolderId();
+							editTagsComponent.open();
+						}
 					},
 
 					_plugUpload: function(event, config) {

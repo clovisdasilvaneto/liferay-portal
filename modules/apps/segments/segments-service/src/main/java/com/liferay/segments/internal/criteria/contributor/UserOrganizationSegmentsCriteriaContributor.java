@@ -32,9 +32,13 @@ import com.liferay.segments.internal.odata.entity.EntityModelFieldMapper;
 import com.liferay.segments.internal.odata.entity.OrganizationEntityModel;
 import com.liferay.segments.odata.retriever.ODataRetriever;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.ResourceBundle;
+
+import javax.portlet.PortletRequest;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -64,7 +68,7 @@ public class UserOrganizationSegmentsCriteriaContributor
 		Criteria criteria, String filterString,
 		Criteria.Conjunction conjunction) {
 
-		criteria.addCriterion(getKey(), filterString, conjunction);
+		criteria.addCriterion(getKey(), getType(), filterString, conjunction);
 
 		long companyId = CompanyThreadLocal.getCompanyId();
 
@@ -87,7 +91,7 @@ public class UserOrganizationSegmentsCriteriaContributor
 				}
 			}
 
-			criteria.addFilter(sb.toString(), conjunction);
+			criteria.addFilter(getType(), sb.toString(), conjunction);
 		}
 		catch (PortalException pe) {
 			_log.error(
@@ -99,8 +103,9 @@ public class UserOrganizationSegmentsCriteriaContributor
 	}
 
 	@Override
-	public List<Field> getFields(Locale locale) {
-		return _entityModelFieldMapper.getFields(_entityModel, locale);
+	public List<Field> getFields(PortletRequest portletRequest) {
+		return _entityModelFieldMapper.getFields(
+			_entityModel, _idEntityFieldTypes, portletRequest);
 	}
 
 	@Override
@@ -116,8 +121,21 @@ public class UserOrganizationSegmentsCriteriaContributor
 		return LanguageUtil.get(resourceBundle, getKey());
 	}
 
+	@Override
+	public Criteria.Type getType() {
+		return Criteria.Type.MODEL;
+	}
+
 	private static final Log _log = LogFactoryUtil.getLog(
 		UserOrganizationSegmentsCriteriaContributor.class);
+
+	private static final Map<String, String> _idEntityFieldTypes =
+		new HashMap<String, String>() {
+			{
+				put("organizationId", Organization.class.getName());
+				put("parentOrganizationId", Organization.class.getName());
+			}
+		};
 
 	@Reference(
 		cardinality = ReferenceCardinality.MANDATORY,

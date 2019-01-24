@@ -264,10 +264,21 @@ class Builder extends Component {
 					}
 
 					if (field.fieldName === fieldName) {
-						field = {
-							...field,
-							value
-						};
+						if(fieldName === 'options') {
+							field = {
+								...field,
+								value: {
+									...field.value,
+									[translationManager.get('editingLocale')]: value
+								}
+							};
+						}else {
+							field = {
+								...field,
+								value
+							};
+						}
+
 						if (field.localizable) {
 							field.localizedValue = {
 								...field.localizedValue,
@@ -555,13 +566,18 @@ class Builder extends Component {
 	}
 
 	attached() {
-		const translationManager = document.querySelector('.ddm-translation-manager');
+		const {activePage, pages} = this.props;
 
 		const formBasicInfo = document.querySelector('.ddm-form-basic-info');
+		const translationManager = document.querySelector('.ddm-translation-manager');
 
-		if (translationManager && formBasicInfo) {
+		if (formBasicInfo && translationManager) {
 			formBasicInfo.classList.remove('hide');
 			translationManager.classList.remove('hide');
+		}
+
+		if (!this._pageHasFields(pages, activePage)) {
+			this.openSidebar();
 		}
 	}
 

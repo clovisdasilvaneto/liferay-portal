@@ -15,37 +15,40 @@
 package com.liferay.arquillian.extension.junit.bridge.container.remote;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
-import org.jboss.arquillian.container.osgi.karaf.remote.KarafRemoteDeployableContainer;
+import javax.management.MBeanServerConnection;
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
+
+import org.jboss.arquillian.container.osgi.jmx.JMXDeployableContainer;
 import org.jboss.arquillian.container.spi.client.container.DeploymentException;
+import org.jboss.arquillian.container.spi.client.container.LifecycleException;
 import org.jboss.arquillian.container.spi.client.protocol.metadata.HTTPContext;
 import org.jboss.arquillian.container.spi.client.protocol.metadata.ProtocolMetaData;
-import org.jboss.arquillian.core.api.Instance;
-import org.jboss.arquillian.core.api.InstanceProducer;
-import org.jboss.arquillian.core.api.annotation.ApplicationScoped;
-import org.jboss.arquillian.core.api.annotation.Inject;
 import org.jboss.shrinkwrap.api.Archive;
+
+import org.osgi.jmx.framework.BundleStateMBean;
+import org.osgi.jmx.framework.FrameworkMBean;
+import org.osgi.jmx.framework.ServiceStateMBean;
 
 /**
  * @author Preston Crary
  */
 public class LiferayRemoteDeployableContainer
 	<T extends LiferayRemoteContainerConfiguration>
-		extends KarafRemoteDeployableContainer<T> {
+		extends JMXDeployableContainer<T> {
 
 	@Override
 	public ProtocolMetaData deploy(Archive<?> archive)
 		throws DeploymentException {
 
-		LiferayRemoteContainerConfiguration
-			liferayRemoteContainerConfiguration = configurationInstance.get();
-
 		ProtocolMetaData protocolMetaData = super.deploy(archive);
 
 		protocolMetaData.addContext(
 			new HTTPContext(
-				liferayRemoteContainerConfiguration.getHttpHost(),
-				liferayRemoteContainerConfiguration.getHttpPort()));
+				_liferayRemoteContainerConfiguration.getHttpHost(),
+				_liferayRemoteContainerConfiguration.getHttpPort()));
 
 		return protocolMetaData;
 	}
@@ -57,28 +60,57 @@ public class LiferayRemoteDeployableContainer
 	}
 
 	@Override
-	public void setup(T config) {
-		configurationInstanceProducer.set(config);
+	public void setup(T configuration) {
+		_liferayRemoteContainerConfiguration = configuration;
 
-		super.setup(config);
+		super.setup(configuration);
 	}
 
 	@Override
-	protected void awaitArquillianBundleActive(long timeout, TimeUnit unit) {
+	public void start() throws LifecycleException {
+		try {
+			MBeanServerConnection mBeanServer = getMBeanServerConnection(
+				30, TimeUnit.SECONDS);
+
+			mbeanServerInstance.set(mBeanServer);
+
+			frameworkMBean = getMBeanProxy(
+				mBeanServer, _frameworkObjectName, FrameworkMBean.class, 30,
+				TimeUnit.SECONDS);
+
+			bundleStateMBean = getMBeanProxy(
+				mBeanServer, _bundleStateObjectName, BundleStateMBean.class, 30,
+				TimeUnit.SECONDS);
+
+			serviceStateMBean = getMBeanProxy(
+				mBeanServer, _serviceStateObjectName, ServiceStateMBean.class,
+				30, TimeUnit.SECONDS);
+		}
+		catch (TimeoutException te) {
+			throw new LifecycleException("JMX timeout", te);
+		}
 	}
 
-	@Override
-	protected void installArquillianBundle() {
+	private static final ObjectName _bundleStateObjectName;
+	private static final ObjectName _frameworkObjectName;
+	private static final ObjectName _serviceStateObjectName;
+
+	static {
+		try {
+			_bundleStateObjectName = new ObjectName(
+				"osgi.core:type=bundleState,*");
+
+			_frameworkObjectName = new ObjectName("osgi.core:type=framework,*");
+
+			_serviceStateObjectName = new ObjectName(
+				"osgi.core:type=serviceState,*");
+		}
+		catch (MalformedObjectNameException mone) {
+			throw new ExceptionInInitializerError(mone);
+		}
 	}
 
-	@ApplicationScoped
-	@Inject
-	protected Instance<LiferayRemoteContainerConfiguration>
-		configurationInstance;
-
-	@ApplicationScoped
-	@Inject
-	protected InstanceProducer<LiferayRemoteContainerConfiguration>
-		configurationInstanceProducer;
+	private LiferayRemoteContainerConfiguration
+		_liferayRemoteContainerConfiguration;
 
 }

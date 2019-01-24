@@ -135,6 +135,22 @@ if (!isFormPublished && isFormSaved) {
 		<div id="<portlet:namespace />-container"></div>
 	</aui:form>
 
+	<liferay-util:html-top
+		outputKey="loadDDMFieldTypes"
+	>
+		<aui:script use="liferay-ddm-form-renderer-types,liferay-ddm-soy-template-util">
+			Liferay.DDM.SoyTemplateUtil.loadModules(
+				function() {
+					Liferay.DDM.Renderer.FieldTypes.register(<%= ddmFormAdminDisplayContext.getDDMFormFieldTypesJSONArray() %>);
+
+					Liferay.DMMFieldTypesReady = true;
+
+					Liferay.fire('DMMFieldTypesReady');
+				}
+			);
+		</aui:script>
+	</liferay-util:html-top>
+
 	<div class="container-fluid-1280 ddm-form-instance-settings hide" id="<portlet:namespace />settings">
 		<%= request.getAttribute(DDMWebKeys.DYNAMIC_DATA_MAPPING_FORM_HTML) %>
 	</div>
@@ -155,27 +171,7 @@ if (!isFormPublished && isFormSaved) {
 		restrictedFormURL: '<%= ddmFormAdminDisplayContext.getRestrictedFormURL() %>',
 		sharedFormURL: '<%= ddmFormAdminDisplayContext.getSharedFormURL() %>',
 		showPagination: true,
-		spritemap: '<%= themeDisplay.getPathThemeImages() %>/lexicon/icons.svg',
-		strings: {
-			'any-unsaved-changes-will-be-lost-are-you-sure-you-want-to-leave': '<liferay-ui:message key="any-unsaved-changes-will-be-lost-are-you-sure-you-want-to-leave" />',
-			'copied-to-clipboard': '<liferay-ui:message key="copied-to-clipboard" />',
-			'draft-x': '<liferay-ui:message key="draft-x" />',
-			'error': '<liferay-ui:message key="error" />',
-			'leave': '<liferay-ui:message key="leave" />',
-			'leave-form': '<liferay-ui:message key="leave-form" />',
-			'please-add-at-least-one-field': '<liferay-ui:message key="please-add-at-least-one-field" />',
-			'preview-form': '<liferay-ui:message key="preview-form" />',
-			'publish-form': '<liferay-ui:message key="publish-form" />',
-			'publish-the-form-to-get-its-shareable-link': '<liferay-ui:message key="publish-the-form-to-get-its-shareable-link" />',
-			'save-form': '<liferay-ui:message key="save-form" />',
-			'saved-x': '<liferay-ui:message key="saved-x" />',
-			'saving': '<liferay-ui:message key="saving" />',
-			'stay': '<liferay-ui:message key="stay" />',
-			'the-form-was-published-successfully-access-it-with-this-url-x': '<liferay-ui:message key="the-form-was-published-successfully-access-it-with-this-url-x" />',
-			'the-form-was-unpublished-successfully': '<liferay-ui:message key="the-form-was-unpublished-successfully" />',
-			'unpublish-form': '<liferay-ui:message key="unpublish-form" />',
-			'your-request-failed-to-complete': '<liferay-ui:message key="your-request-failed-to-complete" />'
-		}
+		spritemap: '<%= themeDisplay.getPathThemeImages() %>/lexicon/icons.svg'
 	};
 
 	Liferay.Forms.App = {

@@ -265,8 +265,7 @@ public class ModuleFrameworkImpl implements ModuleFramework {
 
 		List<FrameworkFactory> frameworkFactories = ServiceLoader.load(
 			new URLClassLoader(_getClassPathURLs(), null),
-			currentThread.getContextClassLoader(), FrameworkFactory.class,
-			null);
+			currentThread.getContextClassLoader(), FrameworkFactory.class);
 
 		FrameworkFactory frameworkFactory = frameworkFactories.get(0);
 
@@ -1081,13 +1080,12 @@ public class ModuleFrameworkImpl implements ModuleFramework {
 					if (bundleVersion.equals(curBundleVersion)) {
 						return bundle;
 					}
-					else {
-						bundle.uninstall();
 
-						_refreshBundles(Collections.singletonList(bundle));
+					bundle.uninstall();
 
-						return null;
-					}
+					_refreshBundles(Collections.singletonList(bundle));
+
+					return null;
 				}
 			}
 
