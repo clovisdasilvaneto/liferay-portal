@@ -140,6 +140,25 @@ class Options extends Component {
 			this._dragAndDrop.dispose();
 		}
 	}
+	
+
+	/**
+	 * TODO: get the current language dynamically
+	 */
+	getCurrentLanguage() {
+		return 'en_US';
+	}
+
+	/**
+	 * TODO: generate the field name dynamically
+	 */
+	getFieldName(value) {
+		return  value + Date.now();
+	}
+
+	getFieldIndex(element) {
+		return parseInt(dom.closest(element, '.ddm-field-options').dataset.index);
+	}
 
 	_startDrag() {
 		this._dragAndDrop = new DragDrop(
@@ -152,12 +171,53 @@ class Options extends Component {
 			}
 		);
 
-		// this._dragAndDrop.on(
-		// 	DragDrop.Events.END,
-		// 	this._handleDragAndDropEnd.bind(this)
-		// );
+		this._dragAndDrop.on(
+			DragDrop.Events.END,
+			this._handleDragAndDropEnd.bind(this)
+		);
 
-		// this._dragAndDrop.on(DragDrop.Events.DRAG, this._handleDragStarted.bind(this));
+		this._dragAndDrop.on(DragDrop.Events.DRAG, this._handleDragStarted.bind(this));
+	}
+
+	_handleDragStarted({source}) {
+		source.classList.add('ddm-source-dragging'); 
+	}
+
+	_handleDragAndDropEnd({target, source}) {
+		const lastSource = document.querySelector('.ddm-source-dragging');
+		const sourceIndex = parseInt(source.dataset.index);
+
+		if(lastSource) {
+			lastSource.classList.remove('ddm-source-dragging');
+		}
+
+		if(!target || target.dataset.index === sourceIndex) {
+			return;
+		}
+
+		const targetIndex = parseInt(target.dataset.index);
+
+		let options = [...this.value[this.getCurrentLanguage()]];
+
+		options.splice(targetIndex, 0, {...options[sourceIndex]});
+
+		options = options.filter(
+			(option, index) => {
+				return sourceIndex > targetIndex ? index != (sourceIndex + 1) : index != sourceIndex;
+			}
+		);
+
+		this.emit(
+			'fieldEdited',
+			{
+				fieldInstance: this,
+				value: options
+			}
+		);
+
+		this.setState({
+			items: this.getItems(options)
+		})
 	}
 
 	_handleDeleteOption(event) {
@@ -184,22 +244,29 @@ class Options extends Component {
 		})
 	}
 
-	/**
-	 * TODO: get the current language dynamically
-	 */
-	getCurrentLanguage() {
-		return 'en_US';
-	}
+	_handleFieldNameChanged(event) {
+		const {target} = event;
+		const {value} = target;
+		const currentLanguage = this.getCurrentLanguage();
+		const itemIndex = this.getFieldIndex(target);
 
-	/**
-	 * TODO: generate the field name dynamically
-	 */
-	getFieldName(value) {
-		return  value + Date.now();
-	}
+		let options = [...this.value[currentLanguage]]
 
-	getFieldIndex(element) {
-		return parseInt(dom.closest(element, '.ddm-field-options').dataset.index);
+		if(!options[itemIndex]) {
+			return;
+		}
+
+		options = options.map(
+			(option, index) => itemIndex === index ? (
+				{
+					...option,
+					fieldNameEdited: true,
+					value: value.trim() ? value : option.value
+				}
+			) : option
+		);
+	
+		this._handleFieldEdited(event, options);
 	}
 
 	_handleTextChanged(event) {
@@ -214,8 +281,9 @@ class Options extends Component {
 			options = options.map(
 				(option, index) => itemIndex === index ? (
 					{
+						...option,
 						label: value,
-						value
+						value: option.fieldNameEdited ? option.value : value.replace(/\s/g,'')
 					}
 				) : option
 			);
@@ -224,11 +292,15 @@ class Options extends Component {
 				...options,
 				{
 					label: value,
-					value
+					value: value.replace(/\s/g,'')
 				}
 			]
 		}
 
+		this._handleFieldEdited(event, options);
+	}
+
+	_handleFieldEdited({originalEvent}, options) {
 		this.emit(
 			'fieldEdited',
 			{
@@ -236,7 +308,7 @@ class Options extends Component {
 				originalEvent,
 				value: options
 			}
-		);
+		)
 
 		this.setState({
 			items: this.getItems(options)

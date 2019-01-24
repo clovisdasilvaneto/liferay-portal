@@ -3,6 +3,7 @@
 {template .render}
 	{@param? _handleDeleteOption: any}
 	{@param? _handleTextChanged: any}
+	{@param? _handleFieldNameChanged: any}
 	{@param? readOnly: bool}
 	{@param? tip: string}
 	{@param? items: list<[
@@ -22,9 +23,9 @@
 	{call FieldBase.render}
 		{param contentRenderer kind="html"}
 			{if $items}
-				<div class="field-options">
+				<div class="ddm-field-options-container">
 					{for $option in $items}
-						<div class="ddm-options-target"></div>
+						<div class="ddm-options-target" data-index={index($option)}></div>
 
 						{let $fieldConfig kind="html"}
 							<div class="ddm-field-options" data-index={index($option)}>
@@ -35,29 +36,36 @@
 									<use xlink:href="{$spritemap}#drag" />
 								</svg>
 
-								{call Text.render}
-									{param events: [
-										'fieldEdited': $_handleTextChanged
-									] /}
-									{param readOnly: $readOnly ? $readOnly : $option.disabled /}
-									{param name: $option.name /}
-									{param ref: 'text'+index($option) /}
-									{param showLabel: false /}
-									{param spritemap: $spritemap /}
-									{param value: $option.label and $option.value ? $option.label : $placeholder /}
-									{param required: $required /}
-								{/call}
+								<div>
+									{call Text.render}
+										{param events: [
+											'fieldEdited': $_handleTextChanged
+										] /}
+										{param readOnly: $readOnly ? $readOnly : $option.disabled /}
+										{param name: $option.name /}
+										{param ref: 'text'+index($option) /}
+										{param showLabel: false /}
+										{param spritemap: $spritemap /}
+										{param value: $option.label ? $option.label : $placeholder /}
+										{param required: $required /}
+									{/call}
 
-								{if not isLast($option)}
-									<button class="close close-modal" data-onclick={$_handleDeleteOption} type="button">
-										<svg
-										aria-hidden="true"
-										class="lexicon-icon lexicon-icon-times"
-									>
-										<use xlink:href="{$spritemap}#times" />
-										</svg>
-									</button>
-								{/if}
+									<div class="active key-value-editor">
+										<label class="control-label key-value-label">Field Name:</label>
+										<input class="key-value-input" type="text" value="{$option.value}" data-oninput="{$_handleFieldNameChanged}" />
+									</div>
+									
+									{if not isLast($option)}
+										<button class="close close-modal" data-onclick={$_handleDeleteOption} type="button">
+											<svg
+											aria-hidden="true"
+											class="lexicon-icon lexicon-icon-times"
+										>
+											<use xlink:href="{$spritemap}#times" />
+											</svg>
+										</button>
+									{/if}
+								</div>
 							</div>
 						{/let}
 
