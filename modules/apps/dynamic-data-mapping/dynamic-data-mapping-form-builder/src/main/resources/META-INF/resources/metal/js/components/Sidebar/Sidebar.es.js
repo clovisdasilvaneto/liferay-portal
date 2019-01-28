@@ -99,6 +99,7 @@ class Sidebar extends Component {
 	};
 
 	static PROPS = {
+		editingLanguageId: Config.string(),
 
 		/**
 		 * @default {}
@@ -871,6 +872,7 @@ class Sidebar extends Component {
 	render() {
 		const {activeTab, open} = this.state;
 		const {
+			editingLanguageId,
 			focusedField,
 			spritemap
 		} = this.props;
@@ -931,6 +933,7 @@ class Sidebar extends Component {
 									<FormWithEvaluator
 										activePage={activeTab}
 										editable={true}
+										editingLanguageId={editingLanguageId}
 										events={layoutRenderEvents}
 										fieldType={focusedField.type}
 										formContext={settingsContext}
