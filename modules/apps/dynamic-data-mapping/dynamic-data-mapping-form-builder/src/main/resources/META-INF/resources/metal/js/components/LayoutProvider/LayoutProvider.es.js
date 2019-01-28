@@ -17,6 +17,7 @@ import RulesSupport from '../RuleBuilder/RulesSupport.es';
 
 class LayoutProvider extends Component {
 	static PROPS = {
+		editingLanguageId: Config.string(),
 
 		/**
 		 * @default undefined
@@ -643,7 +644,7 @@ class LayoutProvider extends Component {
 	}
 
 	render() {
-		const {children, spritemap} = this.props;
+		const {children, spritemap, editingLanguageId} = this.props;
 		const {activePage, focusedField, pages, paginationMode, rules, successPageSettings} = this.state;
 
 		if (children.length) {
@@ -675,6 +676,7 @@ class LayoutProvider extends Component {
 					child.props,
 					{
 						...this.otherProps(),
+						editingLanguageId,
 						activePage,
 						events,
 						focusedField,
