@@ -123,6 +123,7 @@ class Validation extends Component {
 
 		strings: {
 			value: {
+				dynamicallyLoadedData: Liferay.Language.get('dynamically-loaded-data'),
 				chooseAnOption: Liferay.Language.get('choose-an-option'),
 				email: Liferay.Language.get('email'),
 				errorMessage: Liferay.Language.get('error-message'),
