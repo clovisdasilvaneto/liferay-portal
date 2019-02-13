@@ -1,18 +1,40 @@
 import {PagesVisitor} from '../../util/visitors.es';
 
+const implAddColumn = (size, fields = []) => {
+	return {
+		fields,
+		size
+	};
+};
+
 const implAddRow = (size, fields) => {
 	return {
 		columns: [
-			{
-				fields,
-				size
-			}
+			...implAddColumn(size, fields)
 		]
 	};
 };
 
+const addColumnToLastPosition = (pages, pageIndex, rowIndex) => {
+	pages[Number(pageIndex)].rows[Number(rowIndex)].columns = [
+		...pages[Number(pageIndex)].rows[Number(rowIndex)].columns,
+		{
+			size: 1,
+			fields: []
+		}
+	];
+
+	return pages;
+};
+
 const addRow = (pages, indexToAddRow, pageIndex, newRow = implAddRow(12, [])) => {
 	pages[Number(pageIndex)].rows.splice(Number(indexToAddRow), 0, newRow);
+
+	return pages;
+};
+
+const addColumn = (pages, indexToAddColumn, pageIndex, rowIndex, newColumn = implAddColumn(11, [])) => {
+	pages[Number(pageIndex)].rows[rowIndex].columns.splice(Number(indexToAddColumn), 0, newColumn);
 
 	return pages;
 };
@@ -54,6 +76,19 @@ const emptyPages = pages => {
 	);
 
 	return empty;
+};
+
+const changeColumn = (pages, pageIndex, rowIndex, columnIndex, properties) => {
+	const currentColumn = {
+		...pages[Number(pageIndex)].rows[Number(rowIndex)].columns[Number(columnIndex)]
+	};
+
+	pages[Number(pageIndex)].rows[Number(rowIndex)].columns[columnIndex] = {
+		...currentColumn,
+		...properties
+	};
+
+	return pages;
 };
 
 const setColumnFields = (pages, pageIndex, rowIndex, columnIndex, fields = []) => {
@@ -125,6 +160,20 @@ const getColumn = (pages, pageIndex, rowIndex, columnIndex) => {
 
 	return row.columns[Number(columnIndex)];
 };
+
+const getColumnPosition = (pages, pageIndex, rowIndex, columnIndex) => {
+	return columnIndex != -1 ? pages[pageIndex].rows[rowIndex].columns.reduce(
+		(result, next, index) => {
+			if(index <= columnIndex) {
+				const column = getColumn(pages, pageIndex, rowIndex, index);
+				result += column.size;
+			}
+
+			return result;
+		},
+		0
+	) : 0;
+}
 
 const getField = (pages, pageIndex, rowIndex, columnIndex) => {
 	return getColumn(pages, pageIndex, rowIndex, columnIndex).fields[0];
@@ -208,10 +257,14 @@ const updateField = (
 
 export default {
 	addFieldToColumn,
+	addColumnToLastPosition,
+	addColumn,
 	addRow,
+	changeColumn,
 	emptyPages,
 	generateFieldName,
 	getColumn,
+	getColumnPosition,
 	getField,
 	getFieldProperties,
 	getIndexes,

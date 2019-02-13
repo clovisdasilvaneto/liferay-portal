@@ -9,6 +9,8 @@ import FormSupport from './FormSupport.es';
 import Soy from 'metal-soy';
 import templates from './FormRenderer.soy.js';
 import {setValue} from '../../util/i18n.es';
+import {PagesVisitor} from '../../util/visitors.es';
+
 
 /**
  * FormRenderer.
@@ -337,6 +339,10 @@ class FormRenderer extends Component {
 
 	_resetPage() {
 		this.emit('pageReset');
+	}
+
+	_handleColumnResized(event){
+		this.emit('columnResized', event)
 	}
 
 	_handleChangePage({delegateTarget: {dataset}}) {

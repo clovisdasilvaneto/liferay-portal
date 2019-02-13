@@ -118,13 +118,106 @@ class LayoutProvider extends Component {
 
 		rules: Config.arrayOf(rule).valueFn('_rulesValueFn'),
 
-		successPageSettings: Config.object().valueFn('_successPageSettingsValueFn')
+		successPageSettings: Config.object().valueFn('_successPageSettingsValueFn'),
+
+		lastResizedPosition: Config.number()
 	};
 
 	_handleActivePageUpdated(activePage) {
 		this.setState(
 			{
 				activePage
+			}
+		);
+	}
+
+	_formatCurrentColumn(target, source, {pageIndex, rowIndex, columnIndex}, size) {
+		const {pages} = this.state;
+
+		let newPages = [
+			...pages
+		];
+
+		const nextColumn = FormSupport.getColumn(newPages, pageIndex, rowIndex, columnIndex + 1);
+		const currentColumn = FormSupport.getColumn(pages, pageIndex, rowIndex, columnIndex);
+		const currentPosition = FormSupport.getColumnPosition(pages, pageIndex, rowIndex, columnIndex);
+		const newSize = Math.abs(currentPosition - size);
+
+		if(currentPosition >= size) {
+			currentColumn.size -= newSize;
+		}else {
+			currentColumn.size += newSize;
+		}
+
+		if(nextColumn && currentPosition >= size) {
+			nextColumn.size += newSize;
+		}else if(nextColumn){
+			nextColumn.size -= newSize;
+		}else if(size < 12){
+			newPages = FormSupport.addColumnToLastPosition(newPages, pageIndex, rowIndex);
+		}
+
+		return newPages;
+	}
+
+	_formatPreviousColumn(target, source, {pageIndex, rowIndex, columnIndex}, size) {
+		const {pages} = this.state;
+
+		let newPages = [
+			...pages
+		];
+
+		const currentColumn = FormSupport.getColumn(pages, pageIndex, rowIndex, columnIndex);
+		const previousColumnPosition = FormSupport.getColumnPosition(pages, pageIndex, rowIndex, columnIndex - 1);
+		const previousColumn = FormSupport.getColumn(newPages, pageIndex, rowIndex, columnIndex - 1);
+		const newSize = Math.abs(previousColumnPosition - size);
+
+		if(previousColumnPosition >= size) {
+			currentColumn.size += newSize;
+		}else {
+			currentColumn.size -= newSize;
+		}
+
+		if(previousColumn && previousColumnPosition >= size) {
+			previousColumn.size -= newSize;
+		}else if(previousColumn){
+			previousColumn.size += newSize;
+		}else if(size < 12){
+			source.setAttribute('data-ddm-field-column', 1);
+			newPages = FormSupport.addColumn(newPages, 0, pageIndex, rowIndex, {
+				fields: [],
+				size: 1
+			});
+		}
+
+		return newPages;
+	}
+
+	_handleColumnResized({target, source}) {
+		const {pages} = this.state;
+		const isLeft = source.classList.contains('ddm-resize-handle-left');
+		const indexes = FormSupport.getIndexes(source);
+		const {pageIndex, rowIndex, columnIndex} = indexes;
+		const {dataset: {col}} = target;
+		let size = Number(col);
+		let newPages;
+
+		if(size == 12) {
+			return;
+		}
+
+		if(isLeft) {
+			newPages = this._formatPreviousColumn(target, source, indexes, size);
+		} else {
+			newPages = this._formatCurrentColumn(target, source, indexes, size);
+		}
+
+		this.setState(
+			{
+				pages: [
+					...newPages
+				],
+				lastResizedPosition: size
 			}
 		);
 	}
@@ -154,10 +247,9 @@ class LayoutProvider extends Component {
 	 */
 
 	_handleFieldAdded({focusedField: {name, settingsContext, fieldName}, target}) {
-		const {pageIndex, rowIndex} = target;
+		const {pageIndex, rowIndex, columnIndex} = target;
 		const {editingLanguageId, spritemap} = this.props;
 		let {pages} = this.state;
-		let {columnIndex} = target;
 
 		const fieldProperties = {
 			...FormSupport.getFieldProperties(settingsContext, editingLanguageId),
@@ -169,10 +261,9 @@ class LayoutProvider extends Component {
 			type: name
 		};
 
-		if (FormSupport.rowHasFields(pages, pageIndex, rowIndex)) {
-			pages = FormSupport.addRow(pages, rowIndex, pageIndex);
-			columnIndex = 0;
-		}
+		// if (FormSupport.rowHasFields(pages, pageIndex, rowIndex)) {
+		// 	pages = FormSupport.addRow(pages, rowIndex, pageIndex);
+		// }
 
 		this.setState(
 			{
@@ -649,6 +740,7 @@ class LayoutProvider extends Component {
 		if (children.length) {
 			const events = {
 				activePageUpdated: this._handleActivePageUpdated.bind(this),
+				columnResized: this._handleColumnResized.bind(this),
 				fieldAdded: this._handleFieldAdded.bind(this),
 				fieldBlurred: this._handleFieldBlurred.bind(this),
 				fieldChangesCanceled: this._handleFieldChangesCanceled.bind(this),

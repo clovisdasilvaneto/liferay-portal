@@ -3,6 +3,7 @@ import 'clay-dropdown';
 import 'clay-modal';
 import {Config} from 'metal-state';
 import {dom} from 'metal-dom';
+import {DragDrop, Drag} from 'metal-drag-drop';
 import {pageStructure} from '../../util/config.es';
 import {setLocalizedValue} from '../../util/i18n.es';
 import {sub} from '../../util/strings.es';
@@ -22,6 +23,13 @@ class PageRenderer extends Component {
 		 */
 
 		activePage: Config.number().value(0),
+
+		/**
+		 * @instance
+		 * @memberof FormPage
+		 * @type {?boolean}
+		 */
+		editable: Config.bool().value(false),
 
 		/**
 		 * @instance
@@ -100,6 +108,15 @@ class PageRenderer extends Component {
 		total: Config.number().value(1)
 	}
 
+	/**
+	 * Remember to destroy the dragDrop instance when the component is disposed
+	 */
+	attached() {
+		if (this.editable) {
+			this._bindLayoutBuilder();
+		}
+	}
+
 	willAttach() {
 		this.titlePlaceholder = this._getTitlePlaceholder();
 	}
@@ -113,6 +130,30 @@ class PageRenderer extends Component {
 
 	willReceiveState() {
 		this.titlePlaceholder = this._getTitlePlaceholder();
+	}
+
+	convertToPercentage(position, element) {
+		const {offsetWidth, offsetLeft} = element;
+		const calculatedPosition = offsetLeft - position;
+
+		return calculatedPosition / offsetWidth;
+	}
+
+	_bindLayoutBuilder() {
+		this._dragAndDrop = new DragDrop(
+			{
+				axis: 'x',
+				targets: '.ddm-resize-drop',
+				sources: '.ddm-resize-handle',
+				useShim: true
+			}
+		);
+
+		this._dragAndDrop.on(DragDrop.Events.TARGET_ENTER, this._handleDropOver.bind(this));
+	}
+
+	_handleDropOver(event) {
+		this.emit('columnResized', event);
 	}
 
 	/**
@@ -187,18 +228,6 @@ class PageRenderer extends Component {
 
 		this.emit('deleteFieldClicked', index);
 	}
-
-	/**
-	 * @param {!Event} event
-	 * @private
-	 */
-
-	_handleOnClickResize() {}
-
-	/**
-	 * @param {!Object} event
-	 * @private
-	 */
 
 	_handlePageDescriptionChanged(event) {
 		const page = this._changePageForm(event, 'description');
