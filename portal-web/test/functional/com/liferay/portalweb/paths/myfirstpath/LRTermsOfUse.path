@@ -1,0 +1,20 @@
+<html>
+<head>
+<title>LRTermsOfUse</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">LRTermsOfUse</td></tr>
+</thead>
+<tbody>
+<tr>
+	<td>I_AGREE_BUTTON</td>
+	<td>//button[@class='btn btn-primary btn-default']</td>
+	<td></td>
+</tr>
+
+</tbody>
+</table>
+</body>
+</html>
