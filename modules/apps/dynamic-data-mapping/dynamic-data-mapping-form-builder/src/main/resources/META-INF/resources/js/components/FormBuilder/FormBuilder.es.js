@@ -44,7 +44,7 @@ class FormBuilderBase extends Component {
 			this.openSidebar();
 		}
 
-		this._eventHandler.add(
+		this._eventHandlers.add(
 			store.on('fieldDuplicated', () => this.openSidebar())
 		);
 	}
@@ -59,7 +59,7 @@ class FormBuilderBase extends Component {
 	disposeInternal() {
 		super.disposeInternal();
 
-		this._eventHandler.removeAllListeners();
+		this._eventHandlers.removeAllListeners();
 	}
 
 	getFormRendererEvents() {

@@ -112,6 +112,10 @@ const withMoveableFields = ChildComponent => {
 		_handleFieldMoved(event) {
 			const {store} = this.context;
 
+			console.log('event', event);
+
+			console.log('store', store);
+
 			store.emit('fieldMoved', event);
 		}
 
