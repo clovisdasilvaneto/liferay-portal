@@ -24,8 +24,8 @@ class Actions extends Component {
 					}}
 					icon='paste'
 					monospaced={true}
-					size="sm"
-					ref="duplicate"
+					size='sm'
+					ref='duplicate'
 					spritemap={spritemap}
 					style='secondary'
 				/>
@@ -35,8 +35,8 @@ class Actions extends Component {
 					events={{
 						click: this._handleDeleteButtonClicked.bind(this)
 					}}
-					icon="trash"
-					ref="delete"
+					icon='trash'
+					ref='delete'
 					monospaced={true}
 					size='sm'
 					spritemap={spritemap}
@@ -139,7 +139,7 @@ const withActionableFields = ChildComponent => {
 					{this.isActionsEnabled() && (
 						<Actions
 							events={this.getEvents()}
-							ref="actions"
+							ref='actions'
 							spritemap={spritemap}
 						/>
 					)}

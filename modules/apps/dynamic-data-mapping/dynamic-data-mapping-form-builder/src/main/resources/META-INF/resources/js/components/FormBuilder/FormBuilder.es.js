@@ -50,7 +50,11 @@ class FormBuilderBase extends Component {
 	}
 
 	created() {
+<<<<<<< HEAD
 		this._eventHandler = new EventHandler();
+=======
+		this._eventHandlers = new EventHandler();
+>>>>>>> LPS-95534 SF
 		this._handleCancelChangesModalButtonClicked = this._handleCancelChangesModalButtonClicked.bind(
 			this
 		);
