@@ -417,7 +417,7 @@ describe(
 		);
 
 		it(
-			'should close the sidebar in edition mode',
+			'should open the sidebar in edition mode',
 			() => {
 				const focusedField = mockFieldType;
 
@@ -438,7 +438,7 @@ describe(
 		);
 
 		it(
-			'should close the sidebar in edition mode',
+			'should close the sidebar in edition mode when arrow is clicked',
 			() => {
 				const focusedField = mockFieldType;
 
@@ -480,10 +480,10 @@ describe(
 
 				jest.runAllTimers();
 
-				const {FormRenderer} = component.refs;
+				const {evaluableForm} = component.refs;
 				const spy = jest.spyOn(component, 'emit');
 
-				FormRenderer.emit(
+				evaluableForm.emit(
 					'evaluated',
 					{
 						focusedField
@@ -511,10 +511,10 @@ describe(
 
 				jest.runAllTimers();
 
-				const {FormRenderer} = component.refs;
+				const {evaluableForm} = component.refs;
 				const spy = jest.spyOn(component, 'emit');
 
-				FormRenderer.emit(
+				evaluableForm.emit(
 					'fieldEdited',
 					{},
 				);

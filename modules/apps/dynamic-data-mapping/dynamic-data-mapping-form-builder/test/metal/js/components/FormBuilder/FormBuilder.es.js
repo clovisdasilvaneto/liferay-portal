@@ -109,6 +109,8 @@ const defaultStoreBuilder = {
 
 const getFormBuilder = (
 	{
+		defaultLanguageId,
+		editingLanguageId,
 		fieldTypes,
 		namespace,
 		pages,
@@ -117,13 +119,15 @@ const getFormBuilder = (
 		spritemap,
 		successPageSettings
 	},
-	dispatch = () => {},
-	store = defaultStoreBuilder
+	store = defaultStoreBuilder,
+	dispatch
 	) => {
 	return class Parent extends JSXComponent {
 		render() {
 			return (
 				<FormBuilderBase
+					defaultLanguageId={defaultLanguageId}
+					editingLanguageId={editingLanguageId}
 					fieldTypes={fieldTypes}
 					namespace={namespace}
 					pages={pages}
@@ -168,6 +172,8 @@ describe(
 
 				const FormBuilder = new getFormBuilder(
 					{
+						defaultLanguageId: 'en_US',
+						editingLanguageId: 'en_US',
 						fieldTypes,
 						namespace: '_namespace_',
 						pages,
@@ -209,6 +215,8 @@ describe(
 			() => {
 				const FormBuilder = getFormBuilder(
 					{
+						defaultLanguageId: 'en_US',
+						editingLanguageId: 'en_US',
 						fieldTypes,
 						namespace: '_namespace_',
 						pages: [{rows: [{columns: [{fields: []}]}]}],
@@ -230,10 +238,12 @@ describe(
 		);
 
 		it(
-			'should open the sidebar when a field is clicked',
+			'should open the sidebar when add button is clicked',
 			() => {
 				const FormBuilder = getFormBuilder(
 					{
+						defaultLanguageId: 'en_US',
+						editingLanguageId: 'en_US',
 						fieldTypes,
 						namespace: '_namespace_',
 						pages,
@@ -242,6 +252,125 @@ describe(
 						spritemap,
 						successPageSettings
 					}
+				);
+
+				component = new FormBuilder();
+
+				jest.runAllTimers();
+
+				addButton.click();
+
+				let sidebarOpened = component.refs.fbuilder.refs.sidebar.state.open;
+
+                expect(sidebarOpened).toBe(true);
+			}
+		);
+
+		it(
+			'should emit fieldAdded event when a field is added to Form Builder',
+			() => {
+                const dispatch = jest.fn();
+
+                const store = {
+                    emit: jest.fn(),
+                    on: () => {}
+                };
+
+				const FormBuilder = getFormBuilder(
+					{
+						defaultLanguageId: 'en_US',
+						editingLanguageId: 'en_US',
+						fieldTypes,
+						namespace: '_namespace_',
+						pages,
+						paginationMode: 'wizard',
+						rules: [],
+						spritemap,
+						successPageSettings
+					},
+					store,
+					dispatch
+				);
+
+				component = new FormBuilder();
+
+				jest.runAllTimers();
+
+				// console.log('component.refs.fbuilder', component.refs.fbuilder);
+
+				const fieldType = {
+					label: 'Text field',
+					settingsContext: {
+						pages: []
+					}
+				};
+
+				dom.enterDocument('<div class="position-relative"></div>');
+
+				const addedToPlaceholder = document.querySelector('.position-relative');
+
+				const event = {
+					fieldType,
+					data: {
+						target: {
+							parentElement: {
+								parentElement: addedToPlaceholder
+							}
+						}
+					}
+				};
+
+				component.refs.fbuilder._handleFieldAdded(event);
+
+				jest.runAllTimers();
+
+				expect(dispatch).toHaveBeenCalledWith('fieldAdded', 
+				{
+					...event,
+					addedToPlaceholder: false,
+					focusedField: {
+						...fieldType,
+						fieldName: "TextField",
+						settingsContext: {
+							...fieldType.settingsContext,
+							type: undefined
+						}
+					}
+
+				});
+
+				let sidebarOpened = component.refs.fbuilder.refs.sidebar.state.open;
+
+                expect(sidebarOpened).toBe(true);
+			}
+		);
+
+		it(
+			'should open the sidebar when a field is clicked',
+			() => {
+
+				const dispatch = jest.fn();
+
+                const store = {
+                    emit: jest.fn(),
+                    on: () => {}
+				};
+
+				const FormBuilder = getFormBuilder(
+					{
+						defaultLanguageId: 'en_US',
+						editingLanguageId: 'en_US',
+						fieldTypes,
+						namespace: '_namespace_',
+						pages,
+						paginationMode: 'wizard',
+						rules: [],
+						spritemap,
+						successPageSettings
+					},
+					store,
+					dispatch
+
 				);
 
 				component = new FormBuilder();
@@ -261,6 +390,52 @@ describe(
 				let sidebarOpened = component.refs.fbuilder.refs.sidebar.state.open;
 
 				expect(sidebarOpened).toBe(true);
+			}
+		);
+
+		it(
+			'should not show add button when editing language id is different from default language id',
+			() => {
+				const FormBuilder = getFormBuilder(
+					{
+						defaultLanguageId: 'en_US',
+						editingLanguageId: 'pt_BR',
+						fieldTypes,
+						namespace: '_namespace_',
+						pages,
+						paginationMode: 'wizard',
+						rules: [],
+						spritemap,
+						successPageSettings
+					}
+				);
+
+				component = new FormBuilder();
+
+				expect(addButton.classList.contains('invisible')).toBe(true);
+			}
+		);
+
+		it(
+			'should not show add button when editing language id is different from default language id',
+			() => {
+				const FormBuilder = getFormBuilder(
+					{
+						defaultLanguageId: 'en_US',
+						editingLanguageId: 'pt_BR',
+						fieldTypes,
+						namespace: '_namespace_',
+						pages,
+						paginationMode: 'wizard',
+						rules: [],
+						spritemap,
+						successPageSettings
+					}
+				);
+
+				component = new FormBuilder();
+
+				expect(addButton.classList.contains('invisible')).toBe(true);
 			}
 		);
 	}

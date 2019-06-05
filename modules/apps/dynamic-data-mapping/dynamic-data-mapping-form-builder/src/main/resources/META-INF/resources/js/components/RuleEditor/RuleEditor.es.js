@@ -1324,11 +1324,7 @@ class RuleEditor extends Component {
 				action.target = '';
 			} else if (action.action == 'auto-fill') {
 				action = {
-<<<<<<< HEAD
 					...action,
-=======
-					...rule.actions[index],
->>>>>>> LPS-95534 SF
 					calculatorFields: []
 				};
 			}

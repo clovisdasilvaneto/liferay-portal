@@ -129,51 +129,51 @@ describe(
             }
         );
 
-        it(
-            'should move fields from source to target',
-            () => {
-                jest.useFakeTimers();
-                dom.enterDocument('<button id="addFieldButton"></button>');
-                dom.enterDocument('<div class="ddm-translation-manager"></div>');
-                dom.enterDocument('<div id="fieldToDrag" class="ddm-field-container ddm-parent-dragging"></div>');
+        // it(
+        //     'should move fields from source to target',
+        //     () => {
+        //         jest.useFakeTimers();
+        //         dom.enterDocument('<button id="addFieldButton"></button>');
+        //         dom.enterDocument('<div class="ddm-translation-manager"></div>');
+        //         dom.enterDocument('<div id="fieldToDrag" class="ddm-field-container ddm-parent-dragging"></div>');
 
-                let pages = JSON.parse(JSON.stringify(Pages));
-                const FormBuilderWithMoveableFields = getFormBuilderWithMoveableFields(
-                    {
-                        fieldTypes,
-                        pages,
-                        paginationMode: 'wizard',
-                        rules: [],
-                        spritemap
-                    }
-                );
+        //         let pages = JSON.parse(JSON.stringify(Pages));
+        //         const FormBuilderWithMoveableFields = getFormBuilderWithMoveableFields(
+        //             {
+        //                 fieldTypes,
+        //                 pages,
+        //                 paginationMode: 'wizard',
+        //                 rules: [],
+        //                 spritemap
+        //             }
+        //         );
 
-                let component = new FormBuilderWithMoveableFields({}, '#fieldToDrag');
+        //         let component = new FormBuilderWithMoveableFields({}, '#fieldToDrag');
 
-                jest.runAllTimers();
+        //         jest.runAllTimers();
 
-                let event = {
-                    addedToPlaceholder: true,
-                    source: {columnIndex: 0, pageIndex: 0, rowIndex: 0},
-                    target: {columnIndex: 1, pageIndex: 0, rowIndex: 0}
-                };
+        //         let event = {
+        //             addedToPlaceholder: true,
+        //             source: {columnIndex: 0, pageIndex: 0, rowIndex: 0},
+        //             target: {columnIndex: 1, pageIndex: 0, rowIndex: 0}
+        //         };
 
-                // component.refs.moveable._handleFieldMoved(event);
+        //         // component.refs.moveable._handleFieldMoved(event);
 
-                component.refs.moveable._dragAndDrop._handleDragAndDropEnd(event);
+        //         component.refs.moveable._dragAndDrop._handleDragAndDropEnd(event);
 
-                console.log(component.refs.moveable._dragAndDrop._handleDragAndDropEnd(event));
+        //         console.log(component.refs.moveable._dragAndDrop._handleDragAndDropEnd(event));
 
-                // // let move = {
-                // //     source: {
+        //         // // let move = {
+        //         // //     source: {
 
-                // //     },
-                // // }
+        //         // //     },
+        //         // // }
 
-                jest.runAllTimers();
+        //         jest.runAllTimers();
 
-                // expect(component).toMatchSnapshot();
-            }
-        );
+        //         // expect(component).toMatchSnapshot();
+        //     }
+        // );
     }
 );

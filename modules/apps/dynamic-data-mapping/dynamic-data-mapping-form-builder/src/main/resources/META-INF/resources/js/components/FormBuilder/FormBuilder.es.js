@@ -44,17 +44,13 @@ class FormBuilderBase extends Component {
 			this.openSidebar();
 		}
 
-		this._eventHandlers.add(
+		this._eventHandler.add(
 			store.on('fieldDuplicated', () => this.openSidebar())
 		);
 	}
 
 	created() {
-<<<<<<< HEAD
 		this._eventHandler = new EventHandler();
-=======
-		this._eventHandlers = new EventHandler();
->>>>>>> LPS-95534 SF
 		this._handleCancelChangesModalButtonClicked = this._handleCancelChangesModalButtonClicked.bind(
 			this
 		);
@@ -63,7 +59,7 @@ class FormBuilderBase extends Component {
 	disposeInternal() {
 		super.disposeInternal();
 
-		this._eventHandlers.removeAllListeners();
+		this._eventHandler.removeAllListeners();
 	}
 
 	getFormRendererEvents() {
